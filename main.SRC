@@ -1,0 +1,30 @@
+; .\main.SRC generated from: main.c
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE main.c DEBUG OBJECTEXTEND SRC(.\main.SRC)
+
+
+NAME	MAIN
+
+?PR?main?MAIN        SEGMENT CODE 
+	EXTRN	CODE (?C_STARTUP)
+	PUBLIC	main
+; #include <stdio.h>
+; 
+; extern void try_test(void);
+; 
+; void main(void)
+
+	RSEG  ?PR?main?MAIN
+main:
+			; SOURCE LINE # 5
+; {
+			; SOURCE LINE # 6
+; 
+; 
+; 
+; }
+			; SOURCE LINE # 10
+	RET  	
+; END OF main
+
+	END

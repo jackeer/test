@@ -1,0 +1,304 @@
+C51 COMPILER V9.02   VIEW                                                                  06/29/2013 15:30:09 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE VIEW
+OBJECT MODULE PLACED IN .\output\View.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE View.c DEBUG OBJECTEXTEND PRINT(.\list\View.lst) OBJECT(.\output\View.obj)
+
+line level    source
+
+   1          
+   2          #include<View.h>
+   3          #include <Def_INC.h>
+   4          #include <IIC.h>
+   5          
+   6          BYTE xdata _bViewState[ACTIVEVIEW_MAX];
+   7          BYTE xdata _bActiveView[ACTIVEVIEW_MAX];
+   8          BYTE xdata _bTempForView;
+   9          BOOL Led_Act;
+  10          
+  11          extern BYTE xdata _bFocusViewIndex;
+  12          extern BYTE xdata _bKeyProcessViewIndex;
+  13          
+  14          extern BYTE xdata UI_kwy_buffer;
+  15          extern BYTE xdata  STATUS_TSK;
+  16          extern WORD xdata Time_Count;
+  17          extern BOOL keypress;
+  18          
+  19          BOOL fgBaseViewState(void) large
+  20          {
+  21   1              if(P0 != 0xFF)
+  22   1                      {
+  23   2                      if(!keypress)
+  24   2                              {
+  25   3                              if(!key_Power)
+  26   3                                      vEnterView(View_ACT2);
+  27   3                              else if(!key_shink)
+  28   3                                      {
+  29   4                                      vEnterView(View_ACT1);
+  30   4                                      Led_Act = 1;
+  31   4                                      }
+  32   3                              /*                      else if(!key_shift_stop)
+  33   3                                      {
+  34   3                                      //                      vExitFocusView();
+  35   3                                      Led_Act = 0;
+  36   3                                      }
+  37   3                              */
+  38   3                              else if(!key5 || !key6 || !key7 || !key8)
+  39   3                                      UI_kwy_buffer = P0;
+  40   3      
+  41   3                              if(!key_shift)
+  42   3                                      {
+  43   4                                      UI_kwy_buffer = P2;
+  44   4                                      UI_kwy_buffer = ~UI_kwy_buffer;
+  45   4                                      UI_kwy_buffer <<= 1;
+  46   4                                      UI_kwy_buffer = ~UI_kwy_buffer;
+  47   4                                      keypress = 1;
+  48   4                                      }
+  49   3                              }
+  50   2                      }
+  51   1                              else
+  52   1                                      keypress = 0;
+  53   1      
+  54   1              return TRUE;
+  55   1      
+C51 COMPILER V9.02   VIEW                                                                  06/29/2013 15:30:09 PAGE 2   
+
+  56   1      }
+  57          void vExitBaseView(void) large
+  58          {
+  59   1      
+  60   1      }
+  61          void fgInitACT1ViewState(void) large
+  62          {
+  63   1      
+  64   1      }
+  65          BOOL fgACT1ViewState(void) large
+  66          {
+  67   1              if(!key_shift_stop || !key_Power)
+  68   1                      {
+  69   2                      vExitFocusView();
+  70   2                      Led_Act = 0;
+  71   2                      }
+  72   1              if(Led_Act)
+  73   1                      {
+  74   2                      if((++Time_Count) > 1300L)
+  75   2                              {
+  76   3                              Time_Count = 0;
+  77   3                              if(UI_kwy_buffer == 0x0F)
+  78   3                                      UI_kwy_buffer = 0xF6;
+  79   3                              else if(UI_kwy_buffer == 0xF6)
+  80   3                                      UI_kwy_buffer = 0xF7;
+  81   3                              else if(!led4)
+  82   3                                      UI_kwy_buffer = 0x0F;
+  83   3                              else
+  84   3                                      {
+  85   4                                      P2 = 0xFF;
+  86   4                                      UI_kwy_buffer = ~UI_kwy_buffer;
+  87   4                                      UI_kwy_buffer <<= 1;
+  88   4                                      UI_kwy_buffer = ~UI_kwy_buffer;
+  89   4                                      }
+  90   3                              }
+  91   2                      }
+  92   1              return TRUE;
+  93   1      }
+  94          void fgExitACT1ViewState(void) large
+  95          {
+  96   1      
+  97   1      }
+  98          void fgInitACT2ViewState(void) large
+  99          {
+ 100   1      
+ 101   1      }
+ 102          BOOL fgACT2ViewState(void) large
+ 103          {
+ 104   1      if(bGetFocusView() != View_Base_View)
+ 105   1              {
+ 106   2              vViewUninit();
+ 107   2              }
+ 108   1      
+ 109   1              if(key_Power == 0)
+ 110   1                      {
+ 111   2                      keypress = 1;
+ 112   2                      STATUS_TSK = UI_STANDBY;
+ 113   2                      }
+ 114   1      
+ 115   1              return TRUE;
+ 116   1      }
+ 117          void fgExitACT2ViewState(void) large
+C51 COMPILER V9.02   VIEW                                                                  06/29/2013 15:30:09 PAGE 3   
+
+ 118          {
+ 119   1      
+ 120   1      }
+ 121          strucView CODE rView[VIEW_MAX] =
+ 122          {
+ 123                  {NULL_VIEW,fgBaseViewState,vExitBaseView}
+*** WARNING C182 IN LINE 123 OF VIEW.C: pointer to different objects
+*** WARNING C182 IN LINE 123 OF VIEW.C: pointer to different objects
+ 124                  ,{fgInitACT1ViewState,fgACT1ViewState,fgExitACT1ViewState}
+*** WARNING C182 IN LINE 124 OF VIEW.C: pointer to different objects
+*** WARNING C182 IN LINE 124 OF VIEW.C: pointer to different objects
+*** WARNING C182 IN LINE 124 OF VIEW.C: pointer to different objects
+ 125                  ,{fgInitACT2ViewState,fgACT2ViewState,fgExitACT2ViewState}
+*** WARNING C182 IN LINE 125 OF VIEW.C: pointer to different objects
+*** WARNING C182 IN LINE 125 OF VIEW.C: pointer to different objects
+*** WARNING C182 IN LINE 125 OF VIEW.C: pointer to different objects
+ 126                  ,{NULL_VIEW,NULL_VIEW,NULL_VIEW}
+ 127                  ,{NULL_VIEW,NULL_VIEW,NULL_VIEW}
+ 128          };
+ 129          
+ 130          /*****************************************************
+ 131          Internal functions
+ 132          *****************************************************/
+ 133          BYTE bCheckView(BYTE bView) large
+ 134          {
+ 135   1              BYTE bTempViewIdx;
+ 136   1              for (bTempViewIdx = _bFocusViewIndex + 1; bTempViewIdx > 0; bTempViewIdx--)
+ 137   1              {
+ 138   2                      assert(bTempViewIdx > 0);
+ 139   2                      if (bView == _bActiveView[bTempViewIdx - 1])
+ 140   2                      {
+ 141   3                              return _bViewState[bTempViewIdx - 1] ;
+ 142   3                      }
+ 143   2              }
+ 144   1              return VIEW_STATE_EXIT;
+ 145   1      }
+ 146          #if SUPPORT_VIEW_OTHER_FUNC
+ 147          BYTE bGetFocusView(void) large
+ 148          {
+ 149   1              if(_bFocusViewIndex != 0xFF) //if view stack  empty
+ 150   1              {
+ 151   2                      return _bActiveView[_bFocusViewIndex];
+ 152   2              }
+ 153   1              return(VIEW_MAX);
+ 154   1      }
+ 155          #endif
+ 156          void vViewInit(void) large
+ 157          {
+ 158   1              _bFocusViewIndex = 0xFF;        //view stack empty
+ 159   1              _bKeyProcessViewIndex = 0xFF;
+ 160   1              vEnterView(View_Base_View);
+ 161   1      }
+ 162          #if SUPPORT_VIEW_OTHER_FUNC
+ 163          void vViewUninit(void) large
+ 164          {
+ 165   1              for (_bTempForView = _bFocusViewIndex + 1; _bTempForView > 0; _bTempForView--)
+ 166   1              {
+ 167   2                      assert(_bTempForView > 0);
+ 168   2                      if (rView[_bActiveView[_bTempForView - 1]].vExit)
+ 169   2                      {
+ 170   3                              (*rView[_bActiveView[_bTempForView - 1]].vExit)();
+ 171   3                      }
+C51 COMPILER V9.02   VIEW                                                                  06/29/2013 15:30:09 PAGE 4   
+
+ 172   2              }
+ 173   1              _bFocusViewIndex = 0xFF;
+ 174   1      }
+ 175          #endif
+ 176          void vViewProcess(void) large
+ 177          {
+ 178   1              do{
+ 179   2              assert(_bFocusViewIndex != 0xFF);
+ 180   2              _bKeyProcessViewIndex = _bFocusViewIndex;
+ 181   2              switch (_bViewState[_bKeyProcessViewIndex])
+ 182   2                      {
+ 183   3                      case VIEW_STATE_RUNNING:
+ 184   3                      if (rView[_bActiveView[_bKeyProcessViewIndex]].fgDo)
+ 185   3                              {
+ 186   4                              if ((*rView[_bActiveView[_bKeyProcessViewIndex]].fgDo)())
+ 187   4                                      {
+ 188   5                                      return;
+ 189   5                                      }
+ 190   4                              }
+ 191   3                      _bKeyProcessViewIndex--;
+ 192   3                      break;
+ 193   3                      default:
+ 194   3                      break;
+ 195   3                      }
+ 196   2              }while((_bKeyProcessViewIndex >= _bFocusViewIndex) && (_bKeyProcessViewIndex != 0xFF));
+ 197   1      
+ 198   1      
+ 199   1      while(_bKeyProcessViewIndex != 0xFF)
+ 200   1      {
+ 201   2              if((rView[_bActiveView[_bKeyProcessViewIndex]].fgDo) && (_bViewState[_bKeyProcessViewIndex] == VIEW_STATE
+             -_RUNNING))
+ 202   2              {
+ 203   3                      if ((*rView[_bActiveView[_bKeyProcessViewIndex]].fgDo)()) //Exit view
+ 204   3                      {
+ 205   4                              return;
+ 206   4                      }
+ 207   3              }
+ 208   2              assert(_bKeyProcessViewIndex > 0);
+ 209   2              _bKeyProcessViewIndex--;
+ 210   2      };
+ 211   1      
+ 212   1      
+ 213   1      }
+ 214          
+ 215          void vEnterView(BYTE bView) large
+ 216          {
+ 217   1              if(bView >= VIEW_MAX)
+ 218   1              {
+ 219   2                      return;
+ 220   2              }
+ 221   1              if (VIEW_STATE_EXIT == bCheckView(bView))
+ 222   1              {
+ 223   2                      assert((_bFocusViewIndex == 0xFF) || (_bFocusViewIndex < (ACTIVEVIEW_MAX - 1)));
+ 224   2                      _bFocusViewIndex++;
+ 225   2                      _bActiveView[_bFocusViewIndex] = bView;
+ 226   2                      _bViewState[_bFocusViewIndex] = VIEW_STATE_RUNNING;
+ 227   2                      if (rView[_bActiveView[_bFocusViewIndex]].vInit)
+ 228   2                      {
+ 229   3                              (*rView[_bActiveView[_bFocusViewIndex]].vInit)();
+ 230   3                      }
+ 231   2              }
+ 232   1      }
+C51 COMPILER V9.02   VIEW                                                                  06/29/2013 15:30:09 PAGE 5   
+
+ 233          
+ 234          void vExitFocusView(void) large
+ 235          {
+ 236   1              BYTE bTempViewIdx;
+ 237   1      
+ 238   1              assert(_bFocusViewIndex  != 0xFF);
+ 239   1              if (rView[_bActiveView[_bFocusViewIndex]].vExit)
+ 240   1              {
+ 241   2                      (*rView[_bActiveView[_bFocusViewIndex]].vExit)();
+ 242   2              }
+ 243   1      
+ 244   1              bTempViewIdx = _bKeyProcessViewIndex;
+ 245   1              while(bTempViewIdx != _bFocusViewIndex)
+ 246   1              {
+ 247   2                      _bActiveView[bTempViewIdx] = _bActiveView[bTempViewIdx + 1];
+ 248   2                      _bViewState[bTempViewIdx] = _bViewState[bTempViewIdx + 1];
+ 249   2                      bTempViewIdx++;
+ 250   2              }
+ 251   1              
+ 252   1              _bFocusViewIndex--;
+ 253   1      }
+ 254          
+ 255          
+ 256          
+ 257          
+ 258          
+ 259          
+ 260          
+ 261          
+ 262          
+ 263          
+ 264          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1122    ----
+   CONSTANT SIZE    =    440    ----
+   XDATA SIZE       =     11       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  8 WARNING(S),  0 ERROR(S)

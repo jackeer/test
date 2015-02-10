@@ -1,0 +1,138 @@
+A51 MACRO ASSEMBLER  APAUTO                                                               04/03/2006 16:22:10 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.08a
+NO OBJECT MODULE REQUESTED
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE APAUTO.ASM SET(SMALL) DEBUG PRINT(.\list\APAUTO.lst) OBJECT(.\output\APAUT
+                      O.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;;=========================================================
+                       2     ;;=========================================================
+                       3                     .chip   8052
+*** _________________________________________^
+*** ERROR #A9 IN 3 (APAUTO.ASM, LINE 3): SYNTAX ERROR
+                       4                     .symbols
+*** _________________________________________^
+*** ERROR #A9 IN 4 (APAUTO.ASM, LINE 4): SYNTAX ERROR
+                       5                     .ramchk off
+*** _________________________________________^
+*** ERROR #A9 IN 5 (APAUTO.ASM, LINE 5): SYNTAX ERROR
+                       6     ;;=========================================================
+  0001                 7     W78             equ     1       ; W78E58B/858/62/65/516/365/ERD2
+  0000                 8     W77             equ     0       ; W77E516/532, W79xxx
+                       9     ;----------------------------------------------------------
+                      10     chpenr                  reg     f6h
+*** _________________________^
+*** ERROR #A9 IN 10 (APAUTO.ASM, LINE 10): SYNTAX ERROR
+                      11     chpcon                  reg     bfh
+*** _________________________^
+*** ERROR #A9 IN 11 (APAUTO.ASM, LINE 11): SYNTAX ERROR
+                      12     turbo_TA                reg     c7h
+*** _________________________^
+*** ERROR #A9 IN 12 (APAUTO.ASM, LINE 12): SYNTAX ERROR
+                      13     turbo_CHPCON            reg     9fh
+*** _________________________^
+*** ERROR #A9 IN 13 (APAUTO.ASM, LINE 13): SYNTAX ERROR
+                      14     
+                      15     ;;=========================================================
+0000                  16     goto_LDROM:
+                      17     
+                      18             if      W78
+                      19     ;W78EXX run this program.
+0000 75A800           20                     mov     ie,#0h
+0003 758800           21                     mov     tcon,#00h
+0006                  22                     mov     t2con,#00h                      
+*** _________________________________________________^
+*** ERROR #A45 IN 22 (APAUTO.ASM, LINE 22): UNDEFINED SYMBOL (PASS-2)
+0009                  23                     mov     chpenr,#87h
+*** _________________________________________________^
+*** ERROR #A45 IN 23 (APAUTO.ASM, LINE 23): UNDEFINED SYMBOL (PASS-2)
+000C                  24                     mov     chpenr,#59h
+*** _________________________________________________^
+*** ERROR #A45 IN 24 (APAUTO.ASM, LINE 24): UNDEFINED SYMBOL (PASS-2)
+000F                  25                     mov     chpcon,#03h
+*** _________________________________________________^
+*** ERROR #A45 IN 25 (APAUTO.ASM, LINE 25): UNDEFINED SYMBOL (PASS-2)
+0012                  26                     mov     chpenr,#00h
+*** _________________________________________________^
+*** ERROR #A45 IN 26 (APAUTO.ASM, LINE 26): UNDEFINED SYMBOL (PASS-2)
+0015 75A882           27                     mov     ie,#82h
+0018 758901           28                     mov     tmod,#01h
+001B                  29                     mov     tl0,#f0h
+*** ______________________________________________________^
+*** ERROR #A45 IN 29 (APAUTO.ASM, LINE 29): UNDEFINED SYMBOL (PASS-2)
+001E                  30                     mov     th0,#ffh
+*** ______________________________________________________^
+A51 MACRO ASSEMBLER  APAUTO                                                               04/03/2006 16:22:10 PAGE     2
+
+*** ERROR #A45 IN 30 (APAUTO.ASM, LINE 30): UNDEFINED SYMBOL (PASS-2)
+0021 D28C             31                     setb    tr0
+0023 758701           32                     mov     pcon,#01h
+0026 80FE             33                     jmp     $
+                      34             endif
+                      35     
+                      36             if      W77
+                             ;W77Exx run this program.
+                                             mov     ie,#0h
+                                                 mov eie,#0h 
+                                             mov     tcon,#00h
+                                             mov     t2con,#00h                      
+                                             mov     turbo_TA,#aah
+                                             mov     turbo_TA,#55h
+                                             mov     turbo_CHPCON,#03h
+                                             mov     turbo_TA,#00
+                                             mov     ie,#82h
+                                             mov     tmod,#01h
+                                             mov     tl0,#f0h
+                                             mov     th0,#ffh
+                                             setb    tr0
+                                             mov     pcon,#01h
+                                             jmp     $
+                                     endif
+                      54     
+                      55                     .end
+*** _________________________________________^
+*** ERROR #A9 IN 55 (APAUTO.ASM, LINE 55): SYNTAX ERROR
+                      56     
+*** WARNING #A41 IN 56 (APAUTO.ASM, LINE 56): MISSING 'END' STATEMENT
+A51 MACRO ASSEMBLER  APAUTO                                                               04/03/2006 16:22:10 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BFH. . . . . . . .    ----   -----       
+C7H. . . . . . . .    ----   -----       
+CHIP . . . . . . .    ----   -----       
+CHPCON . . . . . .    ----   -----       
+CHPENR . . . . . .    ----   -----       
+F0H. . . . . . . .    ----   -----       
+F6H. . . . . . . .    ----   -----       
+FFH. . . . . . . .    ----   -----       
+GOTO_LDROM . . . .  C ADDR   0000H   A   
+IE . . . . . . . .  D ADDR   00A8H   A   
+OFF. . . . . . . .    ----   -----       
+PCON . . . . . . .  D ADDR   0087H   A   
+RAMCHK . . . . . .    ----   -----       
+REG. . . . . . . .    ----   -----       
+SYMBOLS. . . . . .    ----   -----       
+T2CON. . . . . . .    ----   -----       
+TCON . . . . . . .  D ADDR   0088H   A   
+TH0. . . . . . . .  D ADDR   008CH   A   
+TL0. . . . . . . .  D ADDR   008AH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . .  B ADDR   0088H.4 A   
+TURBO_CHPCON . . .    ----   -----       
+TURBO_TA . . . . .    ----   -----       
+W77. . . . . . . .  N NUMB   0000H   A   
+W78. . . . . . . .  N NUMB   0001H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  1 WARNING(S), 15 ERROR(S)

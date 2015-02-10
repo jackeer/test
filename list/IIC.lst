@@ -1,0 +1,298 @@
+C51 COMPILER V9.02   IIC                                                                   06/29/2013 15:30:09 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE IIC
+OBJECT MODULE PLACED IN .\output\IIC.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE IIC.c DEBUG OBJECTEXTEND PRINT(.\list\IIC.lst) OBJECT(.\output\IIC.obj)
+
+line level    source
+
+   1          #include <Def_INC.h>
+   2          #include <IIC.h>
+   3          
+   4          sbit ISDA = 0x90^1; 
+   5          sbit ISCL = 0x90^2;
+   6          
+   7          
+   8          /*========================
+   9          I2C Delay Time
+  10                     __________
+  11          SCL _/
+  12                     __________
+  13          SDA     _/
+  14          ==========================*/
+  15          void IiCWait(BYTE Delay_Time) large
+  16          {
+  17   1              BYTE i;
+  18   1              for(i=0;i<=Delay_Time;i++)
+  19   1               {
+  20   2               _nop_();
+  21   2               }
+  22   1      
+  23   1      }
+  24          
+  25          /*========================
+  26          I2C Initialize
+  27                     __________
+  28          SCL _/
+  29                     __________
+  30          SDA     _/
+  31          ==========================*/
+  32          void IIC_Inital(void) large
+  33          {
+  34   1              ISDA=1;
+  35   1              ISCL=1;
+  36   1      }
+  37          
+  38          /*========================
+  39          I2C Stop
+  40                             __________
+  41          SCL ______/
+  42                                 ________
+  43          SDA     ________/
+  44          ==========================*/
+  45          void IIC_Stop(void) large
+  46          {
+  47   1              ISDA=0;
+  48   1              IiCWait(1);
+  49   1              ISCL=1;
+  50   1              IiCWait(1);
+  51   1              ISDA=1;
+  52   1      }
+  53          
+  54          /*========================
+  55          I2C start 
+C51 COMPILER V9.02   IIC                                                                   06/29/2013 15:30:09 PAGE 2   
+
+  56                  __________
+  57          SCL                         \____________
+  58                                          
+  59                  _______
+  60          SDA                  \_______________
+  61          ==========================*/
+  62          void IICstart(void) large
+  63          {
+  64   1              ISDA=1;
+  65   1              ISCL=1;
+  66   1              IiCWait(1);
+  67   1              ISDA=0;
+  68   1              IiCWait(1);
+  69   1              ISCL=0;
+  70   1      }
+  71          
+  72          /*========================
+  73          I2C Send_BIT 
+  74                      ______
+  75          SCL __/           \_____
+  76                                          
+  77                    _________
+  78          SDA_/               \____
+  79          ==========================*/
+  80          void IICSend_BIT(BOOL HI_LOW) large
+  81          {
+  82   1              if(HI_LOW==1)
+  83   1                      {
+  84   2                      ISDA=1;
+  85   2                      ISCL=0;
+  86   2                      IiCWait(1);
+  87   2                      ISCL=1;
+  88   2                      IiCWait(1);
+  89   2                      ISCL=0;
+  90   2                      IiCWait(1);
+  91   2                      ISDA=0;
+  92   2                      }
+  93   1              else if(HI_LOW==0)
+  94   1                      {
+  95   2                      ISDA=0;
+  96   2                      ISCL=0;
+  97   2                      IiCWait(1);
+  98   2                      ISCL=1;
+  99   2                      IiCWait(1);
+ 100   2                      ISCL=0;
+ 101   2                      IiCWait(1);
+ 102   2                      ISDA=0;
+ 103   2                      }
+ 104   1      }
+ 105          
+ 106          /*========================
+ 107          I2C GET_BIT 
+ 108                        ______
+ 109          SCL     ___/           \_____
+ 110                                          
+ 111                  __    _____
+ 112          SDA         X ( RET ) X______
+ 113          ==========================*/
+ 114          BOOL IICGet_BIT (void) large
+ 115          {
+ 116   1              BOOL RET_ACK=1;
+ 117   1      
+C51 COMPILER V9.02   IIC                                                                   06/29/2013 15:30:09 PAGE 3   
+
+ 118   1              ISDA=1;
+ 119   1              ISCL=0;
+ 120   1              IiCWait(1);
+ 121   1              ISCL=1;
+ 122   1              IiCWait(1);
+ 123   1              RET_ACK=ISDA;
+ 124   1              ISCL=0;
+ 125   1              IiCWait(1);
+ 126   1              ISDA=0;
+ 127   1      
+ 128   1              return RET_ACK;
+ 129   1      }
+ 130          
+ 131          /*================================
+ 132          I2C Send_BYTE
+ 133                     _    _    _    _    _    _    _    _      _
+ 134          SCL __/ \_/ \_/ \_/ \_/ \_/ \_/ \_/ \__/ \_____
+ 135                                                                   ACK                            
+ 136                       _______________________       _
+ 137          SDA ___XXXXXXXXXXXXXXXXXXXXX___X__
+ 138          =================================*/
+ 139          BOOL IICSend_BYTE(BYTE BYTE_DATA) large
+ 140          {
+ 141   1              BYTE i,j;
+ 142   1      
+ 143   1              IIC_Stop();
+ 144   1              IIC_Inital();
+ 145   1      
+ 146   1              for(i=1;i<=8;i++)
+ 147   1                      {
+ 148   2                      j = (BYTE_DATA & 0x80);
+ 149   2                      IICSend_BIT(j);
+ 150   2                      BYTE_DATA >>= 1;
+ 151   2                      }
+ 152   1              return IICGet_BIT();
+ 153   1      }
+ 154          
+ 155          /*================================
+ 156          I2C Get_BYTE
+ 157                      _     _     _     _     _     _     _     _       _
+ 158          SCL __/  \_/  \_/  \_/  \_/  \_/  \_/  \_/  \__/  \_____
+ 159                                                                                     ACK                          
+ 160                       ___________________________       _
+ 161          SDA ___XXXXXXXXXXXXXXXXXXXXXXXX____X__
+ 162          =================================*/
+ 163          BOOL IICGet_BYTE(BYTE BYTE_DATA) large
+ 164          {
+ 165   1              BYTE i,j;
+ 166   1              
+ 167   1              IIC_Stop();
+ 168   1              IIC_Inital();
+ 169   1      
+ 170   1              for(i=1;i<=8;i++)
+ 171   1                      {
+ 172   2                      BYTE_DATA <<= 1;
+ 173   2                      j = IICGet_BIT();
+ 174   2                      BYTE_DATA = (j & 0x01);
+ 175   2      
+ 176   2                      }
+ 177   1              return IICGet_BIT();
+ 178   1      
+ 179   1      }
+C51 COMPILER V9.02   IIC                                                                   06/29/2013 15:30:09 PAGE 4   
+
+ 180          
+ 181          /*================================
+ 182          I2C Select_Device
+ 183                   _______    _     _______     _
+ 184          SCL _||||||||_||__||||||||__||__
+ 185                                 ACK                  ACK
+ 186                    ______     _     _______     _
+ 187          SDA _|||||||__||__||||||||__||__
+ 188          =================================*/
+ 189          BOOL IICSelect_Device(BYTE DEVICE,BYTE ADDRES) large
+ 190          {
+ 191   1      
+ 192   1              if(!IICSend_BYTE(DEVICE))
+ 193   1                      return (!IICSend_BYTE(ADDRES));
+ 194   1              return 0;
+ 195   1      }
+ 196          
+ 197          /*================================
+ 198          I2C Write_Byte_Device
+ 199                   _______    _     _______     _
+ 200          SCL _||||||||_||__||||||||__||__
+ 201                                 ACK                  ACK
+ 202                    ______     _     _______     _
+ 203          SDA _|||||||__||__||||||||__||__
+ 204          =================================*/
+ 205          BOOL IICWrite_Byte(BYTE DEVICE,BYTE ADDRES,BYTE Len,BYTE *Data) large
+ 206          {
+ 207   1              BYTE i,*tmp;
+ 208   1              BOOL ret = 1;
+ 209   1              IIC_Stop();
+ 210   1              IIC_Inital();
+ 211   1      
+ 212   1              *tmp = *Data;
+ 213   1      
+ 214   1              DEVICE &= 0xFE;
+ 215   1              for(i=0;!IICSelect_Device(DEVICE,ADDRES);i++)
+ 216   1                      {
+ 217   2                      IiCWait(100);
+ 218   2      
+ 219   2                      if(i>=10)
+ 220   2                      return 0;
+ 221   2                      }
+ 222   1      
+ 223   1              IiCWait(200);
+ 224   1      
+ 225   1              for(i=1;i<=Len;i++)
+ 226   1              {
+ 227   2              ret = IICSend_BYTE(*tmp);
+ 228   2              }
+ 229   1              
+ 230   1              return !ret;
+ 231   1      }
+ 232          
+ 233          /*================================
+ 234          I2C Read_Byte_Device
+ 235                   _______    _     _______     _
+ 236          SCL _||||||||_||__||||||||__||__
+ 237                                 ACK                  ACK
+ 238                    ______     _     _______     _
+ 239          SDA _|||||||__||__||||||||__||__
+ 240          =================================*/
+ 241          BOOL IICRead_Byte(BYTE DEVICE,BYTE ADDRES,BYTE Len,BYTE *Data) large
+C51 COMPILER V9.02   IIC                                                                   06/29/2013 15:30:09 PAGE 5   
+
+ 242          {
+ 243   1              BYTE i;
+ 244   1              BOOL ret = 1;
+ 245   1      
+ 246   1              IIC_Stop();
+ 247   1              IIC_Inital();
+ 248   1      
+ 249   1              DEVICE &= 0xFE;
+ 250   1              for(i=0;!IICSelect_Device(DEVICE,ADDRES);i++)
+ 251   1                      {
+ 252   2                      IiCWait(100);
+ 253   2      
+ 254   2                      if(i>=10)
+ 255   2                      return 0;
+ 256   2                      }
+ 257   1      
+ 258   1              IiCWait(200);
+ 259   1      
+ 260   1              for(i=1;i<=Len;i++)
+ 261   1              {
+ 262   2              ret = IICGet_BYTE(*(Data++));
+ 263   2              }
+ 264   1      
+ 265   1              return !ret;
+ 266   1      }
+ 267          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    444    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      17
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       4
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

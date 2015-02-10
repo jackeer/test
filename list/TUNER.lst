@@ -1,0 +1,1362 @@
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE TUNER
+OBJECT MODULE PLACED IN .\output\TUNER.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE TUNER.C DEBUG OBJECTEXTEND PRINT(.\list\TUNER.lst) OBJECT(.\output\TUNER.ob
+                    -j)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #include <intrins.h>
+   3          #include "TUNER.H"
+   4          #include "Define.H"
+*** WARNING C318 IN LINE 4 OF TUNER.C: can't open file 'Define.H'
+   5          //-----------------------------------------------------------------------------------------
+   6          typedef union {
+   7                  struct CHLIMIT{
+   8                          unsigned char TV_Min;
+   9                          unsigned char TV_Max;
+  10                          unsigned char TV_Total;
+  11                          unsigned char CATV_Min;
+  12                          unsigned char CATV_Max;
+  13                          unsigned char CATV_Total;
+  14                  } CH_LIMIT;
+  15                  unsigned char bytes[1];
+  16          } UNI_Tuner_Limit;
+  17          UNI_Tuner_Limit idata UNI_Tuner;
+  18          //-----------------------------------------------------------------------------------------
+  19          xdata unsigned char TunerAddr = 0xC0;
+  20          ///xdata unsigned char TunerBrand;
+  21          
+  22          idata unsigned char VP_Max;
+  23          idata unsigned char HP_Min;
+  24          
+  25          idata unsigned short DevNum;
+  26          xdata unsigned char FineTune;
+  27          
+  28          idata unsigned char ChBuffer;
+  29          static unsigned char i2c_error = 1;                 /* Last error */
+  30          idata unsigned char ChStatus;
+  31          
+  32          idata unsigned char bIrChNum=0;
+  33          unsigned char ChannelBuf[3]={0, 0, 0};
+  34          idata unsigned char TV_COUNTRY_AREA;
+  35          
+  36          sbit sda = P0^0;
+  37          sbit scl = P0^1;
+  38          sbit W_en = P3^1;
+  39          //-----------------------------------------------------------------------------------
+  40          extern bit ack;
+  41          extern bit FLG_Power;
+  42          extern unsigned int idata osd_timer;
+  43          //==================================================================
+  44          void OSD_Show_Channel(char,char);
+  45          void OSD_Show_Num(char stpos2, char Num);
+  46          void Delay_nop_();
+  47          unsigned char ReadTunerOneByte(unsigned char device);
+  48          void Modify_TV_Area(void);
+  49          ///unsigned short FineTuneChannel(unsigned short freq,unsigned char pb);
+  50          //-----------------------------------------------------------------------------------
+  51          extern void shi_sub_read (char,char,char,char*);
+  52          extern void shi_sub_write (char,char,char,char*);
+  53          extern void delay_nop();
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 2   
+
+  54          extern void stop_con();
+  55          extern void start_con();
+  56          extern void nack_con();
+  57          extern void ack_con();
+  58          extern bit send_con(char);
+  59          extern char receive_con();
+  60          extern void osd_show(char,char,char*);
+  61          extern void DelayXms(unsigned char count);
+  62          extern void Write24C16(unsigned short EepAddr,unsigned char dat);
+  63          ///extern unsigned char Read24C16(unsigned short addr16);
+  64          extern void osd_clear(char);
+  65          extern void osd_clearall();
+  66          extern void SetupChNumOSD();
+  67          extern void osd_size(char block, char sizex, char sizey);
+  68          extern void osd_pos(char block, char posx, char posy);
+  69          extern void aisel_func(char aisel);
+  70          extern void OSD_Flag_Reset(void);
+  71          extern void osd_switch(char osd_en);
+  72          extern void ShowCap(char signal);
+  73          extern void Osd_Show_Char(char stpos2, char numfont, char * fontcode);
+  74          extern void VideoBlanking(bit Video_Blanking);
+  75          extern void osd_hbsection(char block, bit hb, char xstart, char xend, char ystart, char yend);
+  76          extern void osd_color(char block, bit fb, bit h, char color);
+  77          //=================================================================
+  78          ///extern char code AIR_TV[6];
+  79          ///extern char code CATV[4];
+  80          //=================================================================
+  81          //=================================================================
+  82          // For FORWARD's Tuner
+  83          // Note:1.為了節省 ROM 的空間，tuner_freq 表中只記錄周波數表中頻率的整數部份，如 CH2 的頻率
+  84          //      為55.25，表中只記錄55，省略了後面的小數0.25的部份。這樣作的好處是整個 tuner_freq
+  85          //      表只需要宣告為 16 bits 的資料長度，而不必宣告為32 bits 的浮點數格式。省略的小數部
+  86          //      份將在channel_sel()函式運算中作補償，補償的方法是將省略的 0.25 部份加至 45.75 而
+  87          //      成為整數 46，因此在channel_sel()函式運算中，對應於週波數表中的頻率值所加入的基頻值
+  88          //      應為 46，而不是45.75。
+  89          //=================================================================
+  90          // (83.25+45.75)*20=2580=0x0A14
+  91          // (83,250,000+45,750,000)/50000=2580=0x0A14            (STEP FREQUENCY = 50KHz)
+  92          //
+  93          // (83.25+45.75)*16=2064=0x0810
+  94          // (83,250,000+45,750,000)/62500=2064=0x0810            (STEP FREQUENCY = 62.5KHz)
+  95          //=================================================================
+  96          //=================================================================
+  97          unsigned short code CATV1_freq[125] = {                         // US181 CABLE CHANNEL
+  98                  73,     55,     61,     67,     77,     83,     175,    181,    187,    193,            // 10
+  99                  199,    205,    211,    121,    127,    133,    139,    145,    151,    157,            // 20
+ 100                  163,    169,    217,    223,    229,    235,    241,    247,    253,    259,            // 30
+ 101                  265,    271,    277,    283,    289,    295,    301,    307,    313,    319,            // 40
+ 102                  325,    331,    337,    343,    349,    355,    361,    367,    373,    379,            // 50
+ 103                  385,    391,    397,    403,    409,    415,    421,    427,    433,    439,            // 60
+ 104                  445,    451,    457,    463,    469,    475,    481,    487,    493,    499,            // 70
+ 105                  505,    511,    517,    523,    529,    535,    541,    547,    553,    559,            // 80
+ 106                  565,    571,    577,    583,    589,    595,    601,    607,    613,    619,            // 90
+ 107                  625,    631,    637,    643,    91,     97,     103,    109,    115,    649,            // 100
+ 108                  655,    661,    667,    673,    679,    685,    691,    697,    703,    709,            // 110
+ 109                  715,    721,    727,    733,    739,    745,    751,    757,    763,    769,            // 120
+ 110                  775,    781,    787,    793,    799};
+ 111          unsigned short code AIRTV1_freq[69] = {                         // US181 AIR CHANNEL
+ 112                  73,     55,     61,     67,     77,     83,     175,    181,    187,    193,            // 10
+ 113                  199,    205,    211,    471,    477,    483,    489,    495,    501,    507,            // 20
+ 114                  513,    519,    525,    531,    537,    543,    549,    555,    561,    567,            // 30
+ 115                  573,    579,    585,    591,    597,    603,    609,    615,    621,    627,            // 40
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 3   
+
+ 116                  633,    639,    645,    651,    657,    663,    669,    675,    681,    687,            // 50
+ 117                  693,    699,    705,    711,    717,    723,    729,    735,    741,    747,            // 60
+ 118                  753,    759,    765,    771,    777,    783,    789,    795,    801};
+ 119          //------------------------------------------------------------------------------------
+ 120          unsigned short code CATV2_freq[63] = {                          // JAPAN CABLE CHANNEL
+ 121                  91,     97,     103,    171,    177,    183,    189,    193,    199,    205,            // 10
+ 122                  211,    217,    109,    115,    121,    127,    133,    139,    145,    151,            // 20
+ 123                  157,    165,    223,    231,    237,    243,    249,    253,    259,    265,            // 30
+ 124                  271,    277,    283,    289,    295,    301,    307,    313,    319,    325,            // 40
+ 125                  331,    337,    343,    349,    355,    361,    367,    373,    379,    385,            // 50
+ 126                  391,    397,    403,    409,    415,    421,    427,    433,    439,    445,            // 60
+ 127                  451,    457,    463};
+ 128          unsigned short code AIRTV2_freq[62] = {                         // JAPAN AIR CHANNEL
+ 129                  91,     97,     103,    171,    177,    183,    189,    193,    199,    205,            // 10
+ 130                  211,    217,    471,    477,    483,    489,    495,    501,    507,    513,            // 20
+ 131                  519,    525,    531,    537,    543,    549,    555,    561,    567,    573,            // 30
+ 132                  579,    585,    591,    597,    603,    609,    615,    621,    627,    633,            // 40
+ 133                  639,    645,    651,    657,    663,    669,    675,    681,    687,    693,            // 50
+ 134                  699,    705,    711,    717,    723,    729,    735,    741,    747,    753,            // 60
+ 135                  759,    765};
+ 136          //------------------------------------------------------------------------------------
+ 137          // CCIR CABLE CHANNEL (Germany), Sound IF 33.4MHz, Picture IF 38.9MHz
+ 138          unsigned short code CATV3_freq[56] = {                          // channel 90.25MHz & 97.25MHz not included in the table
+ 139                  44,     48,     55,     62,     69,     76,     83,     105,    112,    119,            // 10   
+ 140                  126,    133,    140,    147,    154,    161,    168,    175,    182,    189,            // 20
+ 141                  196,    203,    210,    217,    224,    231,    238,    245,    252,    259,            // 30
+ 142                  266,    273,    280,    287,    294,    303,    311,    319,    327,    335,            // 40
+ 143                  343,    351,    359,    367,    375,    383,    391,    399,    407,    415,            // 50
+ 144                  423,    431,    439,    447,    455,    463};
+ 145          unsigned short code AIRTV3_freq[69] = {                         // CCIR AIR CHANNEL
+ 146                  44,     48,     55,     62,     175,    182,    189,    196,    203,    210,            // 10
+ 147                  217,    224,    44,     44,     44,     44,     44,     44,     44,     44,             // 20
+ 148                  471,    479,    487,    495,    503,    511,    519,    527,    535,    543,            // 30
+ 149                  551,    559,    567,    575,    583,    591,599,        607,    615,    623,            // 40
+ 150                  631,    639,    647,    655,    663,    671,    679,    687,    695,    703,            // 50
+ 151                  711,    719,    727,    735,    743,    751,    759,    767,    775,    783,            // 60
+ 152                  791,    799,    807,    815,    823,    831,    839,    847,    855};
+ 153          //------------------------------------------------------------------------------------
+ 154          // Australia PAL B/H channel, 50.0KHz step freq.
+ 155          unsigned short code CATV4_freq[69] = {                          // Australia PAL CABLE CHANNEL
+ 156          //      46,
+ 157                  57,     64,     86,     95,     102,    175,    182,    189,    196,    209,            // 10
+ 158                  216,    223,    245,    252,    259,    266,    273,    280,    287,    294,            // 20
+ 159                  303,    310,    317,    324,    331,    338,    345,    527,    534,    541,            // 30
+ 160                  548,    555,    562,    569,    576,    583,    590,    597,    604,    611,            // 40
+ 161                  618,    625,    632,    639,    646,    653,    660,    667,    674,    681,            // 50
+ 162                  688,    695,    702,    709,    716,    723,    730,    737,    744,    751,            // 60
+ 163                  758,    765,    772,    779,    786,    793,    800,    807,    814};
+ 164          unsigned short code AIRTV4_freq[69] = {                         // Australia PAL AIR CHANNEL
+ 165          //      46,
+ 166                  57,     64,     86,     95,     102,    175,    182,    189,    196,    209,            // 10
+ 167                  216,    223,    245,    252,    259,    266,    273,    280,    287,    294,            // 20
+ 168                  303,    310,    317,    324,    331,    338,    345,    527,    534,    541,            // 30
+ 169                  548,    555,    562,    569,    576,    583,    590,    597,    604,    611,            // 40
+ 170                  618,    625,    632,    639,    646,    653,    660,    667,    674,    681,            // 50
+ 171                  688,    695,    702,    709,    716,    723,    730,    737,    744,    751,            // 60
+ 172                  758,    765,    772,    779,    786,    793,    800,    807,    814};
+ 173          //------------------------------------------------------------------------------------
+ 174          // UK channel for B/W Broadcast
+ 175          unsigned short code CATV5_freq[14] = {                          // UK CABLE CHANNEL
+ 176                  45,     51,     56,     61,     66,     179,    184,    189,    194,    199,
+ 177                  204,    209,    214,    219};
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 4   
+
+ 178          unsigned short code AIRTV5_freq[14] = {                         // UK AIR CHANNEL
+ 179                  45,     51,     56,     61,     66,     179,    184,    189,    194,    199,
+ 180                  204,    209,    214,    219};
+ 181          //------------------------------------------------------------------------------------
+ 182          unsigned short code CATV6_freq[57] = {                          // CHINA CABLE CHANNEL
+ 183                  49,     57,     65,     77,     85,     168,    176,    184,    192,    200,            // 10
+ 184                  208,    216,    471,    479,    487,    493,    503,    511,    519,    527,            // 20
+ 185                  535,    543,    551,    559,    607,    615,    623,    631,    639,    647,            // 30
+ 186                  655,    663,    671,    679,    687,    695,    703,    711,    719,    727,            // 40
+ 187                  735,    743,    751,    759,    767,    775,    783,    791,    799,    807,            // 50
+ 188                  815,    823,    831,    839,    847,    855,    863};
+ 189          unsigned short code AIRTV6_freq[57] = {                         // CHINA AIR CHANNEL
+ 190                  49,     57,     65,     77,     85,     168,    176,    184,    192,    200,            // 10
+ 191                  208,    216,    471,    479,    487,    493,    503,    511,    519,    527,            // 20
+ 192                  535,    543,    551,    559,    607,    615,    623,    631,    639,    647,            // 30
+ 193                  655,    663,    671,    679,    687,    695,    703,    711,    719,    727,            // 40
+ 194                  735,    743,    751,    759,    767,    775,    783,    791,    799,    807,            // 50
+ 195                  815,    823,    831,    839,    847,    855,    863};
+ 196          //------------------------------------------------------------------------------------
+ 197          // US181, Japan, CCIR, AUSTRALIA, UK, CHINA
+ 198          code unsigned short *CATV_FREQ_TAB[]={
+ 199                  CATV1_freq, CATV2_freq, CATV3_freq, CATV4_freq, CATV5_freq, CATV6_freq
+ 200          };
+ 201          code unsigned short *AIR_FREQ_TAB[]={
+ 202                  AIRTV1_freq, AIRTV2_freq, AIRTV3_freq, AIRTV4_freq, AIRTV5_freq, AIRTV6_freq
+ 203          };
+ 204          //==================================================================
+ 205          code unsigned char INTERMEDIATE_FREQ[]={46,     46,     39,     39,     46,     46};
+ 206          //==================================================================
+ 207          code unsigned short STEP_FREQ[]={62500, 62500,  50000,  50000,  62500,  62500};
+ 208          //==================================================================
+ 209          code unsigned short VHF_FREQ[]={0x0BC0, 0x0BC0, 0x0E45, 0x0E45, 0x0BC0, 0x0BC0};
+ 210          //-------------------------------------------------------------------------------------
+ 211          code unsigned short UHF_FREQ[]={0x1E80, 0x1E80, 0x2461, 0x2461, 0x1E80, 0x1E80};
+ 212          //==================================================================
+ 213          code unsigned char DIFF_FREQ[]={0,      0,      3,      3,      0,      0};
+ 214          //==================================================================
+ 215          code unsigned char ChannelLimitTab[]={
+ 216          //      TV_Min, TV_Max, TV_Total,       CATV_Min,       CATV_Max,       CATV_Total
+ 217                  1,              69,             69,             1,                      125,                    125,            // USA
+ 218                  1,              62,             62,             1,                      63,                     63,             // Japan
+ 219                  1,              69,             69,             1,                      56,                     56,             // Germary
+ 220                  1,              69,             69,             1,                      69,                     69,             // Australia
+ 221                  1,              14,             14,             1,                      14,                     14,             // UK
+ 222                  1,              57,             57,             1,                      57,                     57              // China
+ 223          };
+ 224          //==================================================================
+ 225          code unsigned char MaskTab1[8]={
+ 226                  0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80
+ 227          };
+ 228          //-------------------------------------------------------------------------------------
+ 229          code unsigned char MaskTab2[8]={
+ 230                  0xfe,0xfd,0xfb,0xf7,0xef,0xdf,0xbf,0x7f
+ 231          };
+ 232          //==================================================================
+ 233          char code USA[3] = {'U', 'S', 'A'};
+ 234          char code JAPAN[5] = {'J', 'A', 'P', 'A', 'N'};
+ 235          char code GERMARY[7] = {'G', 'E', 'R', 'M', 'A', 'R', 'Y'};
+ 236          char code AUSTRALIA[9] = {'A', 'U', 'S', 'T', 'R', 'A', 'L', 'I', 'A'};
+ 237          char code UK[2] = {'U', 'K'};
+ 238          char code CHINA[5] = {'C', 'H', 'I', 'N', 'A'};
+ 239          ///char code SCANNING[8] = {'S', 'C', 'A', 'N', 'N', 'I', 'N', 'G'};
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 5   
+
+ 240          char code SCANNING[11] = {0x1C, 0x26, 0x24, 0x31, 0x31, 0x2C, 0x31, 0x2A, 0x44, 0x44, 0x44};
+ 241          //==================================================================
+ 242          //==================================================================
+ 243          void LoadChLimit(void)
+ 244          {
+ 245   1              unsigned char i, j;
+ 246   1              unsigned char EEPBUF;
+ 247   1      
+ 248   1              DelayXms(0x10);
+ 249   1              shi_sub_read(EEPROM,0xF0,0x00,&TV_COUNTRY_AREA);
+*** ERROR C202 IN LINE 249 OF TUNER.C: 'EEPROM': undefined identifier
+ 250   1      
+ 251   1              if(TV_COUNTRY_AREA > 0x06)
+ 252   1              {
+ 253   2                      TV_COUNTRY_AREA = 0;
+ 254   2                      DelayXms(0x10);
+ 255   2                      shi_sub_write(EEPROM,0xF0,0x00,&TV_COUNTRY_AREA);
+*** ERROR C202 IN LINE 255 OF TUNER.C: 'EEPROM': undefined identifier
+ 256   2              }
+ 257   1      
+ 258   1              i = TV_COUNTRY_AREA * 6;
+ 259   1      
+ 260   1              for(j=0; j<6; j++)
+ 261   1                      UNI_Tuner.bytes[j] = ChannelLimitTab[i+j];
+ 262   1      
+ 263   1              DelayXms(0x10);
+ 264   1      
+ 265   1              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 265 OF TUNER.C: 'EEPROM': undefined identifier
+ 266   1      
+ 267   1              if(EEPBUF==0)
+ 268   1              {
+ 269   2                      shi_sub_read(EEPROM,0xF2,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 269 OF TUNER.C: 'EEPROM': undefined identifier
+ 270   2                      
+ 271   2                      if(ChBuffer < UNI_Tuner.CH_LIMIT.TV_Min)
+ 272   2                      {
+ 273   3                              ChBuffer = UNI_Tuner.CH_LIMIT.TV_Min;
+ 274   3                              DelayXms(0x10);
+ 275   3                              shi_sub_write(EEPROM,0xF2,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 275 OF TUNER.C: 'EEPROM': undefined identifier
+ 276   3                      }
+ 277   2      
+ 278   2                      if(ChBuffer > UNI_Tuner.CH_LIMIT.TV_Max)
+ 279   2                      {
+ 280   3                              ChBuffer = UNI_Tuner.CH_LIMIT.TV_Max;
+ 281   3                              DelayXms(0x10);
+ 282   3                              shi_sub_write(EEPROM,0xF2,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 282 OF TUNER.C: 'EEPROM': undefined identifier
+ 283   3                      }
+ 284   2              }
+ 285   1              else
+ 286   1              {
+ 287   2                      shi_sub_read(EEPROM,0xF3,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 287 OF TUNER.C: 'EEPROM': undefined identifier
+ 288   2      
+ 289   2                      if(ChBuffer < UNI_Tuner.CH_LIMIT.CATV_Min)
+ 290   2                      {
+ 291   3                              ChBuffer = UNI_Tuner.CH_LIMIT.CATV_Min;
+ 292   3                              DelayXms(0x10);
+ 293   3                              shi_sub_write(EEPROM,0xF3,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 293 OF TUNER.C: 'EEPROM': undefined identifier
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 6   
+
+ 294   3                      }
+ 295   2      
+ 296   2                      if(ChBuffer > UNI_Tuner.CH_LIMIT.CATV_Max)
+ 297   2                      {
+ 298   3                              ChBuffer = UNI_Tuner.CH_LIMIT.CATV_Max;
+ 299   3                              DelayXms(0x10);
+ 300   3                              shi_sub_write(EEPROM,0xF3,0x00,&ChBuffer);
+*** ERROR C202 IN LINE 300 OF TUNER.C: 'EEPROM': undefined identifier
+ 301   3                      }
+ 302   2              }
+ 303   1              bIrChNum = 0;
+ 304   1      ///     osd_timer = 0;
+ 305   1      }
+ 306          //==================================================================
+ 307          //==================================================================
+ 308          void ChannelUpDown(bit Direct)
+ 309          {
+ 310   1              unsigned char CH,j,k,l,m;
+ 311   1              unsigned char EEPBUF;
+ 312   1      
+ 313   1              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);                      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 313 OF TUNER.C: 'EEPROM': undefined identifier
+ 314   1      
+ 315   1              if(EEPBUF==0)   // Air Channel
+ 316   1              {
+ 317   2                      shi_sub_read(EEPROM, 0xF2, 0x00, &CH);                  // Read Air Channel
+*** ERROR C202 IN LINE 317 OF TUNER.C: 'EEPROM': undefined identifier
+ 318   2                      for(j=0; j<UNI_Tuner.CH_LIMIT.TV_Total; j++)
+ 319   2                      {
+ 320   3                              if(Direct)      CH++;
+ 321   3                              else                    CH--;
+ 322   3      
+ 323   3                              if(CH > UNI_Tuner.CH_LIMIT.TV_Max)
+ 324   3                                      CH = UNI_Tuner.CH_LIMIT.TV_Min;
+ 325   3      
+ 326   3                              if(CH < UNI_Tuner.CH_LIMIT.TV_Min)
+ 327   3                                      CH = UNI_Tuner.CH_LIMIT.TV_Max;
+ 328   3      
+ 329   3                              k = (CH - UNI_Tuner.CH_LIMIT.TV_Min) / 8;
+ 330   3                              l = (CH - UNI_Tuner.CH_LIMIT.TV_Min) % 8;
+ 331   3                              shi_sub_read(EEPROM, 0x80+k, 0x00, &m);         // AirChannel Channel Mask
+*** ERROR C202 IN LINE 331 OF TUNER.C: 'EEPROM': undefined identifier
+ 332   3                              if((m & MaskTab1[l]) != 0)
+ 333   3                              {
+ 334   4                                      break;
+ 335   4                              }
+ 336   3                      }
+ 337   2                      DelayXms(0x80);
+ 338   2                      Write24C16(0xF2,CH);
+ 339   2              }
+ 340   1              else                    // Cable Channel
+ 341   1              {
+ 342   2                      shi_sub_read(EEPROM, 0xF3, 0x00, &CH);                  // Read CATV Channel
+*** ERROR C202 IN LINE 342 OF TUNER.C: 'EEPROM': undefined identifier
+ 343   2                      for(j=0; j<UNI_Tuner.CH_LIMIT.CATV_Total; j++)
+ 344   2                      {
+ 345   3                              if(Direct)      CH++;
+ 346   3                              else                    CH--;
+ 347   3      
+ 348   3                              if(CH > UNI_Tuner.CH_LIMIT.CATV_Max)
+ 349   3                                      CH = UNI_Tuner.CH_LIMIT.CATV_Min;
+ 350   3      
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 7   
+
+ 351   3                              if(CH < UNI_Tuner.CH_LIMIT.CATV_Min)
+ 352   3                                      CH = UNI_Tuner.CH_LIMIT.CATV_Max;
+ 353   3      
+ 354   3                              k = (CH - UNI_Tuner.CH_LIMIT.CATV_Min) / 8;
+ 355   3                              l = (CH - UNI_Tuner.CH_LIMIT.CATV_Min) % 8;
+ 356   3                              shi_sub_read(EEPROM, 0x90+k, 0x00, &m);
+*** ERROR C202 IN LINE 356 OF TUNER.C: 'EEPROM': undefined identifier
+ 357   3                              if((m & MaskTab1[l]) != 0)
+ 358   3                              {
+ 359   4                                      break;
+ 360   4                              }
+ 361   3                      }
+ 362   2                      DelayXms(0x80);
+ 363   2                      shi_sub_write(EEPROM,0xF3,0x00,&CH);
+*** ERROR C202 IN LINE 363 OF TUNER.C: 'EEPROM': undefined identifier
+ 364   2              }
+ 365   1              ChBuffer = CH;
+ 366   1              ChannelSel(ChBuffer);
+ 367   1              DelayXms(0x05);
+ 368   1              SetupChNumOSD();
+ 369   1              osd_clearall();
+ 370   1              ShowCap(0xFF);
+ 371   1              osd_size(title,0x2D,0x00);                                      // Set Title block size
+*** ERROR C202 IN LINE 371 OF TUNER.C: 'title': undefined identifier
+ 372   1      ///     osd_show(0x00, 0x05, AIR_TV);
+ 373   1      ///     ShowCap(UNI_Sel.v.Sel_Signal);
+ 374   1              OSD_Show_Channel(0x29,ChBuffer);
+ 375   1      }
+ 376          //==================================================================
+ 377          //==================================================================
+ 378          unsigned char CheckChMask(unsigned char Mask)
+ 379          {
+ 380   1              unsigned char k,l,m;
+ 381   1              unsigned char EEPBUF;
+ 382   1      
+ 383   1              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 383 OF TUNER.C: 'EEPROM': undefined identifier
+ 384   1      
+ 385   1              if(EEPBUF==0)
+ 386   1              {
+ 387   2                      k = (ChBuffer - UNI_Tuner.CH_LIMIT.TV_Min) / 8;
+ 388   2                      l = (ChBuffer - UNI_Tuner.CH_LIMIT.TV_Min) % 8;
+ 389   2      
+ 390   2                      shi_sub_read(EEPROM, 0x80+k, 0x00, &m);
+*** ERROR C202 IN LINE 390 OF TUNER.C: 'EEPROM': undefined identifier
+ 391   2      
+ 392   2                      if(Mask > 1)
+ 393   2                      {
+ 394   3                              if((m & MaskTab1[l]) != 0)
+ 395   3                              {
+ 396   4                                      return 1;
+ 397   4                              }
+ 398   3                              else
+ 399   3                              {
+ 400   4                                      return 0;
+ 401   4                              }
+ 402   3                      }
+ 403   2                      else if(Mask == 0)
+ 404   2                      {
+ 405   3                              m &= MaskTab2[l];
+ 406   3                              Write24C16(0x80+k,m);
+ 407   3                              return 0;
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 8   
+
+ 408   3                      }
+ 409   2                      else
+ 410   2                      {
+ 411   3                              m |= MaskTab1[l];
+ 412   3                              Write24C16(0x80+k,m);
+ 413   3                              return 1;
+ 414   3                      }
+ 415   2              }
+ 416   1              else
+ 417   1              {
+ 418   2                      k = (ChBuffer - UNI_Tuner.CH_LIMIT.CATV_Min) / 8;
+ 419   2                      l = (ChBuffer - UNI_Tuner.CH_LIMIT.CATV_Min) % 8;
+ 420   2      
+ 421   2                      shi_sub_read(EEPROM, 0x90+k, 0x00, &m);
+*** ERROR C202 IN LINE 421 OF TUNER.C: 'EEPROM': undefined identifier
+ 422   2      
+ 423   2                      if(Mask > 1)
+ 424   2                      {
+ 425   3                              if((m & MaskTab1[l]) != 0)
+ 426   3                              {
+ 427   4                                      return 1;
+ 428   4                              }
+ 429   3                              else
+ 430   3                              {
+ 431   4                                      return 0;
+ 432   4                              }
+ 433   3                      }
+ 434   2                      else if(Mask == 0)
+ 435   2                      {
+ 436   3                              m &= MaskTab2[l];
+ 437   3                              Write24C16(0x90+k,m);
+ 438   3                              return 0;
+ 439   3                      }
+ 440   2                      else
+ 441   2                      {
+ 442   3                              m |= MaskTab1[l];
+ 443   3                              Write24C16(0x90+k,m);
+ 444   3                              return 1;
+ 445   3                      }
+ 446   2              }
+ 447   1      }
+ 448          //==================================================================
+ 449          //==================================================================
+ 450          //      Change channel of Tuner Function (For VX1120A)
+ 451          //
+ 452          // Input Factor:
+ 453          //      ch_num       => 8 bits , Channel Num
+ 454          //      ptr_chtable  => Addr, A point of channel table address
+ 455          // Output Factor:
+ 456          //      None
+ 457          //==================================================================
+ 458          void ChannelSel(unsigned char ch)
+ 459          {
+ 460   1              unsigned short *p;
+ 461   1              unsigned char EEPBUF;
+ 462   1      
+ 463   1              DelayXms(0x10);
+ 464   1      
+ 465   1              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 465 OF TUNER.C: 'EEPROM': undefined identifier
+ 466   1      
+ 467   1              if(EEPBUF == 0)
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 9   
+
+ 468   1              {
+ 469   2                      if(ch < UNI_Tuner.CH_LIMIT.TV_Min)
+ 470   2                      {
+ 471   3                              ch = UNI_Tuner.CH_LIMIT.TV_Min;
+ 472   3                              ChBuffer = ch;
+ 473   3                      }
+ 474   2                      else if(ch > UNI_Tuner.CH_LIMIT.TV_Max)
+ 475   2                      {
+ 476   3                              ch = UNI_Tuner.CH_LIMIT.TV_Max;
+ 477   3                              ChBuffer = ch;
+ 478   3                      }
+ 479   2      
+ 480   2                      ch = ch - UNI_Tuner.CH_LIMIT.TV_Min;
+ 481   2                      p = AIR_FREQ_TAB[TV_COUNTRY_AREA] + ch;
+ 482   2                      DevNum = *p;
+ 483   2                      DevNum = DevNum + INTERMEDIATE_FREQ[TV_COUNTRY_AREA];
+ 484   2                      DevNum = DevNum * (1000000/STEP_FREQ[TV_COUNTRY_AREA]);
+ 485   2                      DevNum += DIFF_FREQ[TV_COUNTRY_AREA];
+ 486   2      
+ 487   2                      DelayXms(0x10);
+ 488   2              }
+ 489   1              else
+ 490   1              {
+ 491   2                      if(ch < UNI_Tuner.CH_LIMIT.CATV_Min)
+ 492   2                      {
+ 493   3                              ch = UNI_Tuner.CH_LIMIT.CATV_Min;
+ 494   3                              ChBuffer = ch;
+ 495   3                      }
+ 496   2                      else if(ch > UNI_Tuner.CH_LIMIT.CATV_Max)
+ 497   2                      {
+ 498   3                              ch = UNI_Tuner.CH_LIMIT.CATV_Max;
+ 499   3                              ChBuffer = ch;
+ 500   3                      }
+ 501   2                      ch = ch - UNI_Tuner.CH_LIMIT.CATV_Min;
+ 502   2                      p = CATV_FREQ_TAB[TV_COUNTRY_AREA] + ch;
+ 503   2                      DevNum = *p;
+ 504   2                      DevNum = DevNum + INTERMEDIATE_FREQ[TV_COUNTRY_AREA];
+ 505   2                      DevNum = DevNum * (1000000/STEP_FREQ[TV_COUNTRY_AREA]);
+ 506   2                      DevNum += DIFF_FREQ[TV_COUNTRY_AREA];
+ 507   2                      DelayXms(0x10);
+ 508   2              }
+ 509   1              SetTuner();
+ 510   1              delay_nop();
+ 511   1      
+ 512   1      ///     shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+ 513   1      
+ 514   1      ///     if(EEPBUF)      osd_show(0x00, 0x05, AIR_TV);
+ 515   1      ///     else                    osd_show(0x00, 0x03, CATV);
+ 516   1      }
+ 517          //==================================================================
+ 518          //==================================================================
+ 519          void SetTuner(void)
+ 520          {
+ 521   1              unsigned char DivH,DivL,StepCode,Band;
+ 522   1      
+ 523   1              DivH = (unsigned char)(DevNum >> 8);
+ 524   1              DivL = (unsigned char)DevNum;
+ 525   1      
+ 526   1              #if(TUNER == PHILIPS_Tuner)     // Philips tuner
+*** WARNING C322 IN LINE 526 OF TUNER.C: unknown identifier
+*** WARNING C322 IN LINE 526 OF TUNER.C: unknown identifier
+ 527   1                      if(DevNum < VHF_FREQ[TV_COUNTRY_AREA])
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 10  
+
+ 528   1                      {
+ 529   2                              Band=0xA0;
+ 530   2                      }
+ 531   1                      else
+ 532   1                      {
+ 533   2                              if(DevNum < UHF_FREQ[TV_COUNTRY_AREA])
+ 534   2                                      Band=0x90;
+ 535   2                              else
+ 536   2                                      Band=0x30;
+ 537   2                      }
+ 538   1              #else                                           // Listen tuner
+                              if(DevNum < VHF_FREQ[TV_COUNTRY_AREA])
+                              {
+                                      Band=0x01;
+                              }
+                              else
+                              {
+                                      if(DevNum < UHF_FREQ[TV_COUNTRY_AREA])
+                                              Band=0x02;
+                                      else
+                                              Band=0x08;
+                              }
+                      #endif
+ 551   1      
+ 552   1              DelayXms(0x10);
+ 553   1      
+ 554   1              if (TUNER == PHILIPS_Tuner)     // Philips tuner
+*** ERROR C202 IN LINE 554 OF TUNER.C: 'TUNER': undefined identifier
+ 555   1                      StepCode = 0x8E;                        // set non-fast tuning, test mode = normal mode, step freq. = 62.5KHz, and PLL disabl
+             -ing = normal operation
+ 556   1              else if(TV_COUNTRY_AREA == AREA_GERMANY)
+ 557   1                      StepCode = 0xC0;
+ 558   1              else                                                    // Listen tuner
+ 559   1                      StepCode = 0x86;                        // set step freq. = 62.5KHz
+ 560   1      
+ 561   1      ///     DivH = 0x08;
+ 562   1      ///     DivL = 0x10;
+ 563   1      ///     StepCode = 0x86;
+ 564   1      ///     Band = 0x01;
+ 565   1      
+ 566   1              WriteTuner(DivH,DivL,StepCode,Band);
+ 567   1      }
+ 568          //==================================================================
+ 569          void ScanChannel(void)
+ 570          {
+ 571   1              unsigned char ChannelBuf, max_ch;
+ 572   1              unsigned char EEPBUF;
+ 573   1              unsigned char DataBuf;
+ 574   1      
+ 575   1              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 575 OF TUNER.C: 'EEPROM': undefined identifier
+ 576   1      
+ 577   1              if(EEPBUF==0)
+ 578   1                      max_ch = UNI_Tuner.CH_LIMIT.TV_Max;
+ 579   1              else
+ 580   1                      max_ch = UNI_Tuner.CH_LIMIT.CATV_Max;
+ 581   1      
+ 582   1              ChannelBuf = ChBuffer;
+ 583   1      
+ 584   1              osd_show(0x00, 10, SCANNING);
+ 585   1      
+ 586   1              for ( ChBuffer = 1; ChBuffer <= max_ch; ChBuffer++ )
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 11  
+
+ 587   1              {
+ 588   2                      VideoBlanking(1);
+ 589   2                      ChannelSel(ChBuffer);
+ 590   2                      osd_clear(12);
+ 591   2      ///             osd_show(0x00, 10, SCANNING);
+ 592   2                      OSD_Show_Channel(0x29, ChBuffer);
+ 593   2      
+ 594   2                      aisel_func(0x01);               // Select TV
+ 595   2                      DelayXms(100);
+ 596   2                      aisel_func(0x02);               // Select TV
+ 597   2                      DelayXms(100);
+ 598   2                      DataBuf = 0x60;
+ 599   2                      shi_sub_write(VX1818, 0x10, 0, &DataBuf);
+*** ERROR C202 IN LINE 599 OF TUNER.C: 'VX1818': undefined identifier
+ 600   2                      DelayXms(100);
+ 601   2                      DataBuf = 0x20;
+ 602   2                      shi_sub_write(VX1818, 0x10, 0, &DataBuf);
+*** ERROR C202 IN LINE 602 OF TUNER.C: 'VX1818': undefined identifier
+ 603   2                      DelayXms(100);
+ 604   2                      shi_sub_read(VX1818, 0xD3, 0x00, &ChStatus);            // NOISE_MORE, PHALT, IS443, VPRES, MODE, FINEAGC, MVVALID
+*** ERROR C202 IN LINE 604 OF TUNER.C: 'VX1818': undefined identifier
+ 605   2      
+ 606   2                      if( ChStatus & 0x10 )
+ 607   2                      {
+ 608   3                              VideoBlanking(0);
+ 609   3                              CheckChMask(1);
+ 610   3                      }
+ 611   2                      else
+ 612   2                      {
+ 613   3                              CheckChMask(0);         // test
+ 614   3                      }
+ 615   2              }
+ 616   1              DelayXms(10);
+ 617   1              ChBuffer = ChannelBuf;
+ 618   1              VideoBlanking(1);
+ 619   1              ChannelSel(ChBuffer);
+ 620   1              DelayXms(100);
+ 621   1              osd_clear(0);
+ 622   1              OSD_Show_Channel(0x29, ChannelBuf);
+ 623   1              VideoBlanking(0);
+ 624   1      }
+ 625          //==================================================================
+ 626          // Adjust Channel Freq. and Check if locked.
+ 627          /*
+ 628          unsigned short FineTuneChannel(unsigned short freq,unsigned char pb)
+ 629          {
+ 630                  unsigned char i,j;
+ 631          
+ 632                  #if (TUNER == PHILIPS_Tuner)
+ 633                          freq -= 40;                             // 40*50K=2M
+ 634                  #else
+ 635                          freq -= 32;                             // 32*62.5K=2M
+ 636                  #endif
+ 637          
+ 638                  for ( i = 0; i < 9; i++ )                       //8*0.5M=4M, 0.5M/step
+ 639                  {
+ 640                          #if (TUNER == PHILIPS_Tuner)
+ 641                                  WriteTuner(((freq >> 8) & 0xff),(freq & 0xff),0x88,pb);
+ 642                          #else
+ 643                                  WriteTuner(((freq >> 8) & 0xff),(freq & 0xff),0x8e,pb);
+ 644                          #endif
+ 645          
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 12  
+
+ 646                          Delay_nop_();
+ 647                          
+ 648                          if ( (ReadTunerOneByte(TunerAddr) & 0x40) == 0x40 )     // Locked
+ 649                          {
+ 650                                  return freq;
+ 651                          }
+ 652                          else
+ 653                          {
+ 654                                  freq -= 4;
+ 655                                  for ( j = 0; j < 9; j++ )
+ 656                                  {
+ 657                                          WriteTuner(((freq >> 8) & 0xff),(freq & 0xff),0x8e,pb);
+ 658                                          Delay_nop_();
+ 659          
+ 660                                          if ( (ReadTunerOneByte(TunerAddr) & 0x40) )     // Locked
+ 661                                          {
+ 662                                                  return freq;
+ 663                                          }
+ 664                                          freq += 1;      //fine tune 62.5K
+ 665                                  }
+ 666                          }
+ 667                          freq += 8;      //coarse fine 0.5M
+ 668                  }
+ 669          
+ 670                  return 0;
+ 671          }
+ 672          */
+ 673          //==================================================================
+ 674          void ChannelNumInput(unsigned char IrNum)
+ 675          {
+ 676   1              unsigned int ChNumTemp;
+ 677   1              unsigned char EEPBUF;
+ 678   1              bit OSD_TimerUp = 0;
+ 679   1      
+ 680   1              switch(IrNum)
+ 681   1              {
+ 682   2                      case 0x05:                      // +10
+ 683   2                              osd_timer=0;
+ 684   2      
+ 685   2                              OSD_Flag_Reset();
+ 686   2                              osd_switch(0x00);
+ 687   2                              ShowCap(0xFF);
+ 688   2      
+ 689   2                              osd_clear(0);
+ 690   2      ///                     ShowCap(UNI_Sel.v.Sel_Signal);
+ 691   2                              IrNum = 1;
+ 692   2                              bIrChNum = 2;
+ 693   2                              ChannelBuf[bIrChNum] = IrNum;
+ 694   2                              OSD_Show_Num(0x28, IrNum);
+ 695   2                              OSD_Show_Num(0x29, 0x3F);
+ 696   2                              OSD_Show_Num(0x2A, 0x3F);
+ 697   2                              return;
+ 698   2                      case 0x1B:                      // 1
+ 699   2                              IrNum = 1;
+ 700   2                              break;
+ 701   2                      case 0x5A:                      // 2
+ 702   2                              IrNum = 2;
+ 703   2                              break;
+ 704   2                      case 0x1A:                      // 3
+ 705   2                              IrNum = 3;
+ 706   2                              break;
+ 707   2                      case 0x0E:                      // 4
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 13  
+
+ 708   2                              IrNum = 4;
+ 709   2                              break;
+ 710   2                      case 0x0D:                      // 5
+ 711   2                              IrNum = 5;
+ 712   2                              break;
+ 713   2                      case 0x12:                      // 6
+ 714   2                              IrNum = 6;
+ 715   2                              break;
+ 716   2                      case 0x1C:                      // 7
+ 717   2                              IrNum = 7;
+ 718   2                              break;
+ 719   2                      case 0x1D:                      // 8
+ 720   2                              IrNum = 8;
+ 721   2                              break;
+ 722   2                      case 0x1F:                      // 9
+ 723   2                              IrNum = 9;
+ 724   2                              break;
+ 725   2                      case 0x1E:                      // 0
+ 726   2                              IrNum = 0;
+ 727   2                              break;
+ 728   2      
+ 729   2                      case 0xFF:
+ 730   2                              OSD_TimerUp = 1;
+ 731   2                              break;
+ 732   2      
+ 733   2                      default:
+ 734   2                              break;
+ 735   2              }
+ 736   1              if (bIrChNum==0 && !OSD_TimerUp)
+ 737   1              {
+ 738   2                      osd_timer=0;
+ 739   2      
+ 740   2                      OSD_Flag_Reset();
+ 741   2                      osd_switch(0x00);
+ 742   2                      ShowCap(0xFF);
+ 743   2      
+ 744   2                      osd_clear(0);
+ 745   2      ///             ShowCap(UNI_Sel.v.Sel_Signal);
+ 746   2                      bIrChNum = 1;
+ 747   2                      ChannelBuf[bIrChNum] = IrNum;
+ 748   2                      OSD_Show_Num(0x29, IrNum);
+ 749   2                      OSD_Show_Num(0x2A, 0x3F);
+ 750   2              }
+ 751   1              else if(bIrChNum==2 && !OSD_TimerUp)
+ 752   1              {
+ 753   2                      bIrChNum = 1;
+ 754   2                      ChannelBuf[bIrChNum] = IrNum;
+ 755   2                      OSD_Show_Num(0x29, IrNum);
+ 756   2              }
+ 757   1              else if(bIrChNum==1 || OSD_TimerUp)
+ 758   1              {
+ 759   2                      if(!OSD_TimerUp)
+ 760   2                      {
+ 761   3                              bIrChNum = 0;
+ 762   3                              ChannelBuf[bIrChNum] = IrNum;
+ 763   3                              OSD_Show_Num(0x2A, IrNum);
+ 764   3                      }
+ 765   2      
+ 766   2                      if(bIrChNum==0)
+ 767   2                      {
+ 768   3                              if(!OSD_TimerUp)
+ 769   3                                      ChNumTemp = ChannelBuf[2]*100+ChannelBuf[1]*10+ChannelBuf[0];
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 14  
+
+ 770   3                              else
+ 771   3                                      ChNumTemp = ChannelBuf[1];
+ 772   3                                      
+ 773   3                              shi_sub_read(EEPROM, 0xF1, 0x00, &EEPBUF);      // Read AirChannel or CATVChannel
+*** ERROR C202 IN LINE 773 OF TUNER.C: 'EEPROM': undefined identifier
+ 774   3      
+ 775   3                              if(EEPBUF==0)   // Air Channel
+ 776   3                              {
+ 777   4                                      if((ChNumTemp>=UNI_Tuner.CH_LIMIT.TV_Min)&&(ChNumTemp<=UNI_Tuner.CH_LIMIT.TV_Max))
+ 778   4                                      {
+ 779   5                                              ChBuffer = ChNumTemp;
+ 780   5                                              Write24C16(0xF2,ChBuffer);
+ 781   5                                              VideoBlanking(1);
+ 782   5                                              ChannelSel(ChBuffer);
+ 783   5                                              aisel_func(0x01);               // Select TV
+ 784   5                                              aisel_func(0x02);               // Select TV
+ 785   5                                              VideoBlanking(0);
+ 786   5                                      }
+ 787   4                                      else
+ 788   4                                      {
+ 789   5                                              osd_clear(0);
+ 790   5      ///                                     ShowCap(UNI_Sel.v.Sel_Signal);
+ 791   5                                              OSD_Show_Channel(0x29, ChBuffer);
+ 792   5                                      }
+ 793   4                              }
+ 794   3                              else
+ 795   3                              {
+ 796   4                                      if((ChNumTemp>=UNI_Tuner.CH_LIMIT.CATV_Min)&&(ChNumTemp<=UNI_Tuner.CH_LIMIT.CATV_Max))
+ 797   4                                      {
+ 798   5                                              ChBuffer = ChNumTemp;
+ 799   5                                              Write24C16(0xF3,ChBuffer);
+ 800   5                                              VideoBlanking(1);
+ 801   5                                              ChannelSel(ChBuffer);
+ 802   5                                              aisel_func(0x01);               // Select TV
+ 803   5                                              aisel_func(0x02);               // Select TV
+ 804   5                                              VideoBlanking(0);
+ 805   5                                      }
+ 806   4                                      else
+ 807   4                                      {
+ 808   5                                              osd_clear(0);
+ 809   5      ///                                     ShowCap(UNI_Sel.v.Sel_Signal);
+ 810   5                                              OSD_Show_Channel(0x29, ChBuffer);
+ 811   5                                      }
+ 812   4                              }
+ 813   3      
+ 814   3                              ChannelBuf[0] = 0;
+ 815   3                              ChannelBuf[1] = 0;
+ 816   3                              ChannelBuf[2] = 0;
+ 817   3                      }
+ 818   2              }
+ 819   1      }
+ 820          //==================================================================
+ 821          //==================================================================
+ 822          //==================================================================
+ 823          void HEX2DEC(unsigned int VALUE,unsigned char *DigitBuf)
+ 824          {
+ 825   1              *DigitBuf=VALUE%10;
+ 826   1      
+ 827   1              while(VALUE>0)
+ 828   1              {
+ 829   2                      DigitBuf++;
+ 830   2                      VALUE=VALUE/10;
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 15  
+
+ 831   2                      *DigitBuf=VALUE%10;
+ 832   2              }
+ 833   1      
+ 834   1      }
+ 835          //===================================================================
+ 836          void osd_show_register(char stpos2, char reg)
+ 837          {
+ 838   1              char idata temp[0x02] = {0x10,0x00};
+ 839   1              char idata numtemp[0x02];
+ 840   1      
+ 841   1              temp[1] = stpos2;
+ 842   1              shi_sub_write(VX1818,cw1,0x01,&temp[0]);
+*** ERROR C202 IN LINE 842 OF TUNER.C: 'VX1818': undefined identifier
+ 843   1      
+ 844   1              numtemp[0] = (reg >> 4) & 0x0F;
+ 845   1              numtemp[1] = reg & 0x0F;
+ 846   1              shi_sub_write(VX1818,cw3,0x01,numtemp);
+*** ERROR C202 IN LINE 846 OF TUNER.C: 'VX1818': undefined identifier
+ 847   1      }
+ 848          //===================================================================
+ 849          void OSD_Show_Channel(char stpos2, char reg)
+ 850          {
+ 851   1              char idata temp[0x02] = {0x10,0x00};
+ 852   1              char idata DigitBuf[3] = {0,0,0};
+ 853   1              char idata TempBuf[3] = {0,0,0};
+ 854   1              unsigned char title_color = 0x84;
+ 855   1      
+ 856   1              shi_sub_write(VX1818, 0x5B, 0, &title_color);
+*** ERROR C202 IN LINE 856 OF TUNER.C: 'VX1818': undefined identifier
+ 857   1      
+ 858   1              if(reg < 100)
+ 859   1                      temp[1] = stpos2;
+ 860   1              else
+ 861   1                      temp[1] = stpos2 - 1;
+ 862   1      
+ 863   1              shi_sub_write(VX1818,cw1,0x01,&temp[0]);
+*** ERROR C202 IN LINE 863 OF TUNER.C: 'VX1818': undefined identifier
+ 864   1      
+ 865   1              HEX2DEC(reg, TempBuf);
+ 866   1      
+ 867   1              DigitBuf[0] = TempBuf[2];
+ 868   1              DigitBuf[1] = TempBuf[1];
+ 869   1              DigitBuf[2] = TempBuf[0];
+ 870   1      
+ 871   1              if(reg < 100)
+ 872   1              {
+ 873   2                      shi_sub_write(VX1818,cw3,1,DigitBuf+1);
+*** ERROR C202 IN LINE 873 OF TUNER.C: 'VX1818': undefined identifier
+ 874   2              }
+ 875   1              else
+ 876   1              {
+ 877   2                      shi_sub_write(VX1818,cw3,2,DigitBuf);
+*** ERROR C202 IN LINE 877 OF TUNER.C: 'VX1818': undefined identifier
+ 878   2              }
+ 879   1      }
+ 880          //===================================================================
+ 881          void OSD_Show_Num(char stpos2, char Num)
+ 882          {
+ 883   1              char idata temp[0x02] = {0x10,0x00};
+ 884   1              unsigned char title_color;
+ 885   1      
+ 886   1              title_color = 0x84;
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 16  
+
+ 887   1              shi_sub_write(VX1818, 0x5B, 0, &title_color);
+*** ERROR C202 IN LINE 887 OF TUNER.C: 'VX1818': undefined identifier
+ 888   1      
+ 889   1              temp[1] = stpos2;
+ 890   1              shi_sub_write(VX1818,cw1,0x01,&temp[0]);
+*** ERROR C202 IN LINE 890 OF TUNER.C: 'VX1818': undefined identifier
+ 891   1      
+ 892   1              shi_sub_write(VX1818, cw3, 0x00, &Num);
+*** ERROR C202 IN LINE 892 OF TUNER.C: 'VX1818': undefined identifier
+ 893   1      }
+ 894          //===================================================================
+ 895          void SetupChNumOSD()
+ 896          {
+ 897   1              // Set size of block
+ 898   1              osd_size(content, 0x03, 0x01);                                          // Set Content block size
+*** ERROR C202 IN LINE 898 OF TUNER.C: 'content': undefined identifier
+ 899   1              // Set position of block
+ 900   1              osd_pos(content, 0x01, 0x01);                                           // Set Content block position
+*** ERROR C202 IN LINE 900 OF TUNER.C: 'content': undefined identifier
+ 901   1      }
+ 902          //===================================================================
+ 903          
+ 904          //===================================================================
+ 905          //===================================================================
+ 906          void Delay_nop_()
+ 907          {
+ 908   1              _nop_();
+ 909   1              _nop_();
+ 910   1              _nop_();
+ 911   1              _nop_();
+ 912   1              _nop_();
+ 913   1              _nop_();
+ 914   1              _nop_();
+ 915   1              _nop_();
+ 916   1      }
+ 917          
+ 918          void SclH(void)
+ 919          {
+ 920   1              scl = 1;
+ 921   1              Delay_nop_();
+ 922   1              Delay_nop_();
+ 923   1              Delay_nop_();
+ 924   1      }
+ 925          
+ 926          void SclL(void)
+ 927          {
+ 928   1              scl = 0;
+ 929   1      }
+ 930          
+ 931          void SdaH(void)
+ 932          {
+ 933   1              sda = 1;
+ 934   1      }
+ 935          
+ 936          void SdaL(void)
+ 937          {
+ 938   1              sda = 0;
+ 939   1      }
+ 940          
+ 941          static bit SdaOut(const bit b)
+ 942          {
+ 943   1              return(sda = (b));
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 17  
+
+ 944   1      }
+ 945          
+ 946          static bit SdaIn(void)
+ 947          {
+ 948   1              return(sda);
+ 949   1      }
+ 950          
+ 951          bit IIC_Start(void)
+ 952          {
+ 953   1              SdaH();         //Before stop, Add SdaH, SdaL :Making a Wave, 
+ 954   1              SclH();         //Let SCL go up  
+ 955   1      
+ 956   1              Delay_nop_();
+ 957   1              
+ 958   1              SdaL();         //Pull SDA down... 
+ 959   1              
+ 960   1              Delay_nop_();
+ 961   1              Delay_nop_();
+ 962   1              Delay_nop_();
+ 963   1              
+ 964   1              SclL();         //...and then SCL -> start condition. 
+ 965   1              
+ 966   1              return 0;
+ 967   1      }
+ 968          
+ 969          bit IIC_Stop(void)
+ 970          {
+ 971   1              SdaL();         //Before stop, Add SdaH, SdaL :Making a Wave, 
+ 972   1      
+ 973   1              Delay_nop_();
+ 974   1              SclH();         //Let SCL go up  
+ 975   1              
+ 976   1              Delay_nop_();
+ 977   1              Delay_nop_();
+ 978   1              Delay_nop_();
+ 979   1              Delay_nop_();
+ 980   1              
+ 981   1              SdaH() ;                //..and then SDA up -> stop condition. 
+ 982   1              
+ 983   1              Delay_nop_();
+ 984   1              Delay_nop_();
+ 985   1              return 1;
+ 986   1      }
+ 987          
+ 988          static bit I2cBitIn( )
+ 989          {
+ 990   1              bit bin;
+ 991   1      
+ 992   1              SclH();//Pull SCL back up 
+ 993   1              Delay_nop_();
+ 994   1              Delay_nop_();
+ 995   1              
+ 996   1              bin = SdaIn();//Read in data 
+ 997   1              Delay_nop_();
+ 998   1              Delay_nop_();
+ 999   1              SclL();//Pull SCL back up 
+1000   1              Delay_nop_();
+1001   1              Delay_nop_();
+1002   1              return bin;// Return the sampled bit 
+1003   1      }
+1004          
+1005          static bit I2cBitOut(const bit bout)
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 18  
+
+1006          {
+1007   1              SdaOut(bout);// Put data out on SDA 
+1008   1              Delay_nop_();
+1009   1      
+1010   1              #if 1
+1011   1                      SclH();//Let SCL go up 
+1012   1                      Delay_nop_();
+1013   1                      Delay_nop_();
+1014   1                      Delay_nop_();
+1015   1                      Delay_nop_();
+1016   1      
+1017   1                      if (SdaIn() != bout)
+1018   1                      {
+1019   2                              //Arbitration lost, release bus and return 
+1020   2                              Delay_nop_();
+1021   2                              SdaH();//Should be up anyway, but make sure 
+1022   2                              Delay_nop_();
+1023   2                              SclH();//
+1024   2                              Delay_nop_();
+1025   2      
+1026   2                              i2c_error = I2CERR_LOST;
+*** ERROR C202 IN LINE 1026 OF TUNER.C: 'I2CERR_LOST': undefined identifier
+1027   2                              return 1;
+1028   2                      }
+1029   1                      SclL();//Pull SCL back down 
+1030   1                      Delay_nop_();//1029     
+1031   1                      Delay_nop_();
+1032   1                      Delay_nop_();
+1033   1                      Delay_nop_();
+1034   1              #endif
+1035   1      
+1036   1              return 0;// OK 
+1037   1      }
+1038          //========================================================================
+1039          bit IIC_WriteByte(unsigned char dat)
+1040          {
+1041   1              unsigned char bit_count;
+1042   1      
+1043   1              bit_count=8;
+1044   1              i2c_error=0;
+1045   1      
+1046   1              SdaH();
+1047   1              Delay_nop_();
+1048   1              Delay_nop_();
+1049   1      
+1050   1              while(bit_count)
+1051   1              {
+1052   2                      if (dat & 0x80)
+1053   2                      {
+1054   3                              if (I2cBitOut(1)) return 1;
+1055   3                              Delay_nop_();
+1056   3                      }
+1057   2                      else    
+1058   2                      {
+1059   3                              if (I2cBitOut(0)) return 1;
+1060   3                              Delay_nop_();
+1061   3                      }
+1062   2                      dat <<= 1;
+1063   2                      bit_count--;
+1064   2              }
+1065   1              
+1066   1              Delay_nop_();
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 19  
+
+1067   1              Delay_nop_();
+1068   1              
+1069   1              // Set SDA High to release bus wait for ack
+1070   1              Delay_nop_();
+1071   1              Delay_nop_();
+1072   1              SdaH();
+1073   1      
+1074   1              if (I2cBitIn())
+1075   1              {
+1076   2                      i2c_error = I2CERR_NAK;
+*** ERROR C202 IN LINE 1076 OF TUNER.C: 'I2CERR_NAK': undefined identifier
+1077   2                      Delay_nop_();
+1078   2                      Delay_nop_();
+1079   2                      return i2c_error;
+1080   2              }
+1081   1              Delay_nop_();
+1082   1              Delay_nop_();//1029
+1083   1              return 0;
+1084   1      }
+1085          
+1086          //========================================================================
+1087          static void DelayShort(const unsigned char time)
+1088          {
+1089   1              unsigned char i=0;
+1090   1      
+1091   1              for(i=0;i<(time*1);i++);
+1092   1      }
+1093          //========================================================================
+1094          static I2C_STATUS DevWriteTuner(const unsigned char DEVICE,unsigned char COUNT,const  unsigned int address
+             -, const unsigned char* cData, ADDR_INDEX addr_index)
+*** ERROR C129 IN LINE 1094 OF TUNER.C: missing ';' before 'DevWriteTuner'
+1095          {
+1096                  unsigned char byteptr, byte_out;
+1097          
+1098                  if (IIC_Start()) return 1;
+1099                  i2c_error = 1;
+1100          
+1101                  //Send 1st Slave address
+1102                  byte_out = DEVICE & 0xfe;     /* Ensure that it's a write address */
+1103                  if (IIC_WriteByte(byte_out))
+1104                  {
+1105                          IIC_Stop();
+1106                          return i2c_error;
+1107                  }
+1108          
+1109                  if(addr_index==ADDR_2BYTE)
+1110                  {
+1111                          //Send 2nd Reg HiByte address (NVRam)
+1112                          byte_out = HiByte(address);     /* Ensure that it's a write address */
+1113                          if (IIC_WriteByte(byte_out))
+1114                          {
+1115                                  IIC_Stop();
+1116                                  return i2c_error;
+1117                          }
+1118                  }
+1119          
+1120                  //Send 2nd Reg address LoByte address (NVRam)
+1121                  byte_out = LoByte(address);     /* Ensure that it's a write address */
+1122                  if (IIC_WriteByte(byte_out))
+1123                  {
+1124                          IIC_Stop();
+1125                          return i2c_error;
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 20  
+
+1126                  }
+1127          
+1128                  //Send the other datas
+1129                  for(byteptr=0; byteptr<COUNT; byteptr++)
+1130                  {
+1131                          byte_out = *(cData+byteptr);
+1132                          if (IIC_WriteByte(byte_out))
+1133                          {
+1134                                  IIC_Stop();
+1135                                  return i2c_error;
+1136                          }
+1137                          
+1138                  }
+1139                  IIC_Stop();
+1140                  DelayShort(200);//ADD::1211
+1141                  DelayShort(200);//ADD::1211
+1142                  DelayShort(200);//ADD::1211
+1143                  
+1144                  return I2C_OK;
+1145          }
+1146          //=======================================================================
+1147          //=======================================================================
+1148          void WriteTuner(unsigned char DivH,unsigned char DivL,unsigned char StepCode,unsigned char Band)
+1149          {
+1150                  idata unsigned char bytI2cSendTemp[2];
+1151          
+1152                  bytI2cSendTemp[0]=StepCode;
+1153                  bytI2cSendTemp[1]=Band;
+1154          
+1155                  DevWriteTuner(DEV_FI1236_IIC_ADDR,_02BYTE,(unsigned int)MAKEWORD(DivH,DivL), bytI2cSendTemp, ADDR_2BYTE);
+1156          }
+1157          //=======================================================================
+1158          //=======================================================================
+1159          unsigned char ReadTunerOneByte(unsigned char device)
+1160          {
+1161                  unsigned char i;
+1162                  unsigned char value = 0x00;
+1163          
+1164                  // Send Start
+1165                  start_con();                                                                                    // Master send Start command
+1166          
+1167                  // Send TunerDeviceAddr Read Mode and Read ACK
+1168                  if ( send_con(device+1) )
+1169                  {
+1170                      scl = 1;
+1171                      sda = 1;
+1172                      return 0xff;
+1173                  }
+1174                  delay_nop();
+1175                  
+1176                  // Get Data
+1177                  for ( i = 0; i < 8; i++ )
+1178                  {
+1179                          scl = 0;
+1180                          _nop_(); _nop_(); _nop_(); _nop_();
+1181                          scl = 1;
+1182                           _nop_();
+1183                          if ( sda )
+1184                                  value |= 0x80 >> i;
+1185                  }
+1186                  
+1187                  // Send ACK High
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 21  
+
+1188                  scl = 0;
+1189                  sda = 1;
+1190                  _nop_(); _nop_(); _nop_(); _nop_(); _nop_(); _nop_();
+1191                  ack_con();
+1192                  
+1193                  // Send Stop
+1194                  delay_nop();
+1195                  stop_con();
+1196                  delay_nop();
+1197          
+1198                  return value;
+1199          }
+1200          
+1201          //=======================================================================
+1202          //=======================================================================
+1203          void Modify_TV_Area(void)
+1204          {
+1205                  unsigned char EEP_TV_Area_BUF;
+1206          
+1207                  osd_switch(0x00);// Turn the OSD T/C/B block off
+1208                  // Blinking
+1209                  osd_hbsection(title,bl,0x00,0x00,0x00,0x00);
+1210                  osd_hbsection(title,hl,0x00,0x00,0x00,0x00);
+1211                  osd_clear(0x00);
+1212                  // Select Block Color
+1213                  osd_color(title,foreground,normal,Red);                         // Title
+1214                  osd_color(title,background,normal,Transparent);         // Title
+1215                  // Set position of block
+1216                  osd_pos(title,0x35,0x09);                                                       // Set Title block position
+1217                  osd_clear(0x10);
+1218                  osd_clear(0x23);
+1219                  osd_clear(0x20);
+1220                  osd_size(title,0x2D,0x00);                                      // Set Title block size
+1221          
+1222                  if (FLG_Power)
+1223                  {
+1224                          shi_sub_read(EEPROM, 0xF0, 0x00, &EEP_TV_Area_BUF);     // Read AirChannel or CATVChannel
+1225          
+1226                          switch(EEP_TV_Area_BUF)
+1227                          {
+1228                                  case AREA_USA:
+1229                                          EEP_TV_Area_BUF = AREA_JAPAN;
+1230                                          Osd_Show_Char(0x00,0x04,JAPAN);
+1231                                          break;
+1232          
+1233                                  case AREA_JAPAN:
+1234                                          EEP_TV_Area_BUF = AREA_GERMANY;
+1235                                          Osd_Show_Char(0x00,0x06,GERMARY);
+1236                                          break;
+1237          
+1238                                  case AREA_GERMANY:
+1239                                          EEP_TV_Area_BUF = AREA_AUSTRALIA;
+1240                                          Osd_Show_Char(0x00,0x08,AUSTRALIA);
+1241                                          break;
+1242          
+1243                                  case AREA_AUSTRALIA:
+1244                                          EEP_TV_Area_BUF = AREA_UK;
+1245                                          Osd_Show_Char(0x00,0x01,UK);
+1246                                          break;
+1247          
+1248                                  case AREA_UK:
+1249                                          EEP_TV_Area_BUF = AREA_CHINA;
+C51 COMPILER V9.02   TUNER                                                                 06/29/2013 15:30:10 PAGE 22  
+
+1250                                          Osd_Show_Char(0x00,0x04,CHINA);
+1251                                          break;
+1252          
+1253                                  case AREA_CHINA:
+1254                                          EEP_TV_Area_BUF = AREA_USA;
+1255                                          Osd_Show_Char(0x00,0x02,USA);
+1256                                          break;
+1257          
+1258                                  default:
+1259                                          break;
+1260                          }
+1261                          shi_sub_write(EEPROM,0xF0,0x00,&EEP_TV_Area_BUF);
+1262                  }
+1263          }
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  40 ERROR(S)

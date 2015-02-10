@@ -1,0 +1,551 @@
+; .\output\test.SRC generated from: test.c
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE test.c DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.\list\test.lst) SRC(.\output\test.SRC)
+
+$NOMOD51
+
+NAME	TEST
+
+P0	DATA	080H
+P1	DATA	090H
+P2	DATA	0A0H
+P3	DATA	0B0H
+T0	BIT	0B0H.4
+AC	BIT	0D0H.6
+T1	BIT	0B0H.5
+EA	BIT	0A8H.7
+IE	DATA	0A8H
+RD	BIT	0B0H.7
+ES	BIT	0A8H.4
+IP	DATA	0B8H
+RI	BIT	098H.0
+INT0	BIT	0B0H.2
+CY	BIT	0D0H.7
+TI	BIT	098H.1
+INT1	BIT	0B0H.3
+PS	BIT	0B8H.4
+SP	DATA	081H
+OV	BIT	0D0H.2
+WR	BIT	0B0H.6
+SBUF	DATA	099H
+PCON	DATA	087H
+SCON	DATA	098H
+TMOD	DATA	089H
+TCON	DATA	088H
+IE0	BIT	088H.1
+IE1	BIT	088H.3
+B	DATA	0F0H
+ACC	DATA	0E0H
+ET0	BIT	0A8H.1
+ET1	BIT	0A8H.3
+TF0	BIT	088H.5
+TF1	BIT	088H.7
+RB8	BIT	098H.2
+TH0	DATA	08CH
+EX0	BIT	0A8H.0
+IT0	BIT	088H.0
+TH1	DATA	08DH
+TB8	BIT	098H.3
+EX1	BIT	0A8H.2
+IT1	BIT	088H.2
+P	BIT	0D0H.0
+SM0	BIT	098H.7
+TL0	DATA	08AH
+SM1	BIT	098H.6
+TL1	DATA	08BH
+SM2	BIT	098H.5
+PT0	BIT	0B8H.1
+PT1	BIT	0B8H.3
+RS0	BIT	0D0H.3
+TR0	BIT	088H.4
+RS1	BIT	0D0H.4
+TR1	BIT	088H.6
+PX0	BIT	0B8H.0
+PX1	BIT	0B8H.2
+DPH	DATA	083H
+DPL	DATA	082H
+REN	BIT	098H.4
+RXD	BIT	0B0H.0
+TXD	BIT	0B0H.1
+F0	BIT	0D0H.5
+PSW	DATA	0D0H
+?PR?AUTO_COLOR_TEST?TEST                 SEGMENT CODE 
+?DT?AUTO_COLOR_TEST?TEST                 SEGMENT DATA OVERLAYABLE 
+?PR?try_test?TEST    SEGMENT CODE 
+?DT?try_test?TEST    SEGMENT DATA OVERLAYABLE 
+?PR?_check_parms?TEST                    SEGMENT CODE 
+?DT?_check_parms?TEST                    SEGMENT DATA OVERLAYABLE 
+?PR?Check_drafting?TEST                  SEGMENT CODE 
+?CO?TEST             SEGMENT CODE 
+?XD?Check_drafting?TEST                  SEGMENT XDATA OVERLAYABLE 
+	EXTRN	CODE (getchar)
+	EXTRN	CODE (_printf)
+	EXTRN	DATA (?_printf?BYTE)
+	EXTRN	CODE (?C?COPY)
+	PUBLIC	Check_drafting
+	PUBLIC	_check_parms
+	PUBLIC	try_test
+	PUBLIC	AUTO_COLOR_TEST
+
+	RSEG  ?DT?try_test?TEST
+?try_test?BYTE:
+          i?141:   DS   1
+
+	RSEG  ?DT?AUTO_COLOR_TEST?TEST
+?AUTO_COLOR_TEST?BYTE:
+       TEST?040:   DS   1
+
+	RSEG  ?DT?_check_parms?TEST
+?_check_parms?BYTE:
+     string?242:   DS   3
+
+	RSEG  ?XD?Check_drafting?TEST
+      index?343:   DS   1
+
+	RSEG  ?XD?Check_drafting?TEST
+     arrary?344:   DS   10
+
+	RSEG  ?CO?TEST
+?SC_0:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'0' 
+	DB  ':' ,000H
+
+?SC_12:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'1' 
+	DB  ':' ,000H
+
+?SC_24:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'2' 
+	DB  ':' ,000H
+
+?SC_36:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'3' 
+	DB  ':' ,000H
+
+?SC_48:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'4' 
+	DB  ':' ,000H
+
+?SC_60:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'5' 
+	DB  ':' ,000H
+
+?SC_72:
+	DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'6' 
+	DB  ':' ,000H
+
+?SC_84:
+	DB  00AH,'A' ,' ' ,'=' ,' ' ,'%' ,'x' ,00AH,000H
+
+?SC_93:
+	DB  'A' ,'s' ,'s' ,'e' ,'r' ,'t' ,' ' ,'f' ,'a' ,'i' 
+	DB  'l' ,'e' ,'d' ,':' ,' ' ,'s' ,'t' ,'r' ,'i' ,'n' 
+	DB  'g' ,' ' ,'!' ,'=' ,' ' ,'N' ,'U' ,'L' ,'L' ,' ' 
+	DB  '(' ,'f' ,'i' ,'l' ,'e' ,' ' ,'%' ,'s' ,' ' ,'l' 
+	DB  'i' ,'n' ,'e' ,' ' ,'%' ,'d' ,')' ,00AH,000H
+
+?SC_142:
+	DB  't' ,'e' ,'s' ,'t' ,'.' ,'c' ,000H
+
+?SC_149:
+	DB  'S' ,'t' ,'r' ,'i' ,'n' ,'g' ,' ' ,'%' ,'s' ,' ' 
+	DB  'i' ,'s' ,' ' ,'O' ,'K' ,00AH,000H
+
+?SC_166:
+	DB  00DH,'%' ,'d' ,000H
+
+?SC_170:
+	DB  'E' ,'X' ,'I' ,'T' ,000H
+
+_?ix1000:
+	DB	001H
+	DB	002H
+	DB	003H
+	DB	004H
+	DB	005H
+	DB	006H
+	DB	007H
+	DB	008H
+	DB	009H
+	DB	000H
+
+; #include <Def_INC.h>
+; #include <assert.h>
+; 
+; void AUTO_COLOR_TEST(void)
+
+	RSEG  ?PR?AUTO_COLOR_TEST?TEST
+AUTO_COLOR_TEST:
+	USING	0
+			; SOURCE LINE # 4
+; {
+			; SOURCE LINE # 5
+; BYTE TEST = 0;
+			; SOURCE LINE # 6
+	CLR  	A
+	MOV  	TEST?040,A
+?C0001:
+; 
+; while(1)
+			; SOURCE LINE # 8
+; {
+			; SOURCE LINE # 9
+; 		if((++TEST) > 6)
+			; SOURCE LINE # 10
+	INC  	TEST?040
+	MOV  	A,TEST?040
+	SETB 	C
+	SUBB 	A,#06H
+	JC   	?C0003
+; 			TEST = 1;
+			; SOURCE LINE # 11
+	MOV  	TEST?040,#01H
+?C0003:
+; 	switch(TEST)
+			; SOURCE LINE # 12
+	MOV  	A,TEST?040
+	CJNE 	A,#07H,?C0030
+?C0030:
+	JNC  	?C0001
+	MOV  	DPTR,#?C0031
+	MOV  	R0,A
+	ADD  	A,R0
+	ADD  	A,R0
+	JMP  	@A+DPTR
+?C0031:
+	LJMP 	?C0005
+	LJMP 	?C0006
+	LJMP 	?C0007
+	LJMP 	?C0008
+	LJMP 	?C0009
+	LJMP 	?C0010
+	LJMP 	?C0011
+; 		{
+			; SOURCE LINE # 13
+; 		case 0:
+			; SOURCE LINE # 14
+?C0005:
+; 			printf("%d\n case 0:",TEST);
+			; SOURCE LINE # 15
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_0)
+	MOV  	R1,#LOW (?SC_0)
+; 			break;
+			; SOURCE LINE # 16
+	SJMP 	?C0037
+; 		case 1:
+			; SOURCE LINE # 17
+?C0006:
+; 			printf("%d\n case 1:",TEST);
+			; SOURCE LINE # 18
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_12)
+	MOV  	R1,#LOW (?SC_12)
+?C0033:
+; 			break;
+			; SOURCE LINE # 19
+	SJMP 	?C0037
+; 		case 2:
+			; SOURCE LINE # 20
+?C0007:
+; 			printf("%d\n case 2:",TEST);
+			; SOURCE LINE # 21
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_24)
+	MOV  	R1,#LOW (?SC_24)
+?C0034:
+; 			break;
+			; SOURCE LINE # 22
+	SJMP 	?C0037
+; 		case 3:
+			; SOURCE LINE # 23
+?C0008:
+; 			printf("%d\n case 3:",TEST);
+			; SOURCE LINE # 24
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_36)
+	MOV  	R1,#LOW (?SC_36)
+?C0035:
+; 			break;
+			; SOURCE LINE # 25
+	SJMP 	?C0037
+; 		case 4:
+			; SOURCE LINE # 26
+?C0009:
+; 			printf("%d\n case 4:",TEST);
+			; SOURCE LINE # 27
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_48)
+	MOV  	R1,#LOW (?SC_48)
+?C0036:
+; 			break;
+			; SOURCE LINE # 28
+	SJMP 	?C0037
+; 		case 5:
+			; SOURCE LINE # 29
+?C0010:
+; 			printf("%d\n case 5:",TEST);
+			; SOURCE LINE # 30
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_60)
+	MOV  	R1,#LOW (?SC_60)
+?C0037:
+	MOV  	?_printf?BYTE+03H,TEST?040
+	LCALL	_printf
+; 			break;
+			; SOURCE LINE # 31
+	SJMP 	?C0001
+; 		case 6:
+			; SOURCE LINE # 32
+?C0011:
+; 			printf("%d\n case 6:",TEST);
+			; SOURCE LINE # 33
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_72)
+	MOV  	R1,#LOW (?SC_72)
+	MOV  	?_printf?BYTE+03H,TEST?040
+	LCALL	_printf
+; 			break;
+			; SOURCE LINE # 34
+	SJMP 	?C0001
+; END OF AUTO_COLOR_TEST
+
+; 
+; 		default:
+; 			break;
+; 
+; 		}
+; }
+; }
+; 
+; void try_test(void)
+
+	RSEG  ?PR?try_test?TEST
+try_test:
+	USING	0
+			; SOURCE LINE # 43
+; {
+			; SOURCE LINE # 44
+; BYTE i;
+; 
+; #if 1
+; 
+; while(0)
+			; SOURCE LINE # 49
+; {
+			; SOURCE LINE # 50
+; ACC = 0;
+			; SOURCE LINE # 51
+; _nop_();
+			; SOURCE LINE # 52
+; ACC = 1;
+			; SOURCE LINE # 53
+; _nop_();
+			; SOURCE LINE # 54
+; }
+			; SOURCE LINE # 55
+?C0015:
+; 
+; 
+; 
+; for(i=1;0;i++)
+			; SOURCE LINE # 59
+	MOV  	i?141,#01H
+; {
+			; SOURCE LINE # 60
+; ACC = 0;
+			; SOURCE LINE # 61
+; _nop_();
+			; SOURCE LINE # 62
+; ACC = 1;
+			; SOURCE LINE # 63
+; _nop_();
+			; SOURCE LINE # 64
+; }
+			; SOURCE LINE # 65
+?C0017:
+; #pragma asm
+; 		mov ACC,#1d
+	  mov ACC,#1d
+; run_loop:
+	  run_loop:
+; 		djnz ACC,run_loop
+	  djnz ACC,run_loop
+; 		jnz run_loop
+	  jnz run_loop
+; 		mov ACC,#0AAH
+	  mov ACC,#0AAH
+; #pragma endasm
+; 		printf("\nA = %x\n",ACC);
+			; SOURCE LINE # 73
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_84)
+	MOV  	R1,#LOW (?SC_84)
+	MOV  	?_printf?BYTE+03H,A
+	LJMP 	_printf
+; END OF try_test
+
+; #elif 0
+; 		scanf("\n%d %f %c",&x,&y,&z);
+; 		printf("\n%d %f %c\n",x,y,z);
+; 
+; 		printf("\n%x\n",ALERT_BTN_OK);
+; 		printf("%x\n",ALERT_BTN_CANCEL);
+; 		printf("%x\n",MAX_ALERT_BTN_NUM);
+; #else
+; 
+; #endif
+; }
+; 
+; void check_parms (char *string)
+
+	RSEG  ?PR?_check_parms?TEST
+_check_parms:
+	USING	0
+			; SOURCE LINE # 86
+	MOV  	string?242,R3
+	MOV  	string?242+01H,R2
+	MOV  	string?242+02H,R1
+; {
+			; SOURCE LINE # 87
+; assert (string != NULL); /* check for NULL ptr */
+			; SOURCE LINE # 88
+	MOV  	A,R1
+	ORL  	A,R2
+	ORL  	A,R3
+	JNZ  	?C0021
+?C0020:
+	MOV  	?_printf?BYTE+03H,#0FFH
+	MOV  	?_printf?BYTE+04H,#HIGH (?SC_142)
+	MOV  	?_printf?BYTE+05H,#LOW (?SC_142)
+	MOV  	?_printf?BYTE+06H,#00H
+	MOV  	?_printf?BYTE+07H,#058H
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_93)
+	MOV  	R1,#LOW (?SC_93)
+	LCALL	_printf
+?C0022:
+	SJMP 	?C0022
+?C0021:
+; printf ("String %s is OK\n", string);
+			; SOURCE LINE # 89
+	MOV  	?_printf?BYTE+03H,string?242
+	MOV  	?_printf?BYTE+04H,string?242+01H
+	MOV  	?_printf?BYTE+05H,string?242+02H
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_149)
+	MOV  	R1,#LOW (?SC_149)
+	LJMP 	_printf
+; END OF _check_parms
+
+; }
+; 
+; void Check_drafting(void)
+
+	RSEG  ?PR?Check_drafting?TEST
+Check_drafting:
+	USING	0
+			; SOURCE LINE # 92
+; {
+			; SOURCE LINE # 93
+; BYTE xdata index=0;
+			; SOURCE LINE # 94
+	CLR  	A
+	MOV  	DPTR,#index?343
+	MOVX 	@DPTR,A
+; BYTE xdata arrary[10]={1,2,3,4,5,6,7,8,9,0};
+			; SOURCE LINE # 95
+	MOV  	R0,#LOW (arrary?344)
+	MOV  	R4,#HIGH (arrary?344)
+	MOV  	R5,#01H
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (_?ix1000)
+	MOV  	R1,#LOW (_?ix1000)
+	MOV  	R6,A
+	MOV  	R7,#0AH
+	LCALL	?C?COPY
+?C0025:
+; 
+; 
+; while(index != 'q')
+			; SOURCE LINE # 98
+	MOV  	DPTR,#index?343
+	MOVX 	A,@DPTR
+	XRL  	A,#071H
+	JZ   	?C0026
+; {
+			; SOURCE LINE # 99
+; 	index=getchar();
+			; SOURCE LINE # 100
+	LCALL	getchar
+	MOV  	DPTR,#index?343
+	MOV  	A,R7
+	MOVX 	@DPTR,A
+; 	index-=65;
+			; SOURCE LINE # 101
+	MOVX 	A,@DPTR
+	ADD  	A,#0BFH
+	MOVX 	@DPTR,A
+; 	
+; 	printf("\r%d",arrary[index]);
+			; SOURCE LINE # 103
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_166)
+	MOV  	R1,#LOW (?SC_166)
+	MOVX 	A,@DPTR
+	ADD  	A,#LOW (arrary?344)
+	MOV  	DPL,A
+	CLR  	A
+	ADDC 	A,#HIGH (arrary?344)
+	MOV  	DPH,A
+	MOVX 	A,@DPTR
+	MOV  	?_printf?BYTE+03H,A
+	LCALL	_printf
+; 
+; /*
+;    switch(index)
+;    {
+; 	case 'a':
+; 		y--;
+; //	    gotoxy(x,y);
+; 	printf("\r 1");
+; 		break;
+; 	case 's':
+; 		x--;
+; //	    gotoxy(x,y);
+; 	printf("\r 2");
+; 		break;
+; 	case 'd':
+; 		x++;
+; //	    gotoxy(x,y);
+; 	printf("\r 3");
+; 		break;
+; 	case 'f':
+; 		y++;
+; //	    gotoxy(x,y);
+; 	printf("\r 4");
+; 		break;
+; 	default:
+; 		break;
+;    }
+; */
+; }
+			; SOURCE LINE # 132
+	SJMP 	?C0025
+?C0026:
+; printf("EXIT",index);
+			; SOURCE LINE # 133
+	MOV  	R3,#0FFH
+	MOV  	R2,#HIGH (?SC_170)
+	MOV  	R1,#LOW (?SC_170)
+	MOV  	DPTR,#index?343
+	MOVX 	A,@DPTR
+	MOV  	?_printf?BYTE+03H,A
+	LCALL	_printf
+; for(;;);
+			; SOURCE LINE # 134
+?C0027:
+	SJMP 	?C0027
+; END OF Check_drafting
+
+	END

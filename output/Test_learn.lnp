@@ -1,0 +1,7 @@
+".\output\main.obj",
+".\output\View.obj",
+".\output\IIC.obj",
+".\output\func_ir.obj",
+".\output\constant.obj" 
+TO ".\output\Test_learn" 
+PRINT(".\list\Test_learn.m51") RAMSIZE(256) 

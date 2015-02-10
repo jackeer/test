@@ -1,0 +1,71 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\jackeer\Test\Test_learn.uvproj
+Project File Date:  11/14/2012
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+compiling View.c...
+VIEW.C(123): warning C182: pointer to different objects
+VIEW.C(123): warning C182: pointer to different objects
+VIEW.C(124): warning C182: pointer to different objects
+VIEW.C(124): warning C182: pointer to different objects
+VIEW.C(124): warning C182: pointer to different objects
+VIEW.C(125): warning C182: pointer to different objects
+VIEW.C(125): warning C182: pointer to different objects
+VIEW.C(125): warning C182: pointer to different objects
+compiling IIC.c...
+compiling func_ir.c...
+assembling .\output\func_ir.src...
+compiling constant.c...
+compiling EEPROM.c...
+EEPROM.h(44): warning C322: unknown identifier
+compiling TUNER.C...
+TUNER.C(4): warning C318: can't open file 'Define.H'
+TUNER.C(249): error C202: 'EEPROM': undefined identifier
+TUNER.C(255): error C202: 'EEPROM': undefined identifier
+TUNER.C(265): error C202: 'EEPROM': undefined identifier
+TUNER.C(269): error C202: 'EEPROM': undefined identifier
+TUNER.C(275): error C202: 'EEPROM': undefined identifier
+TUNER.C(282): error C202: 'EEPROM': undefined identifier
+TUNER.C(287): error C202: 'EEPROM': undefined identifier
+TUNER.C(293): error C202: 'EEPROM': undefined identifier
+TUNER.C(300): error C202: 'EEPROM': undefined identifier
+TUNER.C(313): error C202: 'EEPROM': undefined identifier
+TUNER.C(317): error C202: 'EEPROM': undefined identifier
+TUNER.C(331): error C202: 'EEPROM': undefined identifier
+TUNER.C(342): error C202: 'EEPROM': undefined identifier
+TUNER.C(356): error C202: 'EEPROM': undefined identifier
+TUNER.C(363): error C202: 'EEPROM': undefined identifier
+TUNER.C(371): error C202: 'title': undefined identifier
+TUNER.C(383): error C202: 'EEPROM': undefined identifier
+TUNER.C(390): error C202: 'EEPROM': undefined identifier
+TUNER.C(421): error C202: 'EEPROM': undefined identifier
+TUNER.C(465): error C202: 'EEPROM': undefined identifier
+TUNER.C(526): warning C322: unknown identifier
+TUNER.C(526): warning C322: unknown identifier
+TUNER.C(554): error C202: 'TUNER': undefined identifier
+TUNER.C(575): error C202: 'EEPROM': undefined identifier
+TUNER.C(599): error C202: 'VX1818': undefined identifier
+TUNER.C(602): error C202: 'VX1818': undefined identifier
+TUNER.C(604): error C202: 'VX1818': undefined identifier
+TUNER.C(773): error C202: 'EEPROM': undefined identifier
+TUNER.C(842): error C202: 'VX1818': undefined identifier
+TUNER.C(846): error C202: 'VX1818': undefined identifier
+TUNER.C(856): error C202: 'VX1818': undefined identifier
+TUNER.C(863): error C202: 'VX1818': undefined identifier
+TUNER.C(873): error C202: 'VX1818': undefined identifier
+TUNER.C(877): error C202: 'VX1818': undefined identifier
+TUNER.C(887): error C202: 'VX1818': undefined identifier
+TUNER.C(890): error C202: 'VX1818': undefined identifier
+TUNER.C(892): error C202: 'VX1818': undefined identifier
+TUNER.C(898): error C202: 'content': undefined identifier
+TUNER.C(900): error C202: 'content': undefined identifier
+TUNER.C(1026): error C202: 'I2CERR_LOST': undefined identifier
+TUNER.C(1076): error C202: 'I2CERR_NAK': undefined identifier
+TUNER.C(1094): error C129: missing ';' before 'DevWriteTuner'
+Target not created

@@ -1,0 +1,246 @@
+A51 MACRO ASSEMBLER  MAIN                                                                 04/03/2006 16:18:27 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.08a
+OBJECT MODULE PLACED IN .\output\main.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE .\output\main.src PR(.\list\main.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\output\main.SRC generated from: main.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\C51.EXE main.c DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.
+                             \list\main.lst) SRC(.\output\main.SRC)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    MAIN
+                       8     
+  0080                 9     P0      DATA    080H
+  0090                10     P1      DATA    090H
+  00A0                11     P2      DATA    0A0H
+  00B0                12     P3      DATA    0B0H
+  00B4                13     T0      BIT     0B0H.4
+  00D6                14     AC      BIT     0D0H.6
+  00B5                15     T1      BIT     0B0H.5
+  00AF                16     EA      BIT     0A8H.7
+  00A8                17     IE      DATA    0A8H
+  00B7                18     RD      BIT     0B0H.7
+  00AC                19     ES      BIT     0A8H.4
+  00B8                20     IP      DATA    0B8H
+  0098                21     RI      BIT     098H.0
+  00B2                22     INT0    BIT     0B0H.2
+  00D7                23     CY      BIT     0D0H.7
+  0099                24     TI      BIT     098H.1
+  00B3                25     INT1    BIT     0B0H.3
+  00BC                26     PS      BIT     0B8H.4
+  0081                27     SP      DATA    081H
+  00D2                28     OV      BIT     0D0H.2
+  00B6                29     WR      BIT     0B0H.6
+  0099                30     SBUF    DATA    099H
+  0087                31     PCON    DATA    087H
+  0098                32     SCON    DATA    098H
+  0089                33     TMOD    DATA    089H
+  0088                34     TCON    DATA    088H
+  0089                35     IE0     BIT     088H.1
+  008B                36     IE1     BIT     088H.3
+  00F0                37     B       DATA    0F0H
+  00E0                38     ACC     DATA    0E0H
+  00A9                39     ET0     BIT     0A8H.1
+  00AB                40     ET1     BIT     0A8H.3
+  008D                41     TF0     BIT     088H.5
+  008F                42     TF1     BIT     088H.7
+  009A                43     RB8     BIT     098H.2
+  008C                44     TH0     DATA    08CH
+  00A8                45     EX0     BIT     0A8H.0
+  0088                46     IT0     BIT     088H.0
+  008D                47     TH1     DATA    08DH
+  009B                48     TB8     BIT     098H.3
+  00AA                49     EX1     BIT     0A8H.2
+  008A                50     IT1     BIT     088H.2
+  00D0                51     P       BIT     0D0H.0
+  009F                52     SM0     BIT     098H.7
+  008A                53     TL0     DATA    08AH
+  009E                54     SM1     BIT     098H.6
+  008B                55     TL1     DATA    08BH
+  009D                56     SM2     BIT     098H.5
+  00B9                57     PT0     BIT     0B8H.1
+A51 MACRO ASSEMBLER  MAIN                                                                 04/03/2006 16:18:27 PAGE     2
+
+  00BB                58     PT1     BIT     0B8H.3
+  00D3                59     RS0     BIT     0D0H.3
+  008C                60     TR0     BIT     088H.4
+  00D4                61     RS1     BIT     0D0H.4
+  008E                62     TR1     BIT     088H.6
+  00B8                63     PX0     BIT     0B8H.0
+  00BA                64     PX1     BIT     0B8H.2
+  0083                65     DPH     DATA    083H
+  0082                66     DPL     DATA    082H
+  009C                67     REN     BIT     098H.4
+  00B0                68     RXD     BIT     0B0H.0
+  00B1                69     TXD     BIT     0B0H.1
+  00D5                70     F0      BIT     0D0H.5
+  00D0                71     PSW     DATA    0D0H
+                      72     ?PR?main?MAIN        SEGMENT CODE 
+                      73             EXTRN   CODE (?C_STARTUP)
+                      74             PUBLIC  main
+                      75     ; #include <Def_INC.h>
+                      76     ; #include <Test.h>
+                      77     ; 
+                      78     ; //#define Time0_support
+                      79     ; 
+                      80     ; #ifdef Time0_support
+                      81     ; #define PERIOD     -250
+                      82     ; #endif
+                      83     ; /*
+                      84     ; enum ALERT_BUTTON_TYPE
+                      85     ; {
+                      86     ;   ALERT_BTN_OK,
+                      87     ;   ALERT_BTN_CANCEL,
+                      88     ;   MAX_ALERT_BTN_NUM
+                      89     ; };
+                      90     ; */
+                      91     ; /*
+                      92     ; struct Clock_Show
+                      93     ; {
+                      94     ;   BYTE Hour;
+                      95     ;   BYTE Min;
+                      96     ;   BYTE Sec;
+                      97     ;   
+                      98     ; }Clock_Show;
+                      99     ; BYTE Clock_Show;
+                     100     ; */
+                     101     ; 
+                     102     ; //BYTE SEC_timer_0;
+                     103     ; 
+                     104     ; void main(void)
+                     105     
+----                 106             RSEG  ?PR?main?MAIN
+0000                 107     main:
+                     108                             ; SOURCE LINE # 30
+                     109     ; {
+                     110                             ; SOURCE LINE # 31
+                     111     ; #ifdef Time0_support
+                     112     ; TH0 = (unsigned char) PERIOD;          // set timer period
+                     113     ; TL0 = (unsigned char) PERIOD;
+                     114     ; TMOD = TMOD | 0x02;                    // select mode 2
+                     115     ; TR0 = 1;                               // start timer 0
+                     116     ; ET0 = 1;                               // enable timer 0 interrupt
+                     117     ; EA  = 1;                               // global interrupt enable
+                     118     ; #endif
+                     119     ; SCON  = 0x50;               // SCON: mode 1, 8-bit UART, enable rcvr
+                     120                             ; SOURCE LINE # 40
+0000 759850          121             MOV     SCON,#050H
+                     122     ; TMOD |= 0x20;               // TMOD: timer 1, mode 2, 8-bit reload
+                     123                             ; SOURCE LINE # 41
+A51 MACRO ASSEMBLER  MAIN                                                                 04/03/2006 16:18:27 PAGE     3
+
+0003 438920          124             ORL     TMOD,#020H
+                     125     ; TH1   = 221;                // TH1:  reload value for 1200 baud @ 16MHz
+                     126                             ; SOURCE LINE # 42
+0006 758DDD          127             MOV     TH1,#0DDH
+                     128     ; TR1   = 1;                  // TR1:  timer 1 run
+                     129                             ; SOURCE LINE # 43
+0009 D28E            130             SETB    TR1
+                     131     ; TI    = 1;                  // TI:   set TI to send first char of UART
+                     132                             ; SOURCE LINE # 44
+000B D299            133             SETB    TI
+                     134     ; 
+                     135     ; //    AUTO_COLOR_TEST();
+                     136     ; // getchar();
+                     137     ; 
+                     138     ; //    try_test();
+                     139     ; //    Test_Char_Key();
+                     140     ; /*
+                     141     ; #pragma asm
+                     142     ; 
+                     143     ; #pragma endasm
+                     144     ; */
+                     145     ; }
+                     146                             ; SOURCE LINE # 56
+000D 22              147             RET     
+                     148     ; END OF main
+                     149     
+                     150             END
+A51 MACRO ASSEMBLER  MAIN                                                                 04/03/2006 16:18:27 PAGE     4
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+?C_STARTUP . . . .  C ADDR   -----       EXT
+?PR?MAIN?MAIN. . .  C SEG    000EH       REL=UNIT
+AC . . . . . . . .  B ADDR   00D0H.6 A   
+ACC. . . . . . . .  D ADDR   00E0H   A   
+B. . . . . . . . .  D ADDR   00F0H   A   
+CY . . . . . . . .  B ADDR   00D0H.7 A   
+DPH. . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . .  D ADDR   0082H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . .  B ADDR   00A8H.4 A   
+ET0. . . . . . . .  B ADDR   00A8H.1 A   
+ET1. . . . . . . .  B ADDR   00A8H.3 A   
+EX0. . . . . . . .  B ADDR   00A8H.0 A   
+EX1. . . . . . . .  B ADDR   00A8H.2 A   
+F0 . . . . . . . .  B ADDR   00D0H.5 A   
+IE . . . . . . . .  D ADDR   00A8H   A   
+IE0. . . . . . . .  B ADDR   0088H.1 A   
+IE1. . . . . . . .  B ADDR   0088H.3 A   
+INT0 . . . . . . .  B ADDR   00B0H.2 A   
+INT1 . . . . . . .  B ADDR   00B0H.3 A   
+IP . . . . . . . .  D ADDR   00B8H   A   
+IT0. . . . . . . .  B ADDR   0088H.0 A   
+IT1. . . . . . . .  B ADDR   0088H.2 A   
+MAIN . . . . . . .  C ADDR   0000H   R   SEG=?PR?MAIN?MAIN
+OV . . . . . . . .  B ADDR   00D0H.2 A   
+P. . . . . . . . .  B ADDR   00D0H.0 A   
+P0 . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . .  D ADDR   00B0H   A   
+PCON . . . . . . .  D ADDR   0087H   A   
+PS . . . . . . . .  B ADDR   00B8H.4 A   
+PSW. . . . . . . .  D ADDR   00D0H   A   
+PT0. . . . . . . .  B ADDR   00B8H.1 A   
+PT1. . . . . . . .  B ADDR   00B8H.3 A   
+PX0. . . . . . . .  B ADDR   00B8H.0 A   
+PX1. . . . . . . .  B ADDR   00B8H.2 A   
+RB8. . . . . . . .  B ADDR   0098H.2 A   
+RD . . . . . . . .  B ADDR   00B0H.7 A   
+REN. . . . . . . .  B ADDR   0098H.4 A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+RS0. . . . . . . .  B ADDR   00D0H.3 A   
+RS1. . . . . . . .  B ADDR   00D0H.4 A   
+RXD. . . . . . . .  B ADDR   00B0H.0 A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SM0. . . . . . . .  B ADDR   0098H.7 A   
+SM1. . . . . . . .  B ADDR   0098H.6 A   
+SM2. . . . . . . .  B ADDR   0098H.5 A   
+SP . . . . . . . .  D ADDR   0081H   A   
+T0 . . . . . . . .  B ADDR   00B0H.4 A   
+T1 . . . . . . . .  B ADDR   00B0H.5 A   
+TB8. . . . . . . .  B ADDR   0098H.3 A   
+TCON . . . . . . .  D ADDR   0088H   A   
+TF0. . . . . . . .  B ADDR   0088H.5 A   
+TF1. . . . . . . .  B ADDR   0088H.7 A   
+TH0. . . . . . . .  D ADDR   008CH   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . .  B ADDR   0098H.1 A   
+TL0. . . . . . . .  D ADDR   008AH   A   
+A51 MACRO ASSEMBLER  MAIN                                                                 04/03/2006 16:18:27 PAGE     5
+
+TL1. . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . .  B ADDR   0088H.4 A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+TXD. . . . . . . .  B ADDR   00B0H.1 A   
+WR . . . . . . . .  B ADDR   00B0H.6 A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

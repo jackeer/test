@@ -1,0 +1,617 @@
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 1   
+
+
+C51 COMPILER V7.07, COMPILATION OF MODULE TIME
+OBJECT MODULE PLACED IN .\output\time.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE time.c DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.\list\time.lst) O
+                    -BJECT(.\output\time.obj)
+
+stmt level    source
+
+   1          #include <stdio.h>
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  STDIO.H
+   3      =1  
+   4      =1  Prototypes for standard I/O functions.
+   5      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =1  All rights reserved.
+   7      =1  --------------------------------------------------------------------------*/
+   8      =1  
+   9      =1  #ifndef __STDIO_H__
+  10      =1  #define __STDIO_H__
+  11      =1  
+  12      =1  #ifndef EOF
+  13      =1   #define EOF -1
+  14      =1  #endif
+  15      =1  
+  16      =1  #ifndef NULL
+  17      =1   #define NULL ((void *) 0)
+  18      =1  #endif
+  19      =1  
+  20      =1  #ifndef _SIZE_T
+  21      =1   #define _SIZE_T
+  22      =1   typedef unsigned int size_t;
+  23      =1  #endif
+  24      =1  
+  25      =1  #pragma SAVE
+  26      =1  #pragma REGPARMS
+  27      =1  extern char _getkey (void);
+  28      =1  extern char getchar (void);
+  29      =1  extern char ungetchar (char);
+  30      =1  extern char putchar (char);
+  31      =1  extern int printf   (const char *, ...);
+  32      =1  extern int sprintf  (char *, const char *, ...);
+  33      =1  extern int vprintf  (const char *, char *);
+  34      =1  extern int vsprintf (char *, const char *, char *);
+  35      =1  extern char *gets (char *, int n);
+  36      =1  extern int scanf (const char *, ...);
+  37      =1  extern int sscanf (char *, const char *, ...);
+  38      =1  extern int puts (const char *);
+  39      =1  
+  40      =1  #pragma RESTORE
+  41      =1  
+  42      =1  #endif
+  43      =1  
+   2          #include <reg51.h>
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  REG51.H
+   3      =1  
+   4      =1  Header file for generic 80C51 and 80C31 microcontroller.
+   5      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =1  All rights reserved.
+   7      =1  --------------------------------------------------------------------------*/
+   8      =1  
+   9      =1  #ifndef __REG51_H__
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 2   
+
+  10      =1  #define __REG51_H__
+  11      =1  
+  12      =1  /*  BYTE Register  */
+  13      =1  sfr P0   = 0x80;
+  14      =1  sfr P1   = 0x90;
+  15      =1  sfr P2   = 0xA0;
+  16      =1  sfr P3   = 0xB0;
+  17      =1  sfr PSW  = 0xD0;
+  18      =1  sfr ACC  = 0xE0;
+  19      =1  sfr B    = 0xF0;
+  20      =1  sfr SP   = 0x81;
+  21      =1  sfr DPL  = 0x82;
+  22      =1  sfr DPH  = 0x83;
+  23      =1  sfr PCON = 0x87;
+  24      =1  sfr TCON = 0x88;
+  25      =1  sfr TMOD = 0x89;
+  26      =1  sfr TL0  = 0x8A;
+  27      =1  sfr TL1  = 0x8B;
+  28      =1  sfr TH0  = 0x8C;
+  29      =1  sfr TH1  = 0x8D;
+  30      =1  sfr IE   = 0xA8;
+  31      =1  sfr IP   = 0xB8;
+  32      =1  sfr SCON = 0x98;
+  33      =1  sfr SBUF = 0x99;
+  34      =1  
+  35      =1  
+  36      =1  /*  BIT Register  */
+  37      =1  /*  PSW   */
+  38      =1  sbit CY   = 0xD7;
+  39      =1  sbit AC   = 0xD6;
+  40      =1  sbit F0   = 0xD5;
+  41      =1  sbit RS1  = 0xD4;
+  42      =1  sbit RS0  = 0xD3;
+  43      =1  sbit OV   = 0xD2;
+  44      =1  sbit P    = 0xD0;
+  45      =1  
+  46      =1  /*  TCON  */
+  47      =1  sbit TF1  = 0x8F;
+  48      =1  sbit TR1  = 0x8E;
+  49      =1  sbit TF0  = 0x8D;
+  50      =1  sbit TR0  = 0x8C;
+  51      =1  sbit IE1  = 0x8B;
+  52      =1  sbit IT1  = 0x8A;
+  53      =1  sbit IE0  = 0x89;
+  54      =1  sbit IT0  = 0x88;
+  55      =1  
+  56      =1  /*  IE   */
+  57      =1  sbit EA   = 0xAF;
+  58      =1  sbit ES   = 0xAC;
+  59      =1  sbit ET1  = 0xAB;
+  60      =1  sbit EX1  = 0xAA;
+  61      =1  sbit ET0  = 0xA9;
+  62      =1  sbit EX0  = 0xA8;
+  63      =1  
+  64      =1  /*  IP   */ 
+  65      =1  sbit PS   = 0xBC;
+  66      =1  sbit PT1  = 0xBB;
+  67      =1  sbit PX1  = 0xBA;
+  68      =1  sbit PT0  = 0xB9;
+  69      =1  sbit PX0  = 0xB8;
+  70      =1  
+  71      =1  /*  P3  */
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 3   
+
+  72      =1  sbit RD   = 0xB7;
+  73      =1  sbit WR   = 0xB6;
+  74      =1  sbit T1   = 0xB5;
+  75      =1  sbit T0   = 0xB4;
+  76      =1  sbit INT1 = 0xB3;
+  77      =1  sbit INT0 = 0xB2;
+  78      =1  sbit TXD  = 0xB1;
+  79      =1  sbit RXD  = 0xB0;
+  80      =1  
+  81      =1  /*  SCON  */
+  82      =1  sbit SM0  = 0x9F;
+  83      =1  sbit SM1  = 0x9E;
+  84      =1  sbit SM2  = 0x9D;
+  85      =1  sbit REN  = 0x9C;
+  86      =1  sbit TB8  = 0x9B;
+  87      =1  sbit RB8  = 0x9A;
+  88      =1  sbit TI   = 0x99;
+  89      =1  sbit RI   = 0x98;
+  90      =1  
+  91      =1  #endif
+   3          #include <System.h>
+   1      =1  /*************************************************************************
+   2      =1   *  Copyright Statement:
+   3      =1   *  --------------------
+   4      =1   *  This software is protected by Copyright and the information contained
+   5      =1   *  herein is confidential. The software may not be copied and the
+   6      =1   *  information contained herein may not be used or disclosed except with
+   7      =1   *  the written permission of MediaTek Inc. (C) 2003
+   8      =1   *
+   9      =1   *************************************************************************/
+  10      =1  /**
+  11      =1   * @file system.h
+  12      =1   *
+  13      =1   * This file define system configuration
+  14      =1   *
+  15      =1   * @author Mtk00469
+  16      =1   */
+  17      =1  
+  18      =1  #ifndef SYSTEM_H_
+  19      =1  #define SYSTEM_H_
+  20      =1  
+  21      =1  /****************************************************************************
+  22      =1    Define system clock rate, in MHz
+  23      =1   ****************************************************************************/
+  24      =1  
+  25      =1  #define SYS_CLOCK_RATE 27
+  26      =1  
+  27      =1  /****************************************************************************
+  28      =1    Define ST(Sampling Time) for 8032 timer, in ms
+  29      =1   ****************************************************************************/
+  30      =1  #define TIMER_BASE 20
+  31      =1  
+  32      =1  #define TIMER0_ST TIMER_BASE
+  33      =1  #define TIMER1_ST TIMER_BASE
+  34      =1  
+  35      =1  /*=====================================================================
+  36      =1    REGISTER BANK SETTING
+  37      =1  =====================================================================*/
+  38      =1  #define MAIN_BANK   0           // General routines use bank 0
+  39      =1  #define EX0INT_BANK 1           // EX0 interrupt use bank 1
+  40      =1  #define TIMER0_BANK 2           // Timer 0 interrupt use bank 2
+  41      =1  #define TIMER1_BANK 2           // Timer 1 interrupt use bank 2
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 4   
+
+  42      =1  #define TIMER2_BANK 2           // Timer 2 interrupt use bank 2
+  43      =1  
+  44      =1  /*=====================================================================
+  45      =1    INTERRUPT VECTOR SETTING
+  46      =1  =====================================================================*/
+  47      =1  #define EX0INT      0           // iterrupt, EX0
+  48      =1  #define T0INT       1           // Timer 0 interrupt
+  49      =1  #define EX1INT       2          // iterrupt, EX1
+  50      =1  #define T1INT       3           // Timer 1 interrupt
+  51      =1  #define T2INT       5           // Timer 2 interrupt
+  52      =1  
+  53      =1  /****************************************************************************
+  54      =1    Define macro to calculate timer configuration
+  55      =1   ****************************************************************************/
+  56      =1  #define MAKE_TIMER_CFG(bVal) (65535 - ((bVal * 1000L * SYS_CLOCK_RATE)/12) + 1)
+  57      =1  
+  58      =1  /****************************************************************************
+  59      =1    Define Timer 0 Configuration
+  60      =1   ****************************************************************************/
+  61      =1  #define T0_CFG         MAKE_TIMER_CFG(TIMER0_ST)
+  62      =1  #define TH0_CFG        (T0_CFG  & 0xFF00) >> 8
+  63      =1  #define TL0_CFG        (T0_CFG  & 0x00FF)
+  64      =1  #define T0_MODE        0x01     /* 16-bit timer */
+  65      =1  
+  66      =1  /****************************************************************************
+  67      =1    Define Timer 1 Configuration
+  68      =1   ****************************************************************************/
+  69      =1  #define T1_CFG         MAKE_TIMER_CFG(TIMER1_ST)
+  70      =1  #define TH1_CFG        (T1_CFG  & 0xFF00) >> 8
+  71      =1  #define TL1_CFG        (T1_CFG  & 0x00FF)
+  72      =1  #define T1_MODE        0x10     /* 16-bit timer */
+  73      =1  
+  74      =1  /****************************************************************************
+  75      =1    Define timer mode
+  76      =1   ****************************************************************************/
+  77      =1  #define TIMER_MODE     (T0_MODE + T1_MODE)
+  78      =1  
+  79      =1  /****************************************************************************
+  80      =1    Define ST(Sampling Time) for soft timer, in ms
+  81      =1   ****************************************************************************/
+  82      =1  #define UPDT_TM_T0_ST    500    /* updata current time's ST -- timer 0 */
+  83      =1  #define SYS_CLK_T1_ST    1000   /* system clock's ST -- timer 1 */
+  84      =1  
+  85      =1  
+  86      =1  #endif                          /* _8202_SYSTEM_H_ */
+  87      =1  
+   4          #include <Macro.h>
+   1      =1  /*****************************************************************************
+   2      =1   *  Copyright Statement:
+   3      =1   *  --------------------
+   4      =1   *  This software is protected by Copyright and the information contained
+   5      =1   *  herein is confidential. The software may not be copied and the information
+   6      =1   *  contained herein may not be used or disclosed except with the written
+   7      =1   *  permission of MediaTek Inc. (C) 2003
+   8      =1   *
+   9      =1   *****************************************************************************/
+  10      =1  /**
+  11      =1   * @file macro.h
+  12      =1   *
+  13      =1   * Macro function
+  14      =1   *
+  15      =1   * @author Mtk00469
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 5   
+
+  16      =1   */
+  17      =1  
+  18      =1  #ifndef _MACRO_H_
+  19      =1  #define _MACRO_H_
+  20      =1  
+  21      =1  #include "typedef.h"
+   1      =2  /*****************************************************************************
+   2      =2   *  Copyright Statement:
+   3      =2   *  --------------------
+   4      =2   *  This software is protected by Copyright and the information contained
+   5      =2   *  herein is confidential. The software may not be copied and the information
+   6      =2   *  contained herein may not be used or disclosed except with the written
+   7      =2   *  permission of MediaTek Inc. (C) 2003
+   8      =2   *
+   9      =2   *****************************************************************************/
+  10      =2  /**
+  11      =2   * @file typedef.h
+  12      =2   *
+  13      =2   * type define header
+  14      =2   *
+  15      =2   * @author Mtk00469
+  16      =2   */
+  17      =2  
+  18      =2  #ifndef _TYPEDEF_H_
+  19      =2  #define _TYPEDEF_H_
+  20      =2  
+  21      =2  #ifdef PC_8202_SIMULATOR
+           =2 #include "PC_General.h"
+           =2 #endif
+  24      =2  
+  25      =2  /*=====================================================================
+  26      =2    basic type definition
+  27      =2  =====================================================================*/
+  28      =2  
+  29      =2  typedef void VOID;
+  30      =2  
+  31      =2  typedef bit BIT;
+  32      =2  typedef bit BOOL;
+  33      =2  typedef unsigned char BYTE;
+  34      =2  typedef unsigned short WORD;
+  35      =2  typedef unsigned long DWRD;
+  36      =2  typedef char CHAR;
+  37      =2  typedef int INT;
+  38      =2  typedef short SHORT;
+  39      =2  typedef long LONG;
+  40      =2  typedef float FLOAT;
+  41      =2  typedef double DOUBLE;
+  42      =2  typedef long double LDOUBLE;
+  43      =2  #define SBIT              sbit
+  44      =2  
+  45      =2  typedef char INT8;
+  46      =2  typedef short INT16;
+  47      =2  typedef long INT32;
+  48      =2  
+  49      =2  typedef unsigned char UINT8;
+  50      =2  typedef unsigned short UINT16;
+  51      =2  typedef unsigned long UINT32;
+  52      =2  
+  53      =2  typedef char *LPSTR;            /* Null-terminated string */
+  54      =2  typedef const char *LPCSTR;
+  55      =2  
+  56      =2  typedef unsigned char UCHAR;
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 6   
+
+  57      =2  typedef unsigned short USHORT;
+  58      =2  typedef unsigned int UINT;
+  59      =2  typedef unsigned long ULONG;
+  60      =2  
+  61      =2  typedef void *HANDLE;
+  62      =2  
+  63      =2  /*=====================================================================
+  64      =2    Function pointer type definition
+  65      =2  =====================================================================*/
+  66      =2  /*
+  67      =2   * A generic function pointer is always stored using one more byte than a
+  68      =2   * CODE memory-specific function pointer. If you're sure the function body
+  69      =2   * share the smae segment space with the function pointer, please use CODE
+  70      =2   * memory-specific function pointer to achive high execution efficiency.
+  71      =2   * Othwerwise, please use generic function pointer to achive high safety.
+  72      =2   */
+  73      =2  
+  74      =2  /* Generic Pointer */
+  75      =2  typedef void (*vFuncVoid) (void) large;
+  76      =2  typedef void (*vFuncByte) (BYTE) large;
+  77      =2  typedef BYTE(*bFuncVoid) (void) large;
+  78      =2  typedef BYTE(*bFuncByte) (BYTE) large;
+  79      =2  typedef BOOL(*fgFuncVoid) (void) large;
+  80      =2  
+  81      =2  /* CODE Memory-specific Pointers */
+  82      =2  typedef void (code * vCoFuncVoid) (void) large;
+  83      =2  typedef void (code * vCoFuncByte) (BYTE) large;
+  84      =2  typedef BYTE(code * bCoFuncVoid) (void) large;
+  85      =2  typedef BYTE(code * bCoFuncByte) (BYTE) large;
+  86      =2  typedef BOOL(code * fgCoFuncVoid) (void) large;
+  87      =2  
+  88      =2  /*=====================================================================
+  89      =2    Common macro definition
+  90      =2  =====================================================================*/
+  91      =2  #define CONST   const
+  92      =2  #ifndef CODE
+  93      =2  #define CODE    code
+  94      =2  #endif
+  95      =2  #define PUBLIC  extern
+  96      =2  #define PRIVATE static
+  97      =2  
+  98      =2  #ifndef TRUE
+  99      =2  #define TRUE  1
+ 100      =2  #endif
+ 101      =2  
+ 102      =2  #ifndef FALSE
+ 103      =2  #define FALSE 0
+ 104      =2  #endif
+ 105      =2  
+ 106      =2  #ifndef NULL
+           =2 #define NULL  0
+           =2 #endif
+ 109      =2  
+ 110      =2  #define ON   1
+ 111      =2  #define OFF  0
+ 112      =2  
+ 113      =2  #ifdef PC_8202_SIMULATOR
+           =2 /* Special for OSD Service/Driver */
+           =2 #include "defs.h"
+           =2 #include "pc_api_osd.h"
+           =2 #include "pc_drv_osd.h"
+           =2 #include "pc_osd_prv.h"
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 7   
+
+           =2 #endif
+ 120      =2  
+ 121      =2  #endif
+ 122      =2  
+  22      =1  
+  23      =1  /*=====================================================================
+  24      =1    MACRO : Enable and Disable Interrupt
+  25      =1  =====================================================================*/
+  26      =1  #define MEnableINT()            (EA = 1)
+  27      =1  #define MDisableINT()           (EA = 0)
+  28      =1  #define MEnableMainINT()        (EX0 = 1)
+  29      =1  #define MDisableMainINT()       (EX0 = 0)
+  30      =1  #define irq_save(flags)\
+  31      =1          do {\
+  32      =1                  if (EX0 == 0) {\
+  33      =1                          flags = 0;\
+  34      =1                  } else {\
+  35      =1                          flags = 1;\
+  36      =1                  }\
+  37      =1                  EX0 = 0;\
+  38      =1          } while (0)
+  39      =1  #define irq_restore(flags)\
+  40      =1          do {\
+  41      =1                  if (flags == 0) {\
+  42      =1                          EX0 = 0;\
+  43      =1                  } else {\
+  44      =1                          EX0 = 1;\
+  45      =1                  }\
+  46      =1          } while (0)
+  47      =1  #define MMainIntPTLow()         (PX0 = 0)
+  48      =1  #define MMainIntPTHigh()        (PX0 = 1)
+  49      =1  
+  50      =1  /*=====================================================================
+  51      =1    MACRO : Enable and Disable Timer0/Timer1/Timer2 Interrupt/Counter
+  52      =1  =====================================================================*/
+  53      =1  #define MEnableTimer0()         (ET0 = 1)
+  54      =1  #define MDisableTimer0()        (ET0 = 0)
+  55      =1  #define MTrgTimer0Cnt()         (TR0 = 1)
+  56      =1  #define MStopTimer0Cnt()        (TR0 = 0)
+  57      =1  #define MTimer0PTHigh()         (PT0 = 1)
+  58      =1  #define MTimer0PTLow()          (PT0 = 0)
+  59      =1  #define MSetTimer0CntLow(val)   (TL0 = val)
+  60      =1  #define MSetTimer0CntHigh(val)  (TH0 = val)
+  61      =1  #define MSetTimer0Mode(val)     (TMOD = ((TMOD&0xf0)|val))
+  62      =1  
+  63      =1  #define MEnableTimer1()         (ET1 = 1)
+  64      =1  #define MDisableTimer1()        (ET1 = 0)
+  65      =1  #define MTrgTimer1Cnt()         (TR1 = 1)
+  66      =1  #define MStopTimer1Cnt()        (TR1 = 0)
+  67      =1  #define MTimer1PTHigh()         (PT1 = 1)
+  68      =1  #define MTimer1PTLow()          (PT1 = 0)
+  69      =1  #define MSetTimer1CntLow(val)   (TL1 = val)
+  70      =1  #define MSetTimer1CntHigh(val)  (TH1 = val)
+  71      =1  #define MSetTimer1Mode(val)     (TMOD = ((TMOD&0x0f)|val))
+  72      =1  
+  73      =1  #define MEnableTimer2()         (ET2 = 1)
+  74      =1  #define MDisableTimer2()        (ET2 = 0)
+  75      =1  #define MTrgTimer2Cnt()         (TR2 = 1)
+  76      =1  #define MStopTimer2Cnt()        (TR2 = 0)
+  77      =1  #define MTimer2PTHigh()         (PT2 = 1)
+  78      =1  #define MTimer2PTLow()          (PT2 = 0)
+  79      =1  #define MSetTimer2CntLow(val)   (RCAP2L = TL2 = val)
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 8   
+
+  80      =1  #define MSetTimer2CntHigh(val)  (RCAP2H = TH2 = val)
+  81      =1  #define MSetTimer2Mode(val)     (T2CON = val)
+  82      =1  
+  83      =1  #define MSetTimerMode(val)      (TMOD = val)
+  84      =1  
+  85      =1  #define M8032Halt()             PCON = 0x02
+  86      =1  
+  87      =1  /*=====================================================================
+  88      =1    MACRO : byte/word access (HIGH BYTE FIRST)
+  89      =1  =====================================================================*/
+  90      =1  #define bHiByte(arg)      (*(BYTE*)&arg)
+  91      =1  #define bLoByte(arg)      (*((BYTE*)&arg + 1))
+  92      =1  
+  93      =1  #define wHiWord(arg)      (*(WORD*)&arg)
+  94      =1  #define wLoWord(arg)      (*((WORD*)&arg + 1))
+  95      =1  
+  96      =1  #define BYTE0(arg)        (*((BYTE *)&(arg) + 3))
+  97      =1  #define BYTE1(arg)        (*((BYTE *)&(arg) + 2))
+  98      =1  #define BYTE2(arg)        (*((BYTE *)&(arg) + 1))
+  99      =1  #define BYTE3(arg)        (* (BYTE *)&(arg))
+ 100      =1  
+ 101      =1  #define BYTE21(arg)      (*(WORD*)((BYTE*)&arg+1))
+ 102      =1  
+ 103      =1  #define LOADL_DWRD(arg1, arg2)  BYTE3(arg2) = *((BYTE *)(arg1) + 3); \
+ 104      =1                                    BYTE2(arg2) = *((BYTE *)(arg1) + 2); \
+ 105      =1                                    BYTE1(arg2) = *((BYTE *)(arg1) + 1); \
+ 106      =1                                    BYTE0(arg2) = *((BYTE *)(arg1))
+ 107      =1  
+ 108      =1  /*=====================================================================
+ 109      =1    MACRO : Get table size
+ 110      =1  =====================================================================*/
+ 111      =1  #define TBL_SIZE(tbl)   (sizeof(tbl)/sizeof(tbl[0]))
+ 112      =1  
+ 113      =1  /*=====================================================================
+ 114      =1    MACRO : For BCD number
+ 115      =1  =====================================================================*/
+ 116      =1  #define BCD_HI(bcd)  ((bcd) >> 4)
+ 117      =1  #define BCD_LO(bcd)  ((bcd) & 0x0f)
+ 118      =1  #define BCD2DEC(bcd) (BCD_HI(bcd) * 10 +BCD_LO(bcd))
+ 119      =1  #define DEC2BCD(dec) ((((dec) / 10) << 4) + ((dec) % 10))
+ 120      =1  
+ 121      =1  /*=====================================================================
+ 122      =1    MACRO : For Digial to HEX in ASCII conversion
+ 123      =1  =====================================================================*/
+ 124      =1  #define bDigToAsc(bDig) (((bDig) > 9) ? ((bDig) - 10 + 'A') : ((bDig) + '0'))
+ 125      =1  
+ 126      =1  /*=====================================================================
+ 127      =1    MACRO : Number Comparison Macro
+ 128      =1  =====================================================================*/
+ 129      =1  #ifndef MAX
+ 130      =1  #define MAX(a,b) (((a) > (b)) ? (a) : (b))
+ 131      =1  #endif
+ 132      =1  
+ 133      =1  #ifndef MIN
+ 134      =1  #define MIN(a,b) (((a) < (b)) ? (a) : (b))
+ 135      =1  #endif
+ 136      =1  
+ 137      =1  /*=====================================================================
+ 138      =1    MACRO : Expand Value to Meet Special Request
+ 139      =1  =====================================================================*/
+ 140      =1  #define MAKE_EVEN(val) ((((val) + 1) >> 1) << 1)        /* to be even */
+ 141      =1  #define MAKE_ODD(val) ((val) | 0x01)    /* to be odd */
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 9   
+
+ 142      =1  
+ 143      =1    /* Expand given value to be multiple of 8 in upper alignment */
+ 144      =1  #define MAKE_8X(val) ((((val) + 0x07) >> 3) << 3)
+ 145      =1  
+ 146      =1    /* Expand given value to be multiple of 16 in upper alignment */
+ 147      =1  #define MAKE_16X(val) ((((val) + 0x0F) >> 4) << 4)
+ 148      =1  
+ 149      =1    /* Make given value to be multiple of 16 in center alignment */
+ 150      =1  #define MAKE_16X_EX(val) ((((val) + 0x08) >> 4) << 4)
+ 151      =1  
+ 152      =1    /* Expand given value to be multiple of 4 in center alignment */
+ 153      =1  #define  MAKE_4X(val)  ((((val) + 0x01) >> 2) << 2)
+ 154      =1  
+ 155      =1  /*=====================================================================
+ 156      =1   *  Description:
+ 157      =1   *    Make a item position with same step
+ 158      =1   *  Parameters:
+ 159      =1   *    start             base start position of all items
+ 160      =1   *    index             index of the item to be calculated
+ 161      =1   *    step              step of all items
+ 162      =1  =====================================================================*/
+ 163      =1  #define MAKE_ITEM_POS(start, index, step) ((start) + (index) * (step))
+ 164      =1  
+ 165      =1  /*=====================================================================
+ 166      =1    MACRO : Swap Integers Macro
+ 167      =1  =====================================================================*/
+ 168      =1  #define SWAP(a, b)     {(a) ^= (b); (b) ^= (a); (a) ^= (b);}
+ 169      =1  
+ 170      =1  /*=====================================================================
+ 171      =1    MACRO : Retrieve Value from Pointer
+ 172      =1  =====================================================================*/
+ 173      =1  #define dwGetPtrVal(ptr)  (*((DWRD *) (ptr)))   /* Get DWORD value from a pointer */
+ 174      =1  #define wGetPtrVal(ptr)   (*((WORD *) (ptr)))   /* Get  WORD value from a pointer */
+ 175      =1  #define vSetPtrValDW(ptr, dwVal)  (*((DWRD *)ptr) = dwVal)
+ 176      =1  #define vSetPtrValW(ptr, wVal)  (*((WORD *)ptr) = wVal)
+ 177      =1  
+ 178      =1  /*=====================================================================
+ 179      =1    MACRO : Retrieve value of each digit for decimal integer
+ 180      =1  =====================================================================*/
+ 181      =1  /* Maximum digit number of decimal integer. Please extend it if needed */
+ 182      =1  #define MAX_DIGIT_NUM 4
+ 183      =1  
+ 184      =1  #ifdef _MAIN_FILE_
+           =1 CODE WORD nMagicDigit[MAX_DIGIT_NUM] = {
+           =1         1, 10, 100, 1000
+           =1 };
+           =1 #else
+ 189      =1  extern CODE WORD nMagicDigit[MAX_DIGIT_NUM];
+ 190      =1  #endif
+ 191      =1  
+ 192      =1  /*  Description:
+ 193      =1   *    Get value of each digit for decimal integer
+ 194      =1   *  Parameters:
+ 195      =1   *    nVal              Integer value to be parsed
+ 196      =1   *    bIdx              index of digit to be retrieved, zero based.
+ 197      =1   */
+ 198      =1  #define bGetDigit(nVal, bIdx) (((nVal) / nMagicDigit[bIdx]) % 10)
+ 199      =1  
+ 200      =1  #define vResetSystem() ((void (code*) (void)) 0x0000)()
+ 201      =1  
+ 202      =1  #endif
+ 203      =1  
+C51 COMPILER V7.07   TIME                                                                  04/07/2006 17:38:35 PAGE 10  
+
+   5          
+   6          
+   7          extern unsigned char SEC_timer_0;
+   8          
+   9          void timer0 (void) interrupt 1 using 1
+  10          {  // Int Vector at 000BH, Reg Bank 1
+  11   1      
+  12   1              SEC_timer_0 ++ ;
+  13   1      
+  14   1      
+  15   1        
+  16   1      }
+  17          
+  18          void InitTimer(void)
+  19          {
+  20   1        TMOD = 0x12; //timer0 = mode2, timer1 = mode1
+  21   1        TH0 = (65535L - 65000L) / 256;        //timer0 = 60 mSec
+  22   1        TL0 = (65535L -65000L) % 256;
+  23   1        IE = 0x82; // EA = 1 ,ET0 = 1
+  24   1        IP = 0x02; 
+  25   1      }
+  26          
+  27          void timer_0(void) interrupt T0INT using TIMER0_BANK
+  28          {
+  29   1              MStopTimer0Cnt();
+  30   1      
+  31   1              InitTimer();
+  32   1      
+  33   1              Time_Out++;
+*** ERROR C202 IN LINE 33 OF TIME.C: 'Time_Out': undefined identifier
+  34   1      
+  35   1              MTrgTimer0Cnt();
+  36   1      }
+  37          
+  38          
+  39          
+  40          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

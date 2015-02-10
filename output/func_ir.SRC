@@ -1,0 +1,543 @@
+; .\output\func_ir.SRC generated from: func_ir.c
+; COMPILER INVOKED BY:
+;        C:\Keil\C51\BIN\C51.EXE func_ir.c DEBUG OBJECTEXTEND PRINT(.\list\func_ir.lst) SRC(.\output\func_ir.SRC)
+
+$NOMOD51
+
+NAME	FUNC_IR
+
+P0	DATA	080H
+P1	DATA	090H
+P2	DATA	0A0H
+P3	DATA	0B0H
+T0	BIT	0B0H.4
+AC	BIT	0D0H.6
+T1	BIT	0B0H.5
+EA	BIT	0A8H.7
+IE	DATA	0A8H
+RD	BIT	0B0H.7
+ES	BIT	0A8H.4
+IP	DATA	0B8H
+RI	BIT	098H.0
+INT0	BIT	0B0H.2
+CY	BIT	0D0H.7
+TI	BIT	098H.1
+INT1	BIT	0B0H.3
+PS	BIT	0B8H.4
+SP	DATA	081H
+OV	BIT	0D0H.2
+WR	BIT	0B0H.6
+SBUF	DATA	099H
+PCON	DATA	087H
+SCON	DATA	098H
+TMOD	DATA	089H
+TCON	DATA	088H
+IE0	BIT	088H.1
+IE1	BIT	088H.3
+B	DATA	0F0H
+ACC	DATA	0E0H
+ET0	BIT	0A8H.1
+ET1	BIT	0A8H.3
+TF0	BIT	088H.5
+TF1	BIT	088H.7
+RB8	BIT	098H.2
+TH0	DATA	08CH
+EX0	BIT	0A8H.0
+IT0	BIT	088H.0
+TH1	DATA	08DH
+TB8	BIT	098H.3
+EX1	BIT	0A8H.2
+IT1	BIT	088H.2
+P	BIT	0D0H.0
+SM0	BIT	098H.7
+TL0	DATA	08AH
+SM1	BIT	098H.6
+TL1	DATA	08BH
+SM2	BIT	098H.5
+PT0	BIT	0B8H.1
+PT1	BIT	0B8H.3
+RS0	BIT	0D0H.3
+TR0	BIT	088H.4
+RS1	BIT	0D0H.4
+TR1	BIT	088H.6
+PX0	BIT	0B8H.0
+PX1	BIT	0B8H.2
+DPH	DATA	083H
+DPL	DATA	082H
+IRPORT	BIT	0B0H.2
+REN	BIT	098H.4
+RXD	BIT	0B0H.0
+TXD	BIT	0B0H.1
+F0	BIT	0D0H.5
+PSW	DATA	0D0H
+?PR?IR_Received?FUNC_IR                  SEGMENT CODE 
+?DT?IR_Received?FUNC_IR                  SEGMENT DATA OVERLAYABLE 
+?CO?FUNC_IR          SEGMENT CODE 
+?ID?FUNC_IR          SEGMENT IDATA 
+?BI?FUNC_IR          SEGMENT BIT 
+?ID?IR_Received?FUNC_IR                  SEGMENT IDATA OVERLAYABLE 
+	PUBLIC	last_code_com
+	PUBLIC	IR_Received_Data
+	PUBLIC	_pbIRKeyTbl
+	PUBLIC	_pbIRSysCode
+	PUBLIC	IR_Received
+
+	RSEG  ?DT?IR_Received?FUNC_IR
+?IR_Received?BYTE:
+     count1?040:   DS   1
+	ORG  1
+     count2?041:   DS   1
+
+	RSEG  ?ID?FUNC_IR
+IR_Received_Data:   DS   2
+
+	RSEG  ?BI?FUNC_IR
+  last_code_com:   DBIT   1
+
+	RSEG  ?ID?IR_Received?FUNC_IR
+IR_Received_Data_temp?042:   DS   4
+
+	RSEG  ?CO?FUNC_IR
+_pbIRSysCode:
+	DB	004H
+	DB	0B9H
+
+_pbIRKeyTbl:
+	DB	013H
+	DB	000H
+	DB	001H
+	DB	002H
+	DB	003H
+	DB	004H
+	DB	005H
+	DB	006H
+	DB	007H
+	DB	008H
+	DB	009H
+	DB	0FFH
+	DB	0FFH
+	DB	0FFH
+	DB	0FFH
+	DB	0FFH
+	DB	020H
+	DB	023H
+	DB	021H
+	DB	022H
+	DB	00AH
+	DB	00BH
+	DB	011H
+	DB	012H
+	DB	00CH
+	DB	01AH
+	DB	010H
+	DB	025H
+	DB	024H
+	DB	01FH
+	DB	0FFH
+	DB	00DH
+	DB	027H
+	DB	0FFH
+	DB	0FFH
+	DB	04CH
+	DB	04BH
+	DB	01DH
+	DB	0FFH
+	DB	0FFH
+	DB	017H
+	DB	016H
+	DB	028H
+	DB	018H
+	DB  000H,000H,000H,000H
+
+
+; 
+; /********************************************************
+;   IR Communication Function v0.1(Copyright(c) VXIS Inc. 2002)
+;   v0.0
+;   Data:2002.08.02
+;   by P.J. Yang
+;   v0.1
+;   Data:2003.01.15
+;   by P.J. Yang
+;   Modify:1.儲存變數減少為Custom Code和Data Code
+;   	 2.將最末端 last_code_com = 0; 程式移至 IF 判斷式外，避免
+;   	   無法連續按同一按鈕的問題。
+;   Data:2003.01.16
+;   by P.J. Yang
+;   Modify:1.修正持續壓住按鈕，但無法偵測的問題。
+; ********************************************************/
+; 
+; #include <reg51.h>
+; #include <stdio.h>
+; #include <intrins.h>
+; #include <System.h>
+; #include <Macro.h>
+; #include "Func_ir.h"
+; 
+; extern void IR_Received (void);
+; 
+; BYTE idata IR_Received_Data[0x02];
+; BOOL last_code_com;	// A flag to show whether the last code receive is complete
+; 				// 0 => Not complete
+; 				// 1 => Completed
+; 
+; sbit IRPORT = P3^2;
+; 
+; 
+; /************************************************************************************
+; Function: IR_Received
+; Active Interrupt: INT0
+; Input:
+;       1.IRPORT
+;       2.last_code_com => A flag to show whether the received IR code is processed complete
+; 				0 => Not complete
+; 				1 => Completed
+; Output:
+;       1.IR_Received_Data[0] = Data_Code
+;         IR_Received_Data[1] = Custom_Code
+; 
+; How to use:
+;       1.Set INT0 enable
+;       2.Add below program code to your Code:
+;            extern char idata IR_Received_Data[0x04];
+; 	   extern bit last_code_com;
+;       3.Then,your program can detect whether new IR_code have received by detecting
+;         the "last_code_com" flag.
+;         last_code_com = 0 => New IR_code have received
+;                         1 => No new IR_code
+;       4.After processing New IR_code,you should reset the "last_code_com" flag to '1'.
+; 
+; ************************************************************************************/
+; 
+CSEG	AT	00003H
+	LJMP	IR_Received
+
+; void IR_Received() interrupt EX0INT using EX0INT_BANK
+
+	RSEG  ?PR?IR_Received?FUNC_IR
+	USING	1
+IR_Received:
+	PUSH 	ACC
+	PUSH 	B
+	PUSH 	DPH
+	PUSH 	DPL
+	PUSH 	PSW
+	USING	1
+	MOV  	PSW,#08H
+			; SOURCE LINE # 60
+; {
+;   unsigned char count1=0;
+			; SOURCE LINE # 62
+	MOV  	count1?040,#00H
+;   unsigned char count2=0;
+			; SOURCE LINE # 63
+	MOV  	count2?041,#00H
+;   char idata IR_Received_Data_temp[4];
+; 
+;   if (!last_code_com)		// Check whether the last code receive is complete
+			; SOURCE LINE # 66
+	JB   	last_code_com,$ + 6H
+	LJMP 	?IR_Received?End_Int0
+;   {
+			; SOURCE LINE # 67
+;       goto End_Int0;
+			; SOURCE LINE # 68
+;   }
+			; SOURCE LINE # 69
+?C0001:
+; 
+;   EA = 0;			// Disable all interrupt
+			; SOURCE LINE # 71
+	CLR  	EA
+; 
+;   // Check leader code. Signal will keep low until 9.2ms,then go high.
+;   // If signal go high before 9.2ms,it must be a noise and keep it out
+;   // Delay xx ms
+;   for (count1=0;count1<0x03;count1++)
+			; SOURCE LINE # 76
+	MOV  	count1?040,#00H
+?C0003:
+;   {
+			; SOURCE LINE # 77
+;     for (count2=0;count2<0x96;count2++)
+			; SOURCE LINE # 78
+	MOV  	count2?041,#00H
+?C0006:
+;     {
+			; SOURCE LINE # 79
+;     }
+			; SOURCE LINE # 80
+	INC  	count2?041
+	MOV  	A,count2?041
+	CJNE 	A,#096H,?C0006
+;   }
+			; SOURCE LINE # 81
+?C0005:
+	INC  	count1?040
+	MOV  	A,count1?040
+	CJNE 	A,#03H,?C0003
+?C0004:
+;   // Check whether the signal go high and delay xx ms
+;   for (count1=0;count1<0xff;count1++)
+			; SOURCE LINE # 83
+	MOV  	count1?040,#00H
+?C0009:
+;   {
+			; SOURCE LINE # 84
+;    if (IRPORT)
+			; SOURCE LINE # 85
+	JNB  	IRPORT,$ + 6H
+	LJMP 	?IR_Received?End_Int0
+;    {
+			; SOURCE LINE # 86
+;     goto End_Int0;			// The signal is noise
+			; SOURCE LINE # 87
+;    }
+			; SOURCE LINE # 88
+?C0012:
+;   }
+			; SOURCE LINE # 89
+?C0011:
+	INC  	count1?040
+	MOV  	A,count1?040
+	CJNE 	A,#0FFH,?C0009
+?C0013:
+; 
+;   // Start Receiving 32 bits data (customer code + data code)
+;   while (!IRPORT)			// wait until IRPORT = 1
+			; SOURCE LINE # 92
+	JNB  	IRPORT,?C0013
+;   {					// waiting for the end of the carrier waveform of leader code
+			; SOURCE LINE # 93
+;   }
+			; SOURCE LINE # 94
+?C0014:
+?C0015:
+;   while (!IRPORT)			// wait until IRPORT = 1
+			; SOURCE LINE # 95
+	JNB  	IRPORT,?C0015
+;   {					// Check the carrier waveform
+			; SOURCE LINE # 96
+;   }
+			; SOURCE LINE # 97
+?C0016:
+?C0017:
+;   while (IRPORT)			// wait until IRPORT = 0
+			; SOURCE LINE # 98
+	JB   	IRPORT,?C0017
+;   {					// waiting for the carrier waveform of custom code
+			; SOURCE LINE # 99
+;   }
+			; SOURCE LINE # 100
+?C0018:
+; 
+;   for (count1=0;count1<0x20;count1++)
+			; SOURCE LINE # 102
+	MOV  	count1?040,#00H
+?C0019:
+;   {
+			; SOURCE LINE # 103
+?C0022:
+;     while (!IRPORT)			// wait until IRPORT = 1
+			; SOURCE LINE # 104
+	JNB  	IRPORT,?C0022
+;     {					// waiting for the end of the carrier waveform of custom code
+			; SOURCE LINE # 105
+;     }
+			; SOURCE LINE # 106
+?C0023:
+;     // To know the content of the code by checking how long it is
+;     for (count2=0;count2<0x7f;count2++)
+			; SOURCE LINE # 108
+	MOV  	count2?041,#00H
+?C0024:
+;     {
+			; SOURCE LINE # 109
+;      _nop_();
+			; SOURCE LINE # 110
+	NOP  	
+;      _nop_();
+			; SOURCE LINE # 111
+	NOP  	
+;      if (!IRPORT)
+			; SOURCE LINE # 112
+	JNB  	IRPORT,?C0025
+;      {
+			; SOURCE LINE # 113
+;       break;
+			; SOURCE LINE # 114
+;      }
+			; SOURCE LINE # 115
+?C0027:
+;     }
+			; SOURCE LINE # 116
+?C0026:
+	INC  	count2?041
+	MOV  	A,count2?041
+	CJNE 	A,#07FH,?C0024
+?C0025:
+; 
+;     // Save the received bit to carry flag
+;     CY = IRPORT;
+			; SOURCE LINE # 119
+	MOV  	C,IRPORT
+; 
+;     // Check whether the code is the same code.
+;     for (count2=0;count2<=0xff;count2++)
+			; SOURCE LINE # 122
+	MOV  	count2?041,#00H
+?C0028:
+;     {
+			; SOURCE LINE # 123
+;      _nop_();
+			; SOURCE LINE # 124
+	NOP  	
+;      _nop_();
+			; SOURCE LINE # 125
+	NOP  	
+;      if (!IRPORT)
+			; SOURCE LINE # 126
+	JB   	IRPORT,?C0031
+;      {
+			; SOURCE LINE # 127
+;       break;
+			; SOURCE LINE # 128
+	SJMP 	?C0029
+;      }
+			; SOURCE LINE # 129
+?C0031:
+;      else if (count2 == 0xff)
+			; SOURCE LINE # 130
+	MOV  	A,count2?041
+	CJNE 	A,#0FFH,?C0030
+;      {
+			; SOURCE LINE # 131
+; 	  last_code_com = 0;	// Set the flag to show New IR_Code have received
+			; SOURCE LINE # 132
+	CLR  	last_code_com
+; 	  goto End_Int0;
+			; SOURCE LINE # 133
+	SJMP 	?IR_Received?End_Int0
+;      }
+			; SOURCE LINE # 134
+;     }
+			; SOURCE LINE # 135
+?C0030:
+	INC  	count2?041
+	MOV  	A,count2?041
+	SETB 	C
+	SUBB 	A,#0FFH
+	JC   	?C0028
+?C0029:
+; 
+;     // Save the received bit to IR_Received_Data_temp by rotating ACC and Carrier
+;     ACC = IR_Received_Data_temp[0];
+			; SOURCE LINE # 138
+;     #pragma asm
+;      rrc A
+	  rrc A
+;     #pragma endasm
+;     IR_Received_Data_temp[0] = ACC;
+			; SOURCE LINE # 142
+	MOV  	R0,#LOW (IR_Received_Data_temp?042)
+	MOV  	@R0,A
+; 
+;     ACC = IR_Received_Data_temp[1];
+			; SOURCE LINE # 144
+;     #pragma asm
+;      rrc A
+	  rrc A
+;     #pragma endasm
+;     IR_Received_Data_temp[1] = ACC;
+			; SOURCE LINE # 148
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+01H)
+	MOV  	@R0,A
+; 
+;     ACC = IR_Received_Data_temp[2];
+			; SOURCE LINE # 150
+;     #pragma asm
+;      rrc A
+	  rrc A
+;     #pragma endasm
+;     IR_Received_Data_temp[2] = ACC;
+			; SOURCE LINE # 154
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+02H)
+	MOV  	@R0,A
+; 
+;     ACC = IR_Received_Data_temp[3];
+			; SOURCE LINE # 156
+;     #pragma asm
+;      rrc A
+	  rrc A
+;     #pragma endasm
+;     IR_Received_Data_temp[3] = ACC;
+			; SOURCE LINE # 160
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+03H)
+	MOV  	@R0,A
+;   }
+			; SOURCE LINE # 161
+	INC  	count1?040
+	MOV  	A,count1?040
+	XRL  	A,#020H
+	JNZ  	?C0019
+?C0020:
+; 
+;   // Check whether IR_Received_Data_temp and IR_Received_Data is the same
+;   if (IR_Received_Data[0] != IR_Received_Data_temp[1] || IR_Received_Data[1] != IR_Received_Data_temp[3])
+			; SOURCE LINE # 164
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+01H)
+	MOV  	A,@R0
+	MOV  	R7,A
+	MOV  	R0,#LOW (IR_Received_Data)
+	MOV  	A,@R0
+	CJNE 	A,AR7,?C0035
+	MOV  	R1,#LOW (IR_Received_Data+01H)
+	MOV  	A,@R1
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+03H)
+	XRL  	A,@R0
+	JZ   	?C0034
+?C0035:
+;   {
+			; SOURCE LINE # 165
+;    IR_Received_Data[0] = IR_Received_Data_temp[1];
+			; SOURCE LINE # 166
+	MOV  	R0,#LOW (IR_Received_Data)
+	MOV  	@R0,AR7
+;    IR_Received_Data[1] = IR_Received_Data_temp[3];
+			; SOURCE LINE # 167
+	MOV  	R0,#LOW (IR_Received_Data_temp?042+03H)
+	MOV  	A,@R0
+	MOV  	R0,#LOW (IR_Received_Data+01H)
+	MOV  	@R0,A
+;   }
+			; SOURCE LINE # 168
+?C0034:
+;   last_code_com = 0;			// Set the flag to show New IR_Code have received
+			; SOURCE LINE # 169
+	CLR  	last_code_com
+; 
+; IR_Received_Data[1] = _pbIRKeyTbl[IR_Received_Data[1]];
+			; SOURCE LINE # 171
+	MOV  	R0,#LOW (IR_Received_Data+01H)
+	MOV  	A,@R0
+	MOV  	DPTR,#_pbIRKeyTbl
+	MOVC 	A,@A+DPTR
+	MOV  	@R0,A
+; 	
+; End_Int0:
+			; SOURCE LINE # 173
+?IR_Received?End_Int0:
+;   EA = 1;	// Enable all interrupts
+			; SOURCE LINE # 174
+	SETB 	EA
+; }
+			; SOURCE LINE # 175
+	POP  	PSW
+	POP  	DPL
+	POP  	DPH
+	POP  	B
+	POP  	ACC
+	RETI 	
+; END OF IR_Received
+
+	END

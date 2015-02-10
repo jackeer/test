@@ -1,0 +1,1224 @@
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 1   
+
+
+C51 COMPILER V7.07, COMPILATION OF MODULE APUSFILE
+OBJECT MODULE PLACED IN .\output\APUSFILE.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE APUSFILE.C DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.\list\APUSFIL
+                    -E.lst) OBJECT(.\output\APUSFILE.obj)
+
+stmt level    source
+
+   1          
+   2          /*********************************************************/
+   3          //              APUSFile.c 
+   4          /*********************************************************/
+   5          unsigned long Fosc        = 36864000;           // HZ
+   6          unsigned long BaudRate    = 9600;
+   7          
+   8          /*********************************************************/
+   9          unsigned int CodeTotalNumber = 8-1;
+  10          //                                W    B    0    5    D    0    0    0
+  11          unsigned char UserCode[]     = {0x57,0x42,0x30,0x35,0x44,0x30,0x30,0x30};
+  12          
+  13          /*********************************************************/
+  14          //              ISP Mode APROM File
+  15          /*********************************************************/
+  16          
+  17          sfr P3                  = 0xb0;
+  18          sfr P1                  = 0x90;
+  19          sbit P1_0               = P1^0;
+  20          sbit P1_1               = P1^1;
+  21          sbit P1_2               = P1^2;
+  22          sbit P1_3               = P1^3;
+  23          sbit P1_4               = P1^4;
+  24          sbit P1_5               = P1^5;
+  25          sbit P1_6               = P1^6;
+  26          sbit P1_7               = P1^7;
+  27          
+  28          sfr a                   = 0xe0;
+  29          sfr b                   = 0xf0;
+  30          sfr dpl                 = 0x82;
+  31          sfr dph                 = 0x83;
+  32          sfr sbuf                = 0x99;
+  33          
+  34          sfr pcon                = 0x87;
+  35          //sbit idl                = pcon^0;
+  36          //sbit pd                 = pcon^1;
+  37          //sbit gf0                = pcon^2;
+  38          //sbit gf1                = pcon^3;
+  39          //sbit smode              = pcon^7;
+  40          
+  41          sfr scon                = 0x98;
+  42          sbit ti                 = scon^1;
+  43          sbit ri                 = scon^0;
+  44          
+  45          sfr ie                  = 0xa8;
+  46          sbit ex0                = ie^0;
+  47          sbit et0                = ie^1;
+  48          sbit ex1                = ie^2;
+  49          sbit et1                = ie^3;
+  50          sbit es                 = ie^4;
+  51          sbit et2                = ie^5;
+  52          sbit ea                 = ie^7;
+  53          
+  54          sfr ip                  = 0xb8;
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 2   
+
+  55          sbit px0                = ip^0;
+  56          sbit pt0                = ip^1;
+  57          sbit px1                = ip^2;
+  58          sbit pt1                = ip^3;
+  59          sbit ps                 = ip^4;
+  60          sbit pt2                = ip^5;
+  61          
+  62          sfr psw                 = 0xd0;
+  63          sbit p                  = psw^0;
+  64          sbit ov                 = psw^2;
+  65          sbit rs0                = psw^3;
+  66          sbit rs1                = psw^4;
+  67          sbit f0                 = psw^5;
+  68          sbit ac                 = psw^6;
+  69          sbit c                  = psw^7;
+  70          
+  71          sfr tcon                = 0x88;
+  72          sbit it0                = tcon^0;
+  73          sbit ie0                = tcon^1;
+  74          sbit it1                = tcon^2;
+  75          sbit ie1                = tcon^3;
+  76          sbit tr0                = tcon^4;
+  77          sbit tf0                = tcon^5;
+  78          sbit tr1                = tcon^6;
+  79          sbit tf1                = tcon^7;
+  80          
+  81          sfr t2con               = 0xc8;
+  82          sbit cprl2              = t2con^0;
+  83          sbit ct2                = t2con^1;
+  84          sbit tr2                = t2con^2;
+  85          sbit exen2              = t2con^3;
+  86          sbit tclk               = t2con^4;
+  87          sbit rclk               = t2con^5;
+  88          sbit exf2               = t2con^6;
+  89          sbit tf2                = t2con^7;
+  90          
+  91          sfr tmod                = 0x89;
+  92          sfr th0                 = 0x8c;
+  93          sfr tl0                 = 0x8a;
+  94          sfr th1                 = 0x8d;
+  95          sfr tl1                 = 0x8b;
+  96          sfr th2                 = 0xcd;
+  97          sfr tl2                 = 0xcc;
+  98          sfr rcap2h              = 0xcb;
+  99          sfr rcap2l              = 0xca;
+ 100          
+ 101          sfr CHPCON              = 0xbf;
+ 102          sfr CHPENR              = 0xf6;
+ 103          sfr SFRAL               = 0xc4;
+ 104          sfr SFRAH               = 0xc5;
+ 105          sfr SFRFD               = 0xc6;
+ 106          sfr SFRCN               = 0xc7;
+ 107          
+ 108          sfr turbo_TA            = 0xc7;
+ 109          sfr turbo_SFRAL         = 0xac;
+ 110          sfr turbo_SFRAH         = 0xad;
+ 111          sfr turbo_SFRFD         = 0xae;
+ 112          sfr turbo_SFRCN         = 0xaf;
+ 113          sfr turbo_CHPCON        = 0x9f;
+ 114          sfr turbo_CKCON         = 0x8e;         // clock control
+ 115          sfr turbo_T2MOD         = 0xc9;         // clock control
+ 116          
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 3   
+
+ 117          bit jmpLDROM           = 0x20;
+ 118          bit TimerOut           = 0x21;
+ 119          
+ 120          
+ 121          void InitialPowerON(void);
+ 122          void Smode0BaudRate(void);
+ 123          void Smode1BaudRate(void);
+ 124          void Timer2BaudRate(void);
+ 125          void ChangeAPtoLD(void);
+ 126          void RecDataTimer(void);
+ 127          
+ 128          
+ 129          
+ 130          /************************************************/
+ 131          void Timer0ISR (void) interrupt 1 using 1
+ 132          {
+ 133   1              tr0=0;
+ 134   1              tf0=0;
+ 135   1      }
+ 136          
+ 137          
+ 138          
+ 139          /************************************************/
+ 140          void SerialInt(void) interrupt 4 using 3
+ 141          {
+ 142   1              unsigned int i,j,code_a;
+ 143   1      
+ 144   1              if(ri==0)
+ 145   1              { ti=0; }
+ 146   1              else
+ 147   1              {
+ 148   2                      jmpLDROM=1;
+ 149   2      
+ 150   2                      i=0x00;
+ 151   2                      while(1)
+ 152   2                      {
+ 153   3                              j=sbuf;
+ 154   3                              code_a=UserCode[i];
+ 155   3                              if(j!=code_a)
+ 156   3                              {
+ 157   4                                      jmpLDROM=0;
+ 158   4                                      goto ERROR;
+ 159   4                              }
+ 160   3                              while(i==CodeTotalNumber)
+ 161   3                              goto OK;
+ 162   3                              RecDataTimer();
+ 163   3                              if(TimerOut==1)
+ 164   3                              { jmpLDROM=0;
+ 165   4                                goto ERROR; }
+ 166   3      
+ 167   3                              i++;
+ 168   3                      }
+ 169   2              }
+ 170   1              OK: ;
+ 171   1              ERROR: ;
+ 172   1              ri=0;
+ 173   1              tr0=0;
+ 174   1      }
+ 175          
+ 176          
+ 177          
+ 178          /************************************************/
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 4   
+
+ 179          void main(void)
+ 180          {
+ 181   1              InitialPowerON();
+ 182   1              jmpLDROM=0;
+ 183   1      
+ 184   1              while(1)
+ 185   1              {
+ 186   2              if(jmpLDROM==1)
+ 187   2                      {
+ 188   3                              es=0;
+ 189   3                              ti=0;
+ 190   3                              sbuf=0x00;             //Command OK Code
+ 191   3                              while(ti==0)
+ 192   3                              { ; }
+ 193   3                              ti=0;
+ 194   3                              es=1;
+ 195   3                              ChangeAPtoLD();
+ 196   3                      }
+ 197   2              }
+ 198   1      }
+ 199          
+ 200          
+ 201          
+ 202          
+ 203          
+ 204          /************************************************/
+ 205          void InitialPowerON(void)
+ 206          {
+ 207   1              turbo_CKCON=0x01;
+ 208   1      
+ 209   1              ie=0x00;
+ 210   1              et0=1;          // timer0 interrupt enable
+ 211   1              es=1;           // RS-232 interrupt enable
+ 212   1              ea=1;           // all interrupt enable
+ 213   1      
+ 214   1              Timer2BaudRate();
+ 215   1      }
+ 216          
+ 217          /************************************************/
+ 218          void Smode0BaudRate(void)
+ 219          {
+ 220   1              unsigned long i;
+ 221   1      
+ 222   1              scon=0x50;      // mode=mode1 ,ren=enable
+ 223   1              t2con=0x00;
+ 224   1              tmod=tmod|0x20;      // Timer1=auto-raload
+ 225   1              pcon=pcon&0x7f;
+ 226   1      
+ 227   1              th1=256-(Fosc/(BaudRate*384));
+ 228   1      
+ 229   1              i=(((Fosc*10)/(BaudRate*384))-((Fosc/(BaudRate*394))*10));
+ 230   1              if(i>6)
+ 231   1              {
+ 232   2                      th1=th1-1;
+ 233   2              }
+ 234   1      
+ 235   1              tl1=th1;
+ 236   1              tr1=1;
+ 237   1      }
+ 238          
+ 239          
+ 240          
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 5   
+
+ 241          /************************************************/
+ 242          void Smode1BaudRate(void)
+ 243          {
+ 244   1              unsigned long i;
+ 245   1      
+ 246   1              scon=0x50;      // mode=mode1 ,ren=enable
+ 247   1              t2con=0x00;
+ 248   1              tmod=tmod|0x20;      // Timer1=auto-raload
+ 249   1              pcon=pcon|0x80;
+ 250   1      
+ 251   1              th1=256-(Fosc/(BaudRate*192));
+ 252   1      
+ 253   1              i=(((Fosc*10)/(BaudRate*192))-((Fosc/(BaudRate*192))*10));
+ 254   1              if(i>6)
+ 255   1              {
+ 256   2                      th1=th1-1;
+ 257   2              }
+ 258   1      
+ 259   1              tl1=th1;
+ 260   1              tr1=1;
+ 261   1      }
+ 262          
+ 263          
+ 264          
+ 265          /************************************************/
+ 266          void Timer2BaudRate(void)
+ 267          {
+ 268   1              unsigned long i;
+ 269   1      
+ 270   1              scon=0x50;      // mode=mode1 ,ren=enable
+ 271   1              t2con=0x30;     // Timer2=BaudRate CLK
+ 272   1      
+ 273   1              rcap2h=(65536-(Fosc/(BaudRate*32)))/256;
+ 274   1              rcap2l=65536-(Fosc/(BaudRate*32));
+ 275   1      
+ 276   1              i=(((Fosc*10)/(BaudRate*32))-((Fosc/(BaudRate*32))*10));
+ 277   1              if(i>7)
+ 278   1              {
+ 279   2                      rcap2l=rcap2l-1;
+ 280   2      
+ 281   2                      if(rcap2l==0xff)
+ 282   2                      {
+ 283   3                              rcap2h=rcap2h-1;
+ 284   3                      }
+ 285   2              }
+ 286   1      
+ 287   1              th2=rcap2h;
+ 288   1              tl2=rcap2l;
+ 289   1              tr2=1;
+ 290   1      }
+ 291          
+ 292          
+ 293          
+ 294          /************************************************/
+ 295          void RecDataTimer(void)
+ 296          {
+ 297   1              unsigned int delay;
+ 298   1              ri=0;
+ 299   1              TimerOut=0;
+ 300   1      
+ 301   1              tmod=0x11;
+ 302   1              tr0=1;
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 6   
+
+ 303   1              for(delay=50; delay>0; delay--)
+ 304   1              {
+ 305   2                      th0=(65536-(1000*(Fosc/12000000)))/256; // delay x 1ms
+ 306   2                      tl0=65536-(1000*(Fosc/12000000));       // delay x 1ms
+ 307   2                      for(tf0=0; tf0==0; )
+ 308   2                      {
+ 309   3                              while(ri==1)
+ 310   3                              { goto OK ; }
+ 311   3                      }
+ 312   2              }
+ 313   1              TimerOut=1;
+ 314   1              OK: ;
+ 315   1      }
+ 316          
+ 317          
+ 318          /************************************************/
+ 319          void ChangeAPtoLD(void)
+ 320          {
+ 321   1              CHPENR=0x87;         // write enable
+ 322   1              CHPENR=0x59;         // write enable
+ 323   1              CHPCON=0x03;         // bank=4k,flash mode
+ 324   1              tl0=0xfe;
+ 325   1              th0=0xff;
+ 326   1              tr0=1;
+ 327   1              pcon=pcon|0x01;           // enter idle mode
+ 328   1              ;
+ 329   1              ;
+ 330   1              ;
+ 331   1                      turbo_TA=0xaa;          // write enable
+ 332   1                      turbo_TA=0x55;          // write enable
+ 333   1                      turbo_CHPCON=0x03;      // bank=4k,flash mode
+ 334   1                      tl0=0xfe;
+ 335   1                      th0=0xff;
+ 336   1                      tr0=1;
+ 337   1                      pcon=pcon|0x01;              // enter idle mode
+ 338   1              ;
+ 339   1              ;
+ 340   1              ;
+ 341   1      }
+ 342          
+ 343          
+ 344          
+ 345          
+ 346          
+ 347          
+ 348          
+ 349          
+ 350          
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 7   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION Timer0ISR (BEGIN)
+                                           ; SOURCE LINE # 131
+                                           ; SOURCE LINE # 133
+0000 C28C              CLR     tr0
+                                           ; SOURCE LINE # 134
+0002 C28D              CLR     tf0
+                                           ; SOURCE LINE # 135
+0004 32                RETI    
+             ; FUNCTION Timer0ISR (END)
+
+             ; FUNCTION SerialInt (BEGIN)
+0000 C0E0              PUSH    ACC
+0002 C0F0              PUSH    B
+0004 C083              PUSH    DPH
+0006 C082              PUSH    DPL
+0008 C0D0              PUSH    PSW
+000A 75D018            MOV     PSW,#018H
+                                           ; SOURCE LINE # 140
+                                           ; SOURCE LINE # 144
+000D 209804            JB      ri,?C0002
+                                           ; SOURCE LINE # 145
+0010 C299              CLR     ti
+0012 803A              SJMP    ERROR
+0014         ?C0002:
+                                           ; SOURCE LINE # 147
+                                           ; SOURCE LINE # 148
+0014 D200        R     SETB    jmpLDROM
+                                           ; SOURCE LINE # 150
+0016 750000      R     MOV     i,#00H
+0019 750000      R     MOV     i+01H,#00H
+001C         ?C0004:
+                                           ; SOURCE LINE # 151
+                                           ; SOURCE LINE # 152
+                                           ; SOURCE LINE # 153
+001C AF99              MOV     R7,sbuf
+;---- Variable 'j' assigned to Register 'R6/R7' ----
+                                           ; SOURCE LINE # 154
+001E 7400        R     MOV     A,#LOW UserCode
+0020 2500        R     ADD     A,i+01H
+0022 F8                MOV     R0,A
+0023 E6                MOV     A,@R0
+;---- Variable 'code_a' assigned to Register 'R4/R5' ----
+                                           ; SOURCE LINE # 155
+0024 6F                XRL     A,R7
+0025 7001              JNZ     ?C0037
+0027 E4                CLR     A
+0028         ?C0037:
+0028 6004              JZ      ?C0008
+                                           ; SOURCE LINE # 156
+                                           ; SOURCE LINE # 157
+002A C200        R     CLR     jmpLDROM
+                                           ; SOURCE LINE # 158
+002C 8020              SJMP    ERROR
+                                           ; SOURCE LINE # 159
+002E         ?C0008:
+                                           ; SOURCE LINE # 160
+002E E500        R     MOV     A,i+01H
+0030 6500        R     XRL     A,CodeTotalNumber+01H
+0032 7004              JNZ     ?C0038
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 8   
+
+0034 E500        R     MOV     A,i
+0036 6500        R     XRL     A,CodeTotalNumber
+0038         ?C0038:
+0038 6014              JZ      ERROR
+                                           ; SOURCE LINE # 161
+003A         ?C0009:
+                                           ; SOURCE LINE # 162
+003A 120000      R     LCALL   RecDataTimer
+                                           ; SOURCE LINE # 163
+003D 300004      R     JNB     TimerOut,?C0011
+                                           ; SOURCE LINE # 164
+0040 C200        R     CLR     jmpLDROM
+                                           ; SOURCE LINE # 165
+0042 800A              SJMP    ERROR
+0044         ?C0011:
+                                           ; SOURCE LINE # 167
+0044 0500        R     INC     i+01H
+0046 E500        R     MOV     A,i+01H
+0048 70D2              JNZ     ?C0004
+004A 0500        R     INC     i
+004C         ?C0039:
+                                           ; SOURCE LINE # 168
+004C 80CE              SJMP    ?C0004
+                                           ; SOURCE LINE # 169
+                                           ; SOURCE LINE # 170
+004E         ERROR:
+                                           ; SOURCE LINE # 172
+004E C298              CLR     ri
+                                           ; SOURCE LINE # 173
+0050 C28C              CLR     tr0
+                                           ; SOURCE LINE # 174
+0052 D0D0              POP     PSW
+0054 D082              POP     DPL
+0056 D083              POP     DPH
+0058 D0F0              POP     B
+005A D0E0              POP     ACC
+005C 32                RETI    
+             ; FUNCTION SerialInt (END)
+
+             ; FUNCTION main (BEGIN)
+                                           ; SOURCE LINE # 179
+                                           ; SOURCE LINE # 180
+                                           ; SOURCE LINE # 181
+0000 120000      R     LCALL   InitialPowerON
+                                           ; SOURCE LINE # 182
+0003 C200        R     CLR     jmpLDROM
+0005         ?C0013:
+                                           ; SOURCE LINE # 184
+                                           ; SOURCE LINE # 185
+                                           ; SOURCE LINE # 186
+0005 3000FD      R     JNB     jmpLDROM,?C0013
+                                           ; SOURCE LINE # 187
+                                           ; SOURCE LINE # 188
+0008 C2AC              CLR     es
+                                           ; SOURCE LINE # 189
+000A C299              CLR     ti
+                                           ; SOURCE LINE # 190
+000C E4                CLR     A
+000D F599              MOV     sbuf,A
+000F         ?C0016:
+                                           ; SOURCE LINE # 191
+000F 3099FD            JNB     ti,?C0016
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 9   
+
+                                           ; SOURCE LINE # 192
+0012         ?C0017:
+                                           ; SOURCE LINE # 193
+0012 C299              CLR     ti
+                                           ; SOURCE LINE # 194
+0014 D2AC              SETB    es
+                                           ; SOURCE LINE # 195
+0016 120000      R     LCALL   ChangeAPtoLD
+                                           ; SOURCE LINE # 196
+                                           ; SOURCE LINE # 197
+0019 80EA              SJMP    ?C0013
+             ; FUNCTION main (END)
+
+             ; FUNCTION InitialPowerON (BEGIN)
+                                           ; SOURCE LINE # 205
+                                           ; SOURCE LINE # 206
+                                           ; SOURCE LINE # 207
+0000 758E01            MOV     turbo_CKCON,#01H
+                                           ; SOURCE LINE # 209
+0003 E4                CLR     A
+0004 F5A8              MOV     ie,A
+                                           ; SOURCE LINE # 210
+0006 D2A9              SETB    et0
+                                           ; SOURCE LINE # 211
+0008 D2AC              SETB    es
+                                           ; SOURCE LINE # 212
+000A D2AF              SETB    ea
+                                           ; SOURCE LINE # 214
+000C 020000      R     LJMP    Timer2BaudRate
+             ; FUNCTION InitialPowerON (END)
+
+             ; FUNCTION Smode0BaudRate (BEGIN)
+                                           ; SOURCE LINE # 218
+                                           ; SOURCE LINE # 219
+                                           ; SOURCE LINE # 222
+0000 759850            MOV     scon,#050H
+                                           ; SOURCE LINE # 223
+0003 E4                CLR     A
+0004 F5C8              MOV     t2con,A
+                                           ; SOURCE LINE # 224
+0006 438920            ORL     tmod,#020H
+                                           ; SOURCE LINE # 225
+0009 53877F            ANL     pcon,#07FH
+                                           ; SOURCE LINE # 227
+000C 7F80              MOV     R7,#080H
+000E 7E01              MOV     R6,#01H
+0010 FD                MOV     R5,A
+0011 FC                MOV     R4,A
+0012 AB00        R     MOV     R3,BaudRate+03H
+0014 AA00        R     MOV     R2,BaudRate+02H
+0016 A900        R     MOV     R1,BaudRate+01H
+0018 A800        R     MOV     R0,BaudRate
+001A 120000      E     LCALL   ?C?LMUL
+001D A804              MOV     R0,AR4
+001F A905              MOV     R1,AR5
+0021 AA06              MOV     R2,AR6
+0023 AB07              MOV     R3,AR7
+0025 AF00        R     MOV     R7,Fosc+03H
+0027 AE00        R     MOV     R6,Fosc+02H
+0029 AD00        R     MOV     R5,Fosc+01H
+002B AC00        R     MOV     R4,Fosc
+002D 120000      E     LCALL   ?C?ULDIV
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 10  
+
+0030 EF                MOV     A,R7
+0031 F4                CPL     A
+0032 04                INC     A
+0033 F58D              MOV     th1,A
+                                           ; SOURCE LINE # 229
+0035 E4                CLR     A
+0036 7F8A              MOV     R7,#08AH
+0038 7E01              MOV     R6,#01H
+003A FD                MOV     R5,A
+003B FC                MOV     R4,A
+003C AB00        R     MOV     R3,BaudRate+03H
+003E AA00        R     MOV     R2,BaudRate+02H
+0040 A900        R     MOV     R1,BaudRate+01H
+0042 A800        R     MOV     R0,BaudRate
+0044 120000      E     LCALL   ?C?LMUL
+0047 A804              MOV     R0,AR4
+0049 A905              MOV     R1,AR5
+004B AA06              MOV     R2,AR6
+004D AB07              MOV     R3,AR7
+004F AF00        R     MOV     R7,Fosc+03H
+0051 AE00        R     MOV     R6,Fosc+02H
+0053 AD00        R     MOV     R5,Fosc+01H
+0055 AC00        R     MOV     R4,Fosc
+0057 120000      E     LCALL   ?C?ULDIV
+005A E4                CLR     A
+005B 7B0A              MOV     R3,#0AH
+005D FA                MOV     R2,A
+005E F9                MOV     R1,A
+005F F8                MOV     R0,A
+0060 120000      E     LCALL   ?C?LMUL
+0063 C004              PUSH    AR4
+0065 C005              PUSH    AR5
+0067 C006              PUSH    AR6
+0069 C007              PUSH    AR7
+006B E4                CLR     A
+006C 7F80              MOV     R7,#080H
+006E 7E01              MOV     R6,#01H
+0070 FD                MOV     R5,A
+0071 FC                MOV     R4,A
+0072 AB00        R     MOV     R3,BaudRate+03H
+0074 AA00        R     MOV     R2,BaudRate+02H
+0076 A900        R     MOV     R1,BaudRate+01H
+0078 A800        R     MOV     R0,BaudRate
+007A 120000      E     LCALL   ?C?LMUL
+007D C004              PUSH    AR4
+007F C005              PUSH    AR5
+0081 C006              PUSH    AR6
+0083 C007              PUSH    AR7
+0085 E4                CLR     A
+0086 7F0A              MOV     R7,#0AH
+0088 FE                MOV     R6,A
+0089 FD                MOV     R5,A
+008A FC                MOV     R4,A
+008B AB00        R     MOV     R3,Fosc+03H
+008D AA00        R     MOV     R2,Fosc+02H
+008F A900        R     MOV     R1,Fosc+01H
+0091 A800        R     MOV     R0,Fosc
+0093 120000      E     LCALL   ?C?LMUL
+0096 D003              POP     AR3
+0098 D002              POP     AR2
+009A D001              POP     AR1
+009C D000              POP     AR0
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 11  
+
+009E 120000      E     LCALL   ?C?ULDIV
+00A1 D003              POP     AR3
+00A3 D002              POP     AR2
+00A5 D001              POP     AR1
+00A7 D000              POP     AR0
+00A9 C3                CLR     C
+00AA EF                MOV     A,R7
+00AB 9B                SUBB    A,R3
+00AC F500        R     MOV     i+03H,A
+00AE EE                MOV     A,R6
+00AF 9A                SUBB    A,R2
+00B0 F500        R     MOV     i+02H,A
+00B2 ED                MOV     A,R5
+00B3 99                SUBB    A,R1
+00B4 F500        R     MOV     i+01H,A
+00B6 EC                MOV     A,R4
+00B7 98                SUBB    A,R0
+00B8 F500        R     MOV     i,A
+                                           ; SOURCE LINE # 230
+00BA E4                CLR     A
+00BB 7F06              MOV     R7,#06H
+00BD FE                MOV     R6,A
+00BE FD                MOV     R5,A
+00BF FC                MOV     R4,A
+00C0 AB00        R     MOV     R3,i+03H
+00C2 AA00        R     MOV     R2,i+02H
+00C4 A900        R     MOV     R1,i+01H
+00C6 A800        R     MOV     R0,i
+00C8 D3                SETB    C
+00C9 120000      E     LCALL   ?C?ULCMP
+00CC 4002              JC      ?C0020
+                                           ; SOURCE LINE # 231
+                                           ; SOURCE LINE # 232
+00CE 158D              DEC     th1
+                                           ; SOURCE LINE # 233
+00D0         ?C0020:
+                                           ; SOURCE LINE # 235
+00D0 858D8B            MOV     tl1,th1
+                                           ; SOURCE LINE # 236
+00D3 D28E              SETB    tr1
+                                           ; SOURCE LINE # 237
+00D5 22                RET     
+             ; FUNCTION Smode0BaudRate (END)
+
+             ; FUNCTION Smode1BaudRate (BEGIN)
+                                           ; SOURCE LINE # 242
+                                           ; SOURCE LINE # 243
+                                           ; SOURCE LINE # 246
+0000 759850            MOV     scon,#050H
+                                           ; SOURCE LINE # 247
+0003 E4                CLR     A
+0004 F5C8              MOV     t2con,A
+                                           ; SOURCE LINE # 248
+0006 438920            ORL     tmod,#020H
+                                           ; SOURCE LINE # 249
+0009 438780            ORL     pcon,#080H
+                                           ; SOURCE LINE # 251
+000C 7FC0              MOV     R7,#0C0H
+000E FE                MOV     R6,A
+000F FD                MOV     R5,A
+0010 FC                MOV     R4,A
+0011 AB00        R     MOV     R3,BaudRate+03H
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 12  
+
+0013 AA00        R     MOV     R2,BaudRate+02H
+0015 A900        R     MOV     R1,BaudRate+01H
+0017 A800        R     MOV     R0,BaudRate
+0019 120000      E     LCALL   ?C?LMUL
+001C A804              MOV     R0,AR4
+001E A905              MOV     R1,AR5
+0020 AA06              MOV     R2,AR6
+0022 AB07              MOV     R3,AR7
+0024 AF00        R     MOV     R7,Fosc+03H
+0026 AE00        R     MOV     R6,Fosc+02H
+0028 AD00        R     MOV     R5,Fosc+01H
+002A AC00        R     MOV     R4,Fosc
+002C 120000      E     LCALL   ?C?ULDIV
+002F EF                MOV     A,R7
+0030 F4                CPL     A
+0031 04                INC     A
+0032 F58D              MOV     th1,A
+                                           ; SOURCE LINE # 253
+0034 E4                CLR     A
+0035 7FC0              MOV     R7,#0C0H
+0037 FE                MOV     R6,A
+0038 FD                MOV     R5,A
+0039 FC                MOV     R4,A
+003A AB00        R     MOV     R3,BaudRate+03H
+003C AA00        R     MOV     R2,BaudRate+02H
+003E A900        R     MOV     R1,BaudRate+01H
+0040 A800        R     MOV     R0,BaudRate
+0042 120000      E     LCALL   ?C?LMUL
+0045 A804              MOV     R0,AR4
+0047 A905              MOV     R1,AR5
+0049 AA06              MOV     R2,AR6
+004B AB07              MOV     R3,AR7
+004D AF00        R     MOV     R7,Fosc+03H
+004F AE00        R     MOV     R6,Fosc+02H
+0051 AD00        R     MOV     R5,Fosc+01H
+0053 AC00        R     MOV     R4,Fosc
+0055 120000      E     LCALL   ?C?ULDIV
+0058 E4                CLR     A
+0059 7B0A              MOV     R3,#0AH
+005B FA                MOV     R2,A
+005C F9                MOV     R1,A
+005D F8                MOV     R0,A
+005E 120000      E     LCALL   ?C?LMUL
+0061 C004              PUSH    AR4
+0063 C005              PUSH    AR5
+0065 C006              PUSH    AR6
+0067 C007              PUSH    AR7
+0069 E4                CLR     A
+006A 7FC0              MOV     R7,#0C0H
+006C FE                MOV     R6,A
+006D FD                MOV     R5,A
+006E FC                MOV     R4,A
+006F AB00        R     MOV     R3,BaudRate+03H
+0071 AA00        R     MOV     R2,BaudRate+02H
+0073 A900        R     MOV     R1,BaudRate+01H
+0075 A800        R     MOV     R0,BaudRate
+0077 120000      E     LCALL   ?C?LMUL
+007A C004              PUSH    AR4
+007C C005              PUSH    AR5
+007E C006              PUSH    AR6
+0080 C007              PUSH    AR7
+0082 E4                CLR     A
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 13  
+
+0083 7F0A              MOV     R7,#0AH
+0085 FE                MOV     R6,A
+0086 FD                MOV     R5,A
+0087 FC                MOV     R4,A
+0088 AB00        R     MOV     R3,Fosc+03H
+008A AA00        R     MOV     R2,Fosc+02H
+008C A900        R     MOV     R1,Fosc+01H
+008E A800        R     MOV     R0,Fosc
+0090 120000      E     LCALL   ?C?LMUL
+0093 D003              POP     AR3
+0095 D002              POP     AR2
+0097 D001              POP     AR1
+0099 D000              POP     AR0
+009B 120000      E     LCALL   ?C?ULDIV
+009E D003              POP     AR3
+00A0 D002              POP     AR2
+00A2 D001              POP     AR1
+00A4 D000              POP     AR0
+00A6 C3                CLR     C
+00A7 EF                MOV     A,R7
+00A8 9B                SUBB    A,R3
+00A9 F500        R     MOV     i+03H,A
+00AB EE                MOV     A,R6
+00AC 9A                SUBB    A,R2
+00AD F500        R     MOV     i+02H,A
+00AF ED                MOV     A,R5
+00B0 99                SUBB    A,R1
+00B1 F500        R     MOV     i+01H,A
+00B3 EC                MOV     A,R4
+00B4 98                SUBB    A,R0
+00B5 F500        R     MOV     i,A
+                                           ; SOURCE LINE # 254
+00B7 E4                CLR     A
+00B8 7F06              MOV     R7,#06H
+00BA FE                MOV     R6,A
+00BB FD                MOV     R5,A
+00BC FC                MOV     R4,A
+00BD AB00        R     MOV     R3,i+03H
+00BF AA00        R     MOV     R2,i+02H
+00C1 A900        R     MOV     R1,i+01H
+00C3 A800        R     MOV     R0,i
+00C5 D3                SETB    C
+00C6 120000      E     LCALL   ?C?ULCMP
+00C9 4002              JC      ?C0022
+                                           ; SOURCE LINE # 255
+                                           ; SOURCE LINE # 256
+00CB 158D              DEC     th1
+                                           ; SOURCE LINE # 257
+00CD         ?C0022:
+                                           ; SOURCE LINE # 259
+00CD 858D8B            MOV     tl1,th1
+                                           ; SOURCE LINE # 260
+00D0 D28E              SETB    tr1
+                                           ; SOURCE LINE # 261
+00D2 22                RET     
+             ; FUNCTION Smode1BaudRate (END)
+
+             ; FUNCTION Timer2BaudRate (BEGIN)
+                                           ; SOURCE LINE # 266
+                                           ; SOURCE LINE # 267
+                                           ; SOURCE LINE # 270
+0000 759850            MOV     scon,#050H
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 14  
+
+                                           ; SOURCE LINE # 271
+0003 75C830            MOV     t2con,#030H
+                                           ; SOURCE LINE # 273
+0006 E4                CLR     A
+0007 7F20              MOV     R7,#020H
+0009 FE                MOV     R6,A
+000A FD                MOV     R5,A
+000B FC                MOV     R4,A
+000C AB00        R     MOV     R3,BaudRate+03H
+000E AA00        R     MOV     R2,BaudRate+02H
+0010 A900        R     MOV     R1,BaudRate+01H
+0012 A800        R     MOV     R0,BaudRate
+0014 120000      E     LCALL   ?C?LMUL
+0017 A804              MOV     R0,AR4
+0019 A905              MOV     R1,AR5
+001B AA06              MOV     R2,AR6
+001D AB07              MOV     R3,AR7
+001F AF00        R     MOV     R7,Fosc+03H
+0021 AE00        R     MOV     R6,Fosc+02H
+0023 AD00        R     MOV     R5,Fosc+01H
+0025 AC00        R     MOV     R4,Fosc
+0027 120000      E     LCALL   ?C?ULDIV
+002A C3                CLR     C
+002B E4                CLR     A
+002C 9F                SUBB    A,R7
+002D FF                MOV     R7,A
+002E E4                CLR     A
+002F 9E                SUBB    A,R6
+0030 FE                MOV     R6,A
+0031 7401              MOV     A,#01H
+0033 9D                SUBB    A,R5
+0034 FD                MOV     R5,A
+0035 E4                CLR     A
+0036 9C                SUBB    A,R4
+0037 FC                MOV     R4,A
+0038 E4                CLR     A
+0039 FB                MOV     R3,A
+003A 7A01              MOV     R2,#01H
+003C F9                MOV     R1,A
+003D F8                MOV     R0,A
+003E 120000      E     LCALL   ?C?ULDIV
+0041 8FCB              MOV     rcap2h,R7
+                                           ; SOURCE LINE # 274
+0043 E4                CLR     A
+0044 7F20              MOV     R7,#020H
+0046 FE                MOV     R6,A
+0047 FD                MOV     R5,A
+0048 FC                MOV     R4,A
+0049 AB00        R     MOV     R3,BaudRate+03H
+004B AA00        R     MOV     R2,BaudRate+02H
+004D A900        R     MOV     R1,BaudRate+01H
+004F A800        R     MOV     R0,BaudRate
+0051 120000      E     LCALL   ?C?LMUL
+0054 A804              MOV     R0,AR4
+0056 A905              MOV     R1,AR5
+0058 AA06              MOV     R2,AR6
+005A AB07              MOV     R3,AR7
+005C AF00        R     MOV     R7,Fosc+03H
+005E AE00        R     MOV     R6,Fosc+02H
+0060 AD00        R     MOV     R5,Fosc+01H
+0062 AC00        R     MOV     R4,Fosc
+0064 120000      E     LCALL   ?C?ULDIV
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 15  
+
+0067 EF                MOV     A,R7
+0068 F4                CPL     A
+0069 04                INC     A
+006A F5CA              MOV     rcap2l,A
+                                           ; SOURCE LINE # 276
+006C E4                CLR     A
+006D 7F20              MOV     R7,#020H
+006F FE                MOV     R6,A
+0070 FD                MOV     R5,A
+0071 FC                MOV     R4,A
+0072 AB00        R     MOV     R3,BaudRate+03H
+0074 AA00        R     MOV     R2,BaudRate+02H
+0076 A900        R     MOV     R1,BaudRate+01H
+0078 A800        R     MOV     R0,BaudRate
+007A 120000      E     LCALL   ?C?LMUL
+007D A804              MOV     R0,AR4
+007F A905              MOV     R1,AR5
+0081 AA06              MOV     R2,AR6
+0083 AB07              MOV     R3,AR7
+0085 AF00        R     MOV     R7,Fosc+03H
+0087 AE00        R     MOV     R6,Fosc+02H
+0089 AD00        R     MOV     R5,Fosc+01H
+008B AC00        R     MOV     R4,Fosc
+008D 120000      E     LCALL   ?C?ULDIV
+0090 E4                CLR     A
+0091 7B0A              MOV     R3,#0AH
+0093 FA                MOV     R2,A
+0094 F9                MOV     R1,A
+0095 F8                MOV     R0,A
+0096 120000      E     LCALL   ?C?LMUL
+0099 C004              PUSH    AR4
+009B C005              PUSH    AR5
+009D C006              PUSH    AR6
+009F C007              PUSH    AR7
+00A1 E4                CLR     A
+00A2 7F20              MOV     R7,#020H
+00A4 FE                MOV     R6,A
+00A5 FD                MOV     R5,A
+00A6 FC                MOV     R4,A
+00A7 AB00        R     MOV     R3,BaudRate+03H
+00A9 AA00        R     MOV     R2,BaudRate+02H
+00AB A900        R     MOV     R1,BaudRate+01H
+00AD A800        R     MOV     R0,BaudRate
+00AF 120000      E     LCALL   ?C?LMUL
+00B2 C004              PUSH    AR4
+00B4 C005              PUSH    AR5
+00B6 C006              PUSH    AR6
+00B8 C007              PUSH    AR7
+00BA E4                CLR     A
+00BB 7F0A              MOV     R7,#0AH
+00BD FE                MOV     R6,A
+00BE FD                MOV     R5,A
+00BF FC                MOV     R4,A
+00C0 AB00        R     MOV     R3,Fosc+03H
+00C2 AA00        R     MOV     R2,Fosc+02H
+00C4 A900        R     MOV     R1,Fosc+01H
+00C6 A800        R     MOV     R0,Fosc
+00C8 120000      E     LCALL   ?C?LMUL
+00CB D003              POP     AR3
+00CD D002              POP     AR2
+00CF D001              POP     AR1
+00D1 D000              POP     AR0
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 16  
+
+00D3 120000      E     LCALL   ?C?ULDIV
+00D6 D003              POP     AR3
+00D8 D002              POP     AR2
+00DA D001              POP     AR1
+00DC D000              POP     AR0
+00DE C3                CLR     C
+00DF EF                MOV     A,R7
+00E0 9B                SUBB    A,R3
+00E1 F500        R     MOV     i+03H,A
+00E3 EE                MOV     A,R6
+00E4 9A                SUBB    A,R2
+00E5 F500        R     MOV     i+02H,A
+00E7 ED                MOV     A,R5
+00E8 99                SUBB    A,R1
+00E9 F500        R     MOV     i+01H,A
+00EB EC                MOV     A,R4
+00EC 98                SUBB    A,R0
+00ED F500        R     MOV     i,A
+                                           ; SOURCE LINE # 277
+00EF E4                CLR     A
+00F0 7F07              MOV     R7,#07H
+00F2 FE                MOV     R6,A
+00F3 FD                MOV     R5,A
+00F4 FC                MOV     R4,A
+00F5 AB00        R     MOV     R3,i+03H
+00F7 AA00        R     MOV     R2,i+02H
+00F9 A900        R     MOV     R1,i+01H
+00FB A800        R     MOV     R0,i
+00FD D3                SETB    C
+00FE 120000      E     LCALL   ?C?ULCMP
+0101 4009              JC      ?C0024
+                                           ; SOURCE LINE # 278
+                                           ; SOURCE LINE # 279
+0103 15CA              DEC     rcap2l
+                                           ; SOURCE LINE # 281
+0105 E5CA              MOV     A,rcap2l
+0107 B4FF02            CJNE    A,#0FFH,?C0024
+                                           ; SOURCE LINE # 282
+                                           ; SOURCE LINE # 283
+010A 15CB              DEC     rcap2h
+                                           ; SOURCE LINE # 284
+                                           ; SOURCE LINE # 285
+010C         ?C0024:
+                                           ; SOURCE LINE # 287
+010C 85CBCD            MOV     th2,rcap2h
+                                           ; SOURCE LINE # 288
+010F 85CACC            MOV     tl2,rcap2l
+                                           ; SOURCE LINE # 289
+0112 D2CA              SETB    tr2
+                                           ; SOURCE LINE # 290
+0114 22                RET     
+             ; FUNCTION Timer2BaudRate (END)
+
+             ; FUNCTION RecDataTimer (BEGIN)
+                                           ; SOURCE LINE # 295
+                                           ; SOURCE LINE # 296
+                                           ; SOURCE LINE # 298
+0000 C298              CLR     ri
+                                           ; SOURCE LINE # 299
+0002 C200        R     CLR     TimerOut
+                                           ; SOURCE LINE # 301
+0004 758911            MOV     tmod,#011H
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 17  
+
+                                           ; SOURCE LINE # 302
+0007 D28C              SETB    tr0
+                                           ; SOURCE LINE # 303
+0009 750000      R     MOV     delay,#00H
+000C 750032      R     MOV     delay+01H,#032H
+000F         ?C0027:
+                                           ; SOURCE LINE # 304
+                                           ; SOURCE LINE # 305
+000F 7B00              MOV     R3,#00H
+0011 7A1B              MOV     R2,#01BH
+0013 79B7              MOV     R1,#0B7H
+0015 7800              MOV     R0,#00H
+0017 AF00        R     MOV     R7,Fosc+03H
+0019 AE00        R     MOV     R6,Fosc+02H
+001B AD00        R     MOV     R5,Fosc+01H
+001D AC00        R     MOV     R4,Fosc
+001F 120000      E     LCALL   ?C?ULDIV
+0022 E4                CLR     A
+0023 7BE8              MOV     R3,#0E8H
+0025 7A03              MOV     R2,#03H
+0027 F9                MOV     R1,A
+0028 F8                MOV     R0,A
+0029 120000      E     LCALL   ?C?LMUL
+002C C3                CLR     C
+002D E4                CLR     A
+002E 9F                SUBB    A,R7
+002F FF                MOV     R7,A
+0030 E4                CLR     A
+0031 9E                SUBB    A,R6
+0032 FE                MOV     R6,A
+0033 7401              MOV     A,#01H
+0035 9D                SUBB    A,R5
+0036 FD                MOV     R5,A
+0037 E4                CLR     A
+0038 9C                SUBB    A,R4
+0039 FC                MOV     R4,A
+003A E4                CLR     A
+003B FB                MOV     R3,A
+003C 7A01              MOV     R2,#01H
+003E F9                MOV     R1,A
+003F F8                MOV     R0,A
+0040 120000      E     LCALL   ?C?ULDIV
+0043 8F8C              MOV     th0,R7
+                                           ; SOURCE LINE # 306
+0045 7B00              MOV     R3,#00H
+0047 7A1B              MOV     R2,#01BH
+0049 79B7              MOV     R1,#0B7H
+004B 7800              MOV     R0,#00H
+004D AF00        R     MOV     R7,Fosc+03H
+004F AE00        R     MOV     R6,Fosc+02H
+0051 AD00        R     MOV     R5,Fosc+01H
+0053 AC00        R     MOV     R4,Fosc
+0055 120000      E     LCALL   ?C?ULDIV
+0058 E4                CLR     A
+0059 7BE8              MOV     R3,#0E8H
+005B 7A03              MOV     R2,#03H
+005D F9                MOV     R1,A
+005E F8                MOV     R0,A
+005F 120000      E     LCALL   ?C?LMUL
+0062 EF                MOV     A,R7
+0063 F4                CPL     A
+0064 04                INC     A
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 18  
+
+0065 F58A              MOV     tl0,A
+                                           ; SOURCE LINE # 307
+0067 C28D              CLR     tf0
+0069         ?C0030:
+0069 208D04            JB      tf0,?C0029
+                                           ; SOURCE LINE # 308
+006C         ?C0032:
+                                           ; SOURCE LINE # 309
+006C 3098FA            JNB     ri,?C0030
+                                           ; SOURCE LINE # 310
+006F 22                RET     
+                                           ; SOURCE LINE # 311
+                                           ; SOURCE LINE # 312
+0070         ?C0029:
+0070 E500        R     MOV     A,delay+01H
+0072 1500        R     DEC     delay+01H
+0074 7002              JNZ     ?C0040
+0076 1500        R     DEC     delay
+0078         ?C0040:
+0078 E500        R     MOV     A,delay+01H
+007A 4500        R     ORL     A,delay
+007C 7091              JNZ     ?C0027
+007E         ?C0028:
+                                           ; SOURCE LINE # 313
+007E D200        R     SETB    TimerOut
+                                           ; SOURCE LINE # 314
+0080         OK:
+                                           ; SOURCE LINE # 315
+0080         ?C0035:
+0080 22                RET     
+             ; FUNCTION RecDataTimer (END)
+
+             ; FUNCTION ChangeAPtoLD (BEGIN)
+                                           ; SOURCE LINE # 319
+                                           ; SOURCE LINE # 320
+                                           ; SOURCE LINE # 321
+0000 75F687            MOV     CHPENR,#087H
+                                           ; SOURCE LINE # 322
+0003 75F659            MOV     CHPENR,#059H
+                                           ; SOURCE LINE # 323
+0006 75BF03            MOV     CHPCON,#03H
+                                           ; SOURCE LINE # 324
+0009 758AFE            MOV     tl0,#0FEH
+                                           ; SOURCE LINE # 325
+000C 758CFF            MOV     th0,#0FFH
+                                           ; SOURCE LINE # 326
+000F D28C              SETB    tr0
+                                           ; SOURCE LINE # 327
+0011 438701            ORL     pcon,#01H
+                                           ; SOURCE LINE # 331
+0014 75C7AA            MOV     turbo_TA,#0AAH
+                                           ; SOURCE LINE # 332
+0017 75C755            MOV     turbo_TA,#055H
+                                           ; SOURCE LINE # 333
+001A 759F03            MOV     turbo_CHPCON,#03H
+                                           ; SOURCE LINE # 334
+001D 758AFE            MOV     tl0,#0FEH
+                                           ; SOURCE LINE # 335
+0020 758CFF            MOV     th0,#0FFH
+                                           ; SOURCE LINE # 336
+0023 D28C              SETB    tr0
+                                           ; SOURCE LINE # 337
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 19  
+
+0025 438701            ORL     pcon,#01H
+                                           ; SOURCE LINE # 341
+0028 22                RET     
+             ; FUNCTION ChangeAPtoLD (END)
+
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 20  
+
+NAME                                    CLASS   MSPACE  TYPE    OFFSET  SIZE
+====                                    =====   ======  ====    ======  ====
+
+
+turbo_CKCON. . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008EH  1
+P1 . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0090H  1
+et0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00A9H  1
+tf0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008DH  1
+th0. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008CH  1
+BaudRate . . . . . . . . . . . . . . .  PUBLIC   DATA   U_LONG   0000H  4
+Fosc . . . . . . . . . . . . . . . . .  PUBLIC   DATA   U_LONG   0004H  4
+th1. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008DH  1
+th2. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CDH  1
+SerialInt. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  AUTO     DATA   U_INT    0000H  2
+  j. . . . . . . . . . . . . . . . . .  * REG *  DATA   U_INT    001EH  2
+  code_a . . . . . . . . . . . . . . .  * REG *  DATA   U_INT    001CH  2
+  ERROR. . . . . . . . . . . . . . . .  LABEL    CODE   LABEL    -----  -----
+  OK . . . . . . . . . . . . . . . . .  LABEL    CODE   LABEL    -----  -----
+tl0. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008AH  1
+tl1. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   008BH  1
+tl2. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CCH  1
+tr0. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008CH  1
+tr1. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      008EH  1
+tr2. . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00CAH  1
+RecDataTimer . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  delay. . . . . . . . . . . . . . . .  AUTO     DATA   U_INT    0000H  2
+  OK . . . . . . . . . . . . . . . . .  LABEL    CODE   LABEL    -----  -----
+UserCode . . . . . . . . . . . . . . .  PUBLIC   DATA   ARRAY    0008H  8
+Timer0ISR. . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+turbo_TA . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C7H  1
+main . . . . . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+pcon . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0087H  1
+sbuf . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0099H  1
+scon . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0098H  1
+tmod . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0089H  1
+tcon . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   0088H  1
+Smode0BaudRate . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  AUTO     DATA   U_LONG   0000H  4
+Smode1BaudRate . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  AUTO     DATA   U_LONG   0000H  4
+CHPCON . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00BFH  1
+TimerOut . . . . . . . . . . . . . . .  PUBLIC   DATA   BIT      0000H  1
+CHPENR . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00F6H  1
+rcap2h . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CBH  1
+Timer2BaudRate . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+  i. . . . . . . . . . . . . . . . . .  AUTO     DATA   U_LONG   0000H  4
+ea . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00AFH  1
+rcap2l . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00CAH  1
+jmpLDROM . . . . . . . . . . . . . . .  PUBLIC   DATA   BIT      0001H  1
+turbo_CHPCON . . . . . . . . . . . . .  SFR      DATA   U_CHAR   009FH  1
+ie . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00A8H  1
+ChangeAPtoLD . . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+es . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      00ACH  1
+ip . . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00B8H  1
+psw. . . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00D0H  1
+ri . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0098H  1
+ti . . . . . . . . . . . . . . . . . .  ABSBIT   -----  BIT      0099H  1
+t2con. . . . . . . . . . . . . . . . .  SFR      DATA   U_CHAR   00C8H  1
+CodeTotalNumber. . . . . . . . . . . .  PUBLIC   DATA   U_INT    0010H  2
+InitialPowerON . . . . . . . . . . . .  PUBLIC   CODE   PROC     0000H  -----
+
+C51 COMPILER V7.07   APUSFILE                                                              04/03/2006 16:19:37 PAGE 21  
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1012    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     18      16
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

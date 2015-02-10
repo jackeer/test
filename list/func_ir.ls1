@@ -1,0 +1,699 @@
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02
+OBJECT MODULE PLACED IN .\output\func_ir.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE .\output\func_ir.src PR(.\list\func_ir.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\output\func_ir.SRC generated from: func_ir.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\C51.EXE func_ir.c DEBUG OBJECTEXTEND PRINT(.\list\func_ir.lst) SRC
+                             (.\output\func_ir.SRC)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    FUNC_IR
+                       8     
+  0080                 9     P0      DATA    080H
+  0090                10     P1      DATA    090H
+  00A0                11     P2      DATA    0A0H
+  00B0                12     P3      DATA    0B0H
+  00B4                13     T0      BIT     0B0H.4
+  00D6                14     AC      BIT     0D0H.6
+  00B5                15     T1      BIT     0B0H.5
+  00AF                16     EA      BIT     0A8H.7
+  00A8                17     IE      DATA    0A8H
+  00B7                18     RD      BIT     0B0H.7
+  00AC                19     ES      BIT     0A8H.4
+  00B8                20     IP      DATA    0B8H
+  0098                21     RI      BIT     098H.0
+  00B2                22     INT0    BIT     0B0H.2
+  00D7                23     CY      BIT     0D0H.7
+  0099                24     TI      BIT     098H.1
+  00B3                25     INT1    BIT     0B0H.3
+  00BC                26     PS      BIT     0B8H.4
+  0081                27     SP      DATA    081H
+  00D2                28     OV      BIT     0D0H.2
+  00B6                29     WR      BIT     0B0H.6
+  0099                30     SBUF    DATA    099H
+  0087                31     PCON    DATA    087H
+  0098                32     SCON    DATA    098H
+  0089                33     TMOD    DATA    089H
+  0088                34     TCON    DATA    088H
+  0089                35     IE0     BIT     088H.1
+  008B                36     IE1     BIT     088H.3
+  00F0                37     B       DATA    0F0H
+  00E0                38     ACC     DATA    0E0H
+  00A9                39     ET0     BIT     0A8H.1
+  00AB                40     ET1     BIT     0A8H.3
+  008D                41     TF0     BIT     088H.5
+  008F                42     TF1     BIT     088H.7
+  009A                43     RB8     BIT     098H.2
+  008C                44     TH0     DATA    08CH
+  00A8                45     EX0     BIT     0A8H.0
+  0088                46     IT0     BIT     088H.0
+  008D                47     TH1     DATA    08DH
+  009B                48     TB8     BIT     098H.3
+  00AA                49     EX1     BIT     0A8H.2
+  008A                50     IT1     BIT     088H.2
+  00D0                51     P       BIT     0D0H.0
+  009F                52     SM0     BIT     098H.7
+  008A                53     TL0     DATA    08AH
+  009E                54     SM1     BIT     098H.6
+  008B                55     TL1     DATA    08BH
+  009D                56     SM2     BIT     098H.5
+  00B9                57     PT0     BIT     0B8H.1
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     2
+
+  00BB                58     PT1     BIT     0B8H.3
+  00D3                59     RS0     BIT     0D0H.3
+  008C                60     TR0     BIT     088H.4
+  00D4                61     RS1     BIT     0D0H.4
+  008E                62     TR1     BIT     088H.6
+  00B8                63     PX0     BIT     0B8H.0
+  00BA                64     PX1     BIT     0B8H.2
+  0083                65     DPH     DATA    083H
+  0082                66     DPL     DATA    082H
+  00B2                67     IRPORT  BIT     0B0H.2
+  009C                68     REN     BIT     098H.4
+  00B0                69     RXD     BIT     0B0H.0
+  00B1                70     TXD     BIT     0B0H.1
+  00D5                71     F0      BIT     0D0H.5
+  00D0                72     PSW     DATA    0D0H
+                      73     ?PR?IR_Received?FUNC_IR                  SEGMENT CODE 
+                      74     ?DT?IR_Received?FUNC_IR                  SEGMENT DATA OVERLAYABLE 
+                      75     ?CO?FUNC_IR          SEGMENT CODE 
+                      76     ?ID?FUNC_IR          SEGMENT IDATA 
+                      77     ?BI?FUNC_IR          SEGMENT BIT 
+                      78     ?ID?IR_Received?FUNC_IR                  SEGMENT IDATA OVERLAYABLE 
+                      79             PUBLIC  last_code_com
+                      80             PUBLIC  IR_Received_Data
+                      81             PUBLIC  _pbIRKeyTbl
+                      82             PUBLIC  _pbIRSysCode
+                      83             PUBLIC  IR_Received
+                      84     
+----                  85             RSEG  ?DT?IR_Received?FUNC_IR
+0000                  86     ?IR_Received?BYTE:
+0000                  87          count1?040:   DS   1
+0001                  88             ORG  1
+0001                  89          count2?041:   DS   1
+                      90     
+----                  91             RSEG  ?ID?FUNC_IR
+0000                  92     IR_Received_Data:   DS   2
+                      93     
+----                  94             RSEG  ?BI?FUNC_IR
+0000                  95       last_code_com:   DBIT   1
+                      96     
+----                  97             RSEG  ?ID?IR_Received?FUNC_IR
+0000                  98     IR_Received_Data_temp?042:   DS   4
+                      99     
+----                 100             RSEG  ?CO?FUNC_IR
+0000                 101     _pbIRSysCode:
+0000 04              102             DB      004H
+0001 B9              103             DB      0B9H
+                     104     
+0002                 105     _pbIRKeyTbl:
+0002 13              106             DB      013H
+0003 00              107             DB      000H
+0004 01              108             DB      001H
+0005 02              109             DB      002H
+0006 03              110             DB      003H
+0007 04              111             DB      004H
+0008 05              112             DB      005H
+0009 06              113             DB      006H
+000A 07              114             DB      007H
+000B 08              115             DB      008H
+000C 09              116             DB      009H
+000D FF              117             DB      0FFH
+000E FF              118             DB      0FFH
+000F FF              119             DB      0FFH
+0010 FF              120             DB      0FFH
+0011 FF              121             DB      0FFH
+0012 20              122             DB      020H
+0013 23              123             DB      023H
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     3
+
+0014 21              124             DB      021H
+0015 22              125             DB      022H
+0016 0A              126             DB      00AH
+0017 0B              127             DB      00BH
+0018 11              128             DB      011H
+0019 12              129             DB      012H
+001A 0C              130             DB      00CH
+001B 1A              131             DB      01AH
+001C 10              132             DB      010H
+001D 25              133             DB      025H
+001E 24              134             DB      024H
+001F 1F              135             DB      01FH
+0020 FF              136             DB      0FFH
+0021 0D              137             DB      00DH
+0022 27              138             DB      027H
+0023 FF              139             DB      0FFH
+0024 FF              140             DB      0FFH
+0025 4C              141             DB      04CH
+0026 4B              142             DB      04BH
+0027 1D              143             DB      01DH
+0028 FF              144             DB      0FFH
+0029 FF              145             DB      0FFH
+002A 17              146             DB      017H
+002B 16              147             DB      016H
+002C 28              148             DB      028H
+002D 18              149             DB      018H
+002E 00000000        150             DB  000H,000H,000H,000H
+                     151     
+                     152     
+                     153     ; 
+                     154     ; /********************************************************
+                     155     ;   IR Communication Function v0.1(Copyright(c) VXIS Inc. 2002)
+                     156     ;   v0.0
+                     157     ;   Data:2002.08.02
+                     158     ;   by P.J. Yang
+                     159     ;   v0.1
+                     160     ;   Data:2003.01.15
+                     161     ;   by P.J. Yang
+                     162     ;   Modify:1.儲存變數減少為Custom Code和Data Code
+                     163     ;        2.將最末端 last_code_com = 0; 程式移至 IF 判斷式外，避免
+                     164     ;          無法連續按同一按鈕的問題。
+                     165     ;   Data:2003.01.16
+                     166     ;   by P.J. Yang
+                     167     ;   Modify:1.修正持續壓住按鈕，朴L法偵測的問題。
+                     168     ; ********************************************************/
+                     169     ; 
+                     170     ; #include <reg51.h>
+                     171     ; #include <stdio.h>
+                     172     ; #include <intrins.h>
+                     173     ; #include <System.h>
+                     174     ; #include <Macro.h>
+                     175     ; #include "Func_ir.h"
+                     176     ; 
+                     177     ; extern void IR_Received (void);
+                     178     ; 
+                     179     ; BYTE idata IR_Received_Data[0x02];
+                     180     ; BOOL last_code_com;   // A flag to show whether the last code receive is complete
+                     181     ;                               // 0 => Not complete
+                     182     ;                               // 1 => Completed
+                     183     ; 
+                     184     ; sbit IRPORT = P3^2;
+                     185     ; 
+                     186     ; 
+                     187     ; /************************************************************************************
+                     188     ; Function: IR_Received
+                     189     ; Active Interrupt: INT0
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     4
+
+                     190     ; Input:
+                     191     ;       1.IRPORT
+                     192     ;       2.last_code_com => A flag to show whether the received IR code is processed complet
+                             e
+                     193     ;                               0 => Not complete
+                     194     ;                               1 => Completed
+                     195     ; Output:
+                     196     ;       1.IR_Received_Data[0] = Data_Code
+                     197     ;         IR_Received_Data[1] = Custom_Code
+                     198     ; 
+                     199     ; How to use:
+                     200     ;       1.Set INT0 enable
+                     201     ;       2.Add below program code to your Code:
+                     202     ;            extern char idata IR_Received_Data[0x04];
+                     203     ;          extern bit last_code_com;
+                     204     ;       3.Then,your program can detect whether new IR_code have received by detecting
+                     205     ;         the "last_code_com" flag.
+                     206     ;         last_code_com = 0 => New IR_code have received
+                     207     ;                         1 => No new IR_code
+                     208     ;       4.After processing New IR_code,you should reset the "last_code_com" flag to '1'.
+                     209     ; 
+                     210     ; ************************************************************************************/
+                     211     ; 
+----                 212     CSEG    AT      00003H
+0003 020000   F      213             LJMP    IR_Received
+                     214     
+                     215     ; void IR_Received() interrupt EX0INT using EX0INT_BANK
+                     216     
+----                 217             RSEG  ?PR?IR_Received?FUNC_IR
+                     218             USING   1
+0000                 219     IR_Received:
+0000 C0E0            220             PUSH    ACC
+0002 C0F0            221             PUSH    B
+0004 C083            222             PUSH    DPH
+0006 C082            223             PUSH    DPL
+0008 C0D0            224             PUSH    PSW
+                     225             USING   1
+000A 75D008          226             MOV     PSW,#08H
+                     227                             ; SOURCE LINE # 60
+                     228     ; {
+                     229     ;   unsigned char count1=0;
+                     230                             ; SOURCE LINE # 62
+000D 750000   F      231             MOV     count1?040,#00H
+                     232     ;   unsigned char count2=0;
+                     233                             ; SOURCE LINE # 63
+0010 750000   F      234             MOV     count2?041,#00H
+                     235     ;   char idata IR_Received_Data_temp[4];
+                     236     ; 
+                     237     ;   if (!last_code_com)         // Check whether the last code receive is complete
+                     238                             ; SOURCE LINE # 66
+0013 200003   F      239             JB      last_code_com,$ + 6H
+0016 020000   F      240             LJMP    ?IR_Received?End_Int0
+                     241     ;   {
+                     242                             ; SOURCE LINE # 67
+                     243     ;       goto End_Int0;
+                     244                             ; SOURCE LINE # 68
+                     245     ;   }
+                     246                             ; SOURCE LINE # 69
+0019                 247     ?C0001:
+                     248     ; 
+                     249     ;   EA = 0;                     // Disable all interrupt
+                     250                             ; SOURCE LINE # 71
+0019 C2AF            251             CLR     EA
+                     252     ; 
+                     253     ;   // Check leader code. Signal will keep low until 9.2ms,then go high.
+                     254     ;   // If signal go high before 9.2ms,it must be a noise and keep it out
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     5
+
+                     255     ;   // Delay xx ms
+                     256     ;   for (count1=0;count1<0x03;count1++)
+                     257                             ; SOURCE LINE # 76
+001B 750000   F      258             MOV     count1?040,#00H
+001E                 259     ?C0003:
+                     260     ;   {
+                     261                             ; SOURCE LINE # 77
+                     262     ;     for (count2=0;count2<0x96;count2++)
+                     263                             ; SOURCE LINE # 78
+001E 750000   F      264             MOV     count2?041,#00H
+0021                 265     ?C0006:
+                     266     ;     {
+                     267                             ; SOURCE LINE # 79
+                     268     ;     }
+                     269                             ; SOURCE LINE # 80
+0021 0500     F      270             INC     count2?041
+0023 E500     F      271             MOV     A,count2?041
+0025 B496F9          272             CJNE    A,#096H,?C0006
+                     273     ;   }
+                     274                             ; SOURCE LINE # 81
+0028                 275     ?C0005:
+0028 0500     F      276             INC     count1?040
+002A E500     F      277             MOV     A,count1?040
+002C B403EF          278             CJNE    A,#03H,?C0003
+002F                 279     ?C0004:
+                     280     ;   // Check whether the signal go high and delay xx ms
+                     281     ;   for (count1=0;count1<0xff;count1++)
+                     282                             ; SOURCE LINE # 83
+002F 750000   F      283             MOV     count1?040,#00H
+0032                 284     ?C0009:
+                     285     ;   {
+                     286                             ; SOURCE LINE # 84
+                     287     ;    if (IRPORT)
+                     288                             ; SOURCE LINE # 85
+0032 30B203          289             JNB     IRPORT,$ + 6H
+0035 020000   F      290             LJMP    ?IR_Received?End_Int0
+                     291     ;    {
+                     292                             ; SOURCE LINE # 86
+                     293     ;     goto End_Int0;                    // The signal is noise
+                     294                             ; SOURCE LINE # 87
+                     295     ;    }
+                     296                             ; SOURCE LINE # 88
+0038                 297     ?C0012:
+                     298     ;   }
+                     299                             ; SOURCE LINE # 89
+0038                 300     ?C0011:
+0038 0500     F      301             INC     count1?040
+003A E500     F      302             MOV     A,count1?040
+003C B4FFF3          303             CJNE    A,#0FFH,?C0009
+003F                 304     ?C0013:
+                     305     ; 
+                     306     ;   // Start Receiving 32 bits data (customer code + data code)
+                     307     ;   while (!IRPORT)                     // wait until IRPORT = 1
+                     308                             ; SOURCE LINE # 92
+003F 30B2FD          309             JNB     IRPORT,?C0013
+                     310     ;   {                                   // waiting for the end of the carrier waveform of l
+                             eader code
+                     311                             ; SOURCE LINE # 93
+                     312     ;   }
+                     313                             ; SOURCE LINE # 94
+0042                 314     ?C0014:
+0042                 315     ?C0015:
+                     316     ;   while (!IRPORT)                     // wait until IRPORT = 1
+                     317                             ; SOURCE LINE # 95
+0042 30B2FD          318             JNB     IRPORT,?C0015
+                     319     ;   {                                   // Check the carrier waveform
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     6
+
+                     320                             ; SOURCE LINE # 96
+                     321     ;   }
+                     322                             ; SOURCE LINE # 97
+0045                 323     ?C0016:
+0045                 324     ?C0017:
+                     325     ;   while (IRPORT)                      // wait until IRPORT = 0
+                     326                             ; SOURCE LINE # 98
+0045 20B2FD          327             JB      IRPORT,?C0017
+                     328     ;   {                                   // waiting for the carrier waveform of custom code
+                     329                             ; SOURCE LINE # 99
+                     330     ;   }
+                     331                             ; SOURCE LINE # 100
+0048                 332     ?C0018:
+                     333     ; 
+                     334     ;   for (count1=0;count1<0x20;count1++)
+                     335                             ; SOURCE LINE # 102
+0048 750000   F      336             MOV     count1?040,#00H
+004B                 337     ?C0019:
+                     338     ;   {
+                     339                             ; SOURCE LINE # 103
+004B                 340     ?C0022:
+                     341     ;     while (!IRPORT)                   // wait until IRPORT = 1
+                     342                             ; SOURCE LINE # 104
+004B 30B2FD          343             JNB     IRPORT,?C0022
+                     344     ;     {                                 // waiting for the end of the carrier waveform of c
+                             ustom code
+                     345                             ; SOURCE LINE # 105
+                     346     ;     }
+                     347                             ; SOURCE LINE # 106
+004E                 348     ?C0023:
+                     349     ;     // To know the content of the code by checking how long it is
+                     350     ;     for (count2=0;count2<0x7f;count2++)
+                     351                             ; SOURCE LINE # 108
+004E 750000   F      352             MOV     count2?041,#00H
+0051                 353     ?C0024:
+                     354     ;     {
+                     355                             ; SOURCE LINE # 109
+                     356     ;      _nop_();
+                     357                             ; SOURCE LINE # 110
+0051 00              358             NOP     
+                     359     ;      _nop_();
+                     360                             ; SOURCE LINE # 111
+0052 00              361             NOP     
+                     362     ;      if (!IRPORT)
+                     363                             ; SOURCE LINE # 112
+0053 30B207          364             JNB     IRPORT,?C0025
+                     365     ;      {
+                     366                             ; SOURCE LINE # 113
+                     367     ;       break;
+                     368                             ; SOURCE LINE # 114
+                     369     ;      }
+                     370                             ; SOURCE LINE # 115
+0056                 371     ?C0027:
+                     372     ;     }
+                     373                             ; SOURCE LINE # 116
+0056                 374     ?C0026:
+0056 0500     F      375             INC     count2?041
+0058 E500     F      376             MOV     A,count2?041
+005A B47FF4          377             CJNE    A,#07FH,?C0024
+005D                 378     ?C0025:
+                     379     ; 
+                     380     ;     // Save the received bit to carry flag
+                     381     ;     CY = IRPORT;
+                     382                             ; SOURCE LINE # 119
+005D A2B2            383             MOV     C,IRPORT
+                     384     ; 
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     7
+
+                     385     ;     // Check whether the code is the same code.
+                     386     ;     for (count2=0;count2<=0xff;count2++)
+                     387                             ; SOURCE LINE # 122
+005F 750000   F      388             MOV     count2?041,#00H
+0062                 389     ?C0028:
+                     390     ;     {
+                     391                             ; SOURCE LINE # 123
+                     392     ;      _nop_();
+                     393                             ; SOURCE LINE # 124
+0062 00              394             NOP     
+                     395     ;      _nop_();
+                     396                             ; SOURCE LINE # 125
+0063 00              397             NOP     
+                     398     ;      if (!IRPORT)
+                     399                             ; SOURCE LINE # 126
+0064 20B202          400             JB      IRPORT,?C0031
+                     401     ;      {
+                     402                             ; SOURCE LINE # 127
+                     403     ;       break;
+                     404                             ; SOURCE LINE # 128
+0067 8012            405             SJMP    ?C0029
+                     406     ;      }
+                     407                             ; SOURCE LINE # 129
+0069                 408     ?C0031:
+                     409     ;      else if (count2 == 0xff)
+                     410                             ; SOURCE LINE # 130
+0069 E500     F      411             MOV     A,count2?041
+006B B4FF04          412             CJNE    A,#0FFH,?C0030
+                     413     ;      {
+                     414                             ; SOURCE LINE # 131
+                     415     ;         last_code_com = 0;    // Set the flag to show New IR_Code have received
+                     416                             ; SOURCE LINE # 132
+006E C200     F      417             CLR     last_code_com
+                     418     ;         goto End_Int0;
+                     419                             ; SOURCE LINE # 133
+0070 8047            420             SJMP    ?IR_Received?End_Int0
+                     421     ;      }
+                     422                             ; SOURCE LINE # 134
+                     423     ;     }
+                     424                             ; SOURCE LINE # 135
+0072                 425     ?C0030:
+0072 0500     F      426             INC     count2?041
+0074 E500     F      427             MOV     A,count2?041
+0076 D3              428             SETB    C
+0077 94FF            429             SUBB    A,#0FFH
+0079 40E7            430             JC      ?C0028
+007B                 431     ?C0029:
+                     432     ; 
+                     433     ;     // Save the received bit to IR_Received_Data_temp by rotating ACC and Carrier
+                     434     ;     ACC = IR_Received_Data_temp[0];
+                     435                             ; SOURCE LINE # 138
+                     436     ;     #pragma asm
+                     437     ;      rrc A
+007B 13              438               rrc A
+                     439     ;     #pragma endasm
+                     440     ;     IR_Received_Data_temp[0] = ACC;
+                     441                             ; SOURCE LINE # 142
+007C 7800     F      442             MOV     R0,#LOW (IR_Received_Data_temp?042)
+007E F6              443             MOV     @R0,A
+                     444     ; 
+                     445     ;     ACC = IR_Received_Data_temp[1];
+                     446                             ; SOURCE LINE # 144
+                     447     ;     #pragma asm
+                     448     ;      rrc A
+007F 13              449               rrc A
+                     450     ;     #pragma endasm
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     8
+
+                     451     ;     IR_Received_Data_temp[1] = ACC;
+                     452                             ; SOURCE LINE # 148
+0080 7800     F      453             MOV     R0,#LOW (IR_Received_Data_temp?042+01H)
+0082 F6              454             MOV     @R0,A
+                     455     ; 
+                     456     ;     ACC = IR_Received_Data_temp[2];
+                     457                             ; SOURCE LINE # 150
+                     458     ;     #pragma asm
+                     459     ;      rrc A
+0083 13              460               rrc A
+                     461     ;     #pragma endasm
+                     462     ;     IR_Received_Data_temp[2] = ACC;
+                     463                             ; SOURCE LINE # 154
+0084 7800     F      464             MOV     R0,#LOW (IR_Received_Data_temp?042+02H)
+0086 F6              465             MOV     @R0,A
+                     466     ; 
+                     467     ;     ACC = IR_Received_Data_temp[3];
+                     468                             ; SOURCE LINE # 156
+                     469     ;     #pragma asm
+                     470     ;      rrc A
+0087 13              471               rrc A
+                     472     ;     #pragma endasm
+                     473     ;     IR_Received_Data_temp[3] = ACC;
+                     474                             ; SOURCE LINE # 160
+0088 7800     F      475             MOV     R0,#LOW (IR_Received_Data_temp?042+03H)
+008A F6              476             MOV     @R0,A
+                     477     ;   }
+                     478                             ; SOURCE LINE # 161
+008B 0500     F      479             INC     count1?040
+008D E500     F      480             MOV     A,count1?040
+008F 6420            481             XRL     A,#020H
+0091 70B8            482             JNZ     ?C0019
+0093                 483     ?C0020:
+                     484     ; 
+                     485     ;   // Check whether IR_Received_Data_temp and IR_Received_Data is the same
+                     486     ;   if (IR_Received_Data[0] != IR_Received_Data_temp[1] || IR_Received_Data[1] != IR_Receiv
+                             ed_Data_temp[3])
+                     487                             ; SOURCE LINE # 164
+0093 7800     F      488             MOV     R0,#LOW (IR_Received_Data_temp?042+01H)
+0095 E6              489             MOV     A,@R0
+0096 FF              490             MOV     R7,A
+0097 7800     F      491             MOV     R0,#LOW (IR_Received_Data)
+0099 E6              492             MOV     A,@R0
+009A B50F08          493             CJNE    A,AR7,?C0035
+009D 7900     F      494             MOV     R1,#LOW (IR_Received_Data+01H)
+009F E7              495             MOV     A,@R1
+00A0 7800     F      496             MOV     R0,#LOW (IR_Received_Data_temp?042+03H)
+00A2 66              497             XRL     A,@R0
+00A3 600A            498             JZ      ?C0034
+00A5                 499     ?C0035:
+                     500     ;   {
+                     501                             ; SOURCE LINE # 165
+                     502     ;    IR_Received_Data[0] = IR_Received_Data_temp[1];
+                     503                             ; SOURCE LINE # 166
+00A5 7800     F      504             MOV     R0,#LOW (IR_Received_Data)
+00A7 A60F            505             MOV     @R0,AR7
+                     506     ;    IR_Received_Data[1] = IR_Received_Data_temp[3];
+                     507                             ; SOURCE LINE # 167
+00A9 7800     F      508             MOV     R0,#LOW (IR_Received_Data_temp?042+03H)
+00AB E6              509             MOV     A,@R0
+00AC 7800     F      510             MOV     R0,#LOW (IR_Received_Data+01H)
+00AE F6              511             MOV     @R0,A
+                     512     ;   }
+                     513                             ; SOURCE LINE # 168
+00AF                 514     ?C0034:
+                     515     ;   last_code_com = 0;                  // Set the flag to show New IR_Code have received
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE     9
+
+                     516                             ; SOURCE LINE # 169
+00AF C200     F      517             CLR     last_code_com
+                     518     ; 
+                     519     ; IR_Received_Data[1] = _pbIRKeyTbl[IR_Received_Data[1]];
+                     520                             ; SOURCE LINE # 171
+00B1 7800     F      521             MOV     R0,#LOW (IR_Received_Data+01H)
+00B3 E6              522             MOV     A,@R0
+00B4 900000   F      523             MOV     DPTR,#_pbIRKeyTbl
+00B7 93              524             MOVC    A,@A+DPTR
+00B8 F6              525             MOV     @R0,A
+                     526     ;       
+                     527     ; End_Int0:
+                     528                             ; SOURCE LINE # 173
+00B9                 529     ?IR_Received?End_Int0:
+                     530     ;   EA = 1;     // Enable all interrupts
+                     531                             ; SOURCE LINE # 174
+00B9 D2AF            532             SETB    EA
+                     533     ; }
+                     534                             ; SOURCE LINE # 175
+00BB D0D0            535             POP     PSW
+00BD D082            536             POP     DPL
+00BF D083            537             POP     DPH
+00C1 D0F0            538             POP     B
+00C3 D0E0            539             POP     ACC
+00C5 32              540             RETI    
+                     541     ; END OF IR_Received
+                     542     
+                     543             END
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE    10
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                    T Y P E  V A L U E   ATTRIBUTES
+
+?BI?FUNC_IR . . . . . . .  B SEG    0001H       REL=UNIT
+?C0001. . . . . . . . . .  C ADDR   0019H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0003. . . . . . . . . .  C ADDR   001EH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0004. . . . . . . . . .  C ADDR   002FH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0005. . . . . . . . . .  C ADDR   0028H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0006. . . . . . . . . .  C ADDR   0021H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0009. . . . . . . . . .  C ADDR   0032H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0011. . . . . . . . . .  C ADDR   0038H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0012. . . . . . . . . .  C ADDR   0038H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0013. . . . . . . . . .  C ADDR   003FH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0014. . . . . . . . . .  C ADDR   0042H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0015. . . . . . . . . .  C ADDR   0042H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0016. . . . . . . . . .  C ADDR   0045H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0017. . . . . . . . . .  C ADDR   0045H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0018. . . . . . . . . .  C ADDR   0048H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0019. . . . . . . . . .  C ADDR   004BH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0020. . . . . . . . . .  C ADDR   0093H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0022. . . . . . . . . .  C ADDR   004BH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0023. . . . . . . . . .  C ADDR   004EH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0024. . . . . . . . . .  C ADDR   0051H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0025. . . . . . . . . .  C ADDR   005DH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0026. . . . . . . . . .  C ADDR   0056H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0027. . . . . . . . . .  C ADDR   0056H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0028. . . . . . . . . .  C ADDR   0062H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0029. . . . . . . . . .  C ADDR   007BH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0030. . . . . . . . . .  C ADDR   0072H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0031. . . . . . . . . .  C ADDR   0069H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0034. . . . . . . . . .  C ADDR   00AFH   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?C0035. . . . . . . . . .  C ADDR   00A5H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?CO?FUNC_IR . . . . . . .  C SEG    0032H       REL=UNIT
+?DT?IR_RECEIVED?FUNC_IR .  D SEG    0002H       REL=UNIT
+?ID?FUNC_IR . . . . . . .  I SEG    0002H       REL=UNIT
+?ID?IR_RECEIVED?FUNC_IR .  I SEG    0004H       REL=UNIT
+?IR_RECEIVED?BYTE . . . .  D ADDR   0000H   R   SEG=?DT?IR_RECEIVED?FUNC_IR
+?IR_RECEIVED?END_INT0 . .  C ADDR   00B9H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+?PR?IR_RECEIVED?FUNC_IR .  C SEG    00C6H       REL=UNIT
+AC. . . . . . . . . . . .  B ADDR   00D0H.6 A   
+ACC . . . . . . . . . . .  D ADDR   00E0H   A   
+AR7 . . . . . . . . . . .  D ADDR   000FH   A   
+B . . . . . . . . . . . .  D ADDR   00F0H   A   
+COUNT1?040. . . . . . . .  D ADDR   0000H   R   SEG=?DT?IR_RECEIVED?FUNC_IR
+COUNT2?041. . . . . . . .  D ADDR   0001H   R   SEG=?DT?IR_RECEIVED?FUNC_IR
+CY. . . . . . . . . . . .  B ADDR   00D0H.7 A   
+DPH . . . . . . . . . . .  D ADDR   0083H   A   
+DPL . . . . . . . . . . .  D ADDR   0082H   A   
+EA. . . . . . . . . . . .  B ADDR   00A8H.7 A   
+ES. . . . . . . . . . . .  B ADDR   00A8H.4 A   
+ET0 . . . . . . . . . . .  B ADDR   00A8H.1 A   
+ET1 . . . . . . . . . . .  B ADDR   00A8H.3 A   
+EX0 . . . . . . . . . . .  B ADDR   00A8H.0 A   
+EX1 . . . . . . . . . . .  B ADDR   00A8H.2 A   
+F0. . . . . . . . . . . .  B ADDR   00D0H.5 A   
+FUNC_IR . . . . . . . . .  N NUMB   -----       
+IE. . . . . . . . . . . .  D ADDR   00A8H   A   
+IE0 . . . . . . . . . . .  B ADDR   0088H.1 A   
+IE1 . . . . . . . . . . .  B ADDR   0088H.3 A   
+INT0. . . . . . . . . . .  B ADDR   00B0H.2 A   
+INT1. . . . . . . . . . .  B ADDR   00B0H.3 A   
+IP. . . . . . . . . . . .  D ADDR   00B8H   A   
+IRPORT. . . . . . . . . .  B ADDR   00B0H.2 A   
+A51 MACRO ASSEMBLER  FUNC_IR                                                              06/29/2013 15:30:10 PAGE    11
+
+IR_RECEIVED . . . . . . .  C ADDR   0000H   R   SEG=?PR?IR_RECEIVED?FUNC_IR
+IR_RECEIVED_DATA. . . . .  I ADDR   0000H   R   SEG=?ID?FUNC_IR
+IR_RECEIVED_DATA_TEMP?042  I ADDR   0000H   R   SEG=?ID?IR_RECEIVED?FUNC_IR
+IT0 . . . . . . . . . . .  B ADDR   0088H.0 A   
+IT1 . . . . . . . . . . .  B ADDR   0088H.2 A   
+LAST_CODE_COM . . . . . .  B ADDR   0000H.0 R   SEG=?BI?FUNC_IR
+OV. . . . . . . . . . . .  B ADDR   00D0H.2 A   
+P . . . . . . . . . . . .  B ADDR   00D0H.0 A   
+P0. . . . . . . . . . . .  D ADDR   0080H   A   
+P1. . . . . . . . . . . .  D ADDR   0090H   A   
+P2. . . . . . . . . . . .  D ADDR   00A0H   A   
+P3. . . . . . . . . . . .  D ADDR   00B0H   A   
+PCON. . . . . . . . . . .  D ADDR   0087H   A   
+PS. . . . . . . . . . . .  B ADDR   00B8H.4 A   
+PSW . . . . . . . . . . .  D ADDR   00D0H   A   
+PT0 . . . . . . . . . . .  B ADDR   00B8H.1 A   
+PT1 . . . . . . . . . . .  B ADDR   00B8H.3 A   
+PX0 . . . . . . . . . . .  B ADDR   00B8H.0 A   
+PX1 . . . . . . . . . . .  B ADDR   00B8H.2 A   
+RB8 . . . . . . . . . . .  B ADDR   0098H.2 A   
+RD. . . . . . . . . . . .  B ADDR   00B0H.7 A   
+REN . . . . . . . . . . .  B ADDR   0098H.4 A   
+RI. . . . . . . . . . . .  B ADDR   0098H.0 A   
+RS0 . . . . . . . . . . .  B ADDR   00D0H.3 A   
+RS1 . . . . . . . . . . .  B ADDR   00D0H.4 A   
+RXD . . . . . . . . . . .  B ADDR   00B0H.0 A   
+SBUF. . . . . . . . . . .  D ADDR   0099H   A   
+SCON. . . . . . . . . . .  D ADDR   0098H   A   
+SM0 . . . . . . . . . . .  B ADDR   0098H.7 A   
+SM1 . . . . . . . . . . .  B ADDR   0098H.6 A   
+SM2 . . . . . . . . . . .  B ADDR   0098H.5 A   
+SP. . . . . . . . . . . .  D ADDR   0081H   A   
+T0. . . . . . . . . . . .  B ADDR   00B0H.4 A   
+T1. . . . . . . . . . . .  B ADDR   00B0H.5 A   
+TB8 . . . . . . . . . . .  B ADDR   0098H.3 A   
+TCON. . . . . . . . . . .  D ADDR   0088H   A   
+TF0 . . . . . . . . . . .  B ADDR   0088H.5 A   
+TF1 . . . . . . . . . . .  B ADDR   0088H.7 A   
+TH0 . . . . . . . . . . .  D ADDR   008CH   A   
+TH1 . . . . . . . . . . .  D ADDR   008DH   A   
+TI. . . . . . . . . . . .  B ADDR   0098H.1 A   
+TL0 . . . . . . . . . . .  D ADDR   008AH   A   
+TL1 . . . . . . . . . . .  D ADDR   008BH   A   
+TMOD. . . . . . . . . . .  D ADDR   0089H   A   
+TR0 . . . . . . . . . . .  B ADDR   0088H.4 A   
+TR1 . . . . . . . . . . .  B ADDR   0088H.6 A   
+TXD . . . . . . . . . . .  B ADDR   00B0H.1 A   
+WR. . . . . . . . . . . .  B ADDR   00B0H.6 A   
+_PBIRKEYTBL . . . . . . .  C ADDR   0002H   R   SEG=?CO?FUNC_IR
+_PBIRSYSCODE. . . . . . .  C ADDR   0000H   R   SEG=?CO?FUNC_IR
+
+
+REGISTER BANK(S) USED: 0 1 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

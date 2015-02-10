@@ -1,0 +1,212 @@
+C51 COMPILER V9.02   MAIN                                                                  06/29/2013 15:30:09 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\output\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c DEBUG OBJECTEXTEND PRINT(.\list\main.lst) OBJECT(.\output\main.obj)
+
+line level    source
+
+   1          
+   2          #include <Def_INC.h>
+   3          #include <Test.h>
+   4          #include <View.h>
+   5          #include <System.h>
+   6          #include <Macro.h>
+   7          
+   8          
+   9          BYTE xdata _bFocusViewIndex;
+  10          BYTE xdata _bKeyProcessViewIndex;
+  11          
+  12          BYTE xdata UI_kwy_buffer,Time_Out;
+  13          WORD xdata Time_Count;
+  14          BYTE xdata STATUS_TSK;
+  15          BOOL keypress;
+  16          
+  17          /*
+  18          #ifdef Time0_support
+  19          #define PERIOD     -250
+  20          #endif
+  21          */
+  22          /*
+  23          enum ALERT_BUTTON_TYPE
+  24          {
+  25            ALERT_BTN_OK,
+  26            ALERT_BTN_CANCEL,
+  27            MAX_ALERT_BTN_NUM
+  28          };
+  29          */
+  30          /*
+  31          struct Clock_Show
+  32          {
+  33            BYTE Hour;
+  34            BYTE Min;
+  35            BYTE Sec;
+  36            
+  37          }Clock_Show;
+  38          BYTE Clock_Show;
+  39          */
+  40          
+  41          //BYTE SEC_timer_0;
+  42          
+  43          BYTE Init_All_Func(BYTE TSK)
+  44          {
+  45   1              BYTE init_Tsk = TSK;
+  46   1              if(init_Tsk >=UI_MAX || Time_Out >= 100)
+  47   1                      init_Tsk = UI_INIT;
+  48   1              else if (!init_Tsk)
+  49   1                      init_Tsk = UI_INIT;
+  50   1              else
+  51   1                      init_Tsk = UI_DETECT;
+  52   1              return init_Tsk;
+  53   1      }
+  54          
+  55          void InitIO(void)
+C51 COMPILER V9.02   MAIN                                                                  06/29/2013 15:30:09 PAGE 2   
+
+  56          {
+  57   1        P2 = 0xFF;
+  58   1      }
+  59          
+  60          void InitTimer(void)
+  61          {
+  62   1        TMOD = 0x12; //timer0 = mode2, timer1 = mode1
+  63   1        TH0 = (65535L - 65000L) / 256;        //timer0 = 60 mSec
+  64   1        TL0 = (65535L -65000L) % 256;
+  65   1        IE = 0x82; // EA = 1 ,ET0 = 1
+  66   1        IP = 0x02; 
+  67   1      }
+  68          
+  69          void timer_0(void) interrupt T0INT using TIMER0_BANK
+  70          {
+  71   1              MStopTimer0Cnt();
+  72   1      
+  73   1              InitTimer();
+  74   1      
+  75   1              Time_Out++;
+  76   1      
+  77   1              MTrgTimer0Cnt();
+  78   1      }
+  79          void main(void)
+  80          {
+  81   1      BYTE xdata Task_loop;
+  82   1      /*
+  83   1      #ifdef Time0_support
+  84   1      TH0 = (unsigned char) PERIOD;          // set timer period
+  85   1      TL0 = (unsigned char) PERIOD;
+  86   1      TMOD = TMOD | 0x02;                    // select mode 2
+  87   1      TR0 = 1;                               // start timer 0
+  88   1      ET0 = 1;                               // enable timer 0 interrupt
+  89   1      EA  = 1;                               // global interrupt enable
+  90   1      #endif
+  91   1      SCON  = 0x50;               // SCON: mode 1, 8-bit UART, enable rcvr
+  92   1      TMOD |= 0x20;               // TMOD: timer 1, mode 2, 8-bit reload
+  93   1      TH1   = 221;                // TH1:  reload value for 1200 baud @ 16MHz
+  94   1      TR1   = 1;                  // TR1:  timer 1 run
+  95   1      TI    = 1;                  // TI:   set TI to send first char of UART
+  96   1      */
+  97   1              InitTimer();
+  98   1              TR0 = 1;
+  99   1      
+ 100   1              Task_loop = Init_All_Func(STATUS_TSK);
+ 101   1      
+ 102   1      while(1)
+ 103   1      {
+ 104   2      
+ 105   2              switch(Task_loop)
+ 106   2              {
+ 107   3                      case UI_WAIT_INIT:
+ 108   3                              if (Time_Out >= 100)
+ 109   3                                      STATUS_TSK = UI_DETECT;
+ 110   3                              break;
+ 111   3                              
+ 112   3                      case UI_INIT:
+ 113   3                              STATUS_TSK = UI_WAIT_INIT;
+ 114   3                              InitIO();
+ 115   3                              InitTimer();
+ 116   3                              Time_Count = 0;
+ 117   3                              Time_Out = 0;
+C51 COMPILER V9.02   MAIN                                                                  06/29/2013 15:30:09 PAGE 3   
+
+ 118   3                              UI_kwy_buffer = 0xFF;
+ 119   3                              _bFocusViewIndex = 0;
+ 120   3                              _bKeyProcessViewIndex = 0;
+ 121   3      
+ 122   3                              TR0 = 1;
+ 123   3                              break;
+ 124   3                              
+ 125   3                      case UI_DETECT:
+ 126   3                              if(P0 != 0xFF)
+ 127   3                                      {
+ 128   4                                      if(!keypress)
+ 129   4                                              {
+ 130   5                                              if(key_Power)
+ 131   5                                                      break;
+ 132   5                                              else
+ 133   5                                                      {
+ 134   6                                                      keypress = 1;
+ 135   6                                                      vViewInit();
+ 136   6                                                      STATUS_TSK = UI_RUN;
+ 137   6                                                      Time_Out = 0;
+ 138   6                                                      break;
+ 139   6                                                      }
+ 140   5                                              }
+ 141   4                                      }
+ 142   3                              else
+ 143   3                                      {
+ 144   4                                      keypress = 0;
+ 145   4                                      break;
+ 146   4                                      }
+ 147   3                      
+ 148   3                      case UI_RUN:
+ 149   3                              vViewProcess();
+ 150   3                              P2 = UI_kwy_buffer;
+ 151   3      /*
+ 152   3                              if(Time_Out > 1000L)
+ 153   3                                      {
+ 154   3      //                              STATUS_TSK = UI_DETECT;
+ 155   3                                      Time_Out = 0;
+ 156   3                                      }
+ 157   3      */
+ 158   3                              break;
+ 159   3                              
+ 160   3                      case UI_STANDBY:
+ 161   3                              STATUS_TSK = UI_INIT;
+ 162   3                              break;
+ 163   3                              
+ 164   3                      default:
+ 165   3                              break;
+ 166   3              }
+ 167   2      
+ 168   2              Task_loop = STATUS_TSK;
+ 169   2      
+ 170   2      }
+ 171   1      
+ 172   1      //      AUTO_COLOR_TEST();
+ 173   1      //      getchar();
+ 174   1      
+ 175   1      //      try_test();
+ 176   1      //      Test_Char_Key();
+ 177   1      /*
+ 178   1      #pragma asm
+ 179   1      
+C51 COMPILER V9.02   MAIN                                                                  06/29/2013 15:30:09 PAGE 4   
+
+ 180   1      #pragma endasm
+ 181   1      */
+ 182   1      }
+ 183          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    227    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      7       1
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

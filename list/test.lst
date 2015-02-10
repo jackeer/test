@@ -1,0 +1,495 @@
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 1   
+
+
+C51 COMPILER V7.07, COMPILATION OF MODULE TEST
+OBJECT MODULE PLACED IN .\output\test.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE test.c DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.\list\test.lst) O
+                    -BJECT(.\output\test.obj)
+
+stmt level    source
+
+   1          #include <Def_INC.h>
+   1      =1  
+   2      =1  #ifndef _DEF_INC_H_
+   3      =1  #define _DEF_INC_H_
+   4      =1  
+   5      =1  
+   6      =1  #include <stdio.h>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  STDIO.H
+   3      =2  
+   4      =2  Prototypes for standard I/O functions.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __STDIO_H__
+  10      =2  #define __STDIO_H__
+  11      =2  
+  12      =2  #ifndef EOF
+  13      =2   #define EOF -1
+  14      =2  #endif
+  15      =2  
+  16      =2  #ifndef NULL
+  17      =2   #define NULL ((void *) 0)
+  18      =2  #endif
+  19      =2  
+  20      =2  #ifndef _SIZE_T
+  21      =2   #define _SIZE_T
+  22      =2   typedef unsigned int size_t;
+  23      =2  #endif
+  24      =2  
+  25      =2  #pragma SAVE
+  26      =2  #pragma REGPARMS
+  27      =2  extern char _getkey (void);
+  28      =2  extern char getchar (void);
+  29      =2  extern char ungetchar (char);
+  30      =2  extern char putchar (char);
+  31      =2  extern int printf   (const char *, ...);
+  32      =2  extern int sprintf  (char *, const char *, ...);
+  33      =2  extern int vprintf  (const char *, char *);
+  34      =2  extern int vsprintf (char *, const char *, char *);
+  35      =2  extern char *gets (char *, int n);
+  36      =2  extern int scanf (const char *, ...);
+  37      =2  extern int sscanf (char *, const char *, ...);
+  38      =2  extern int puts (const char *);
+  39      =2  
+  40      =2  #pragma RESTORE
+  41      =2  
+  42      =2  #endif
+  43      =2  
+   7      =1  #include <reg51.h>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  REG51.H
+   3      =2  
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 2   
+
+   4      =2  Header file for generic 80C51 and 80C31 microcontroller.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __REG51_H__
+  10      =2  #define __REG51_H__
+  11      =2  
+  12      =2  /*  BYTE Register  */
+  13      =2  sfr P0   = 0x80;
+  14      =2  sfr P1   = 0x90;
+  15      =2  sfr P2   = 0xA0;
+  16      =2  sfr P3   = 0xB0;
+  17      =2  sfr PSW  = 0xD0;
+  18      =2  sfr ACC  = 0xE0;
+  19      =2  sfr B    = 0xF0;
+  20      =2  sfr SP   = 0x81;
+  21      =2  sfr DPL  = 0x82;
+  22      =2  sfr DPH  = 0x83;
+  23      =2  sfr PCON = 0x87;
+  24      =2  sfr TCON = 0x88;
+  25      =2  sfr TMOD = 0x89;
+  26      =2  sfr TL0  = 0x8A;
+  27      =2  sfr TL1  = 0x8B;
+  28      =2  sfr TH0  = 0x8C;
+  29      =2  sfr TH1  = 0x8D;
+  30      =2  sfr IE   = 0xA8;
+  31      =2  sfr IP   = 0xB8;
+  32      =2  sfr SCON = 0x98;
+  33      =2  sfr SBUF = 0x99;
+  34      =2  
+  35      =2  
+  36      =2  /*  BIT Register  */
+  37      =2  /*  PSW   */
+  38      =2  sbit CY   = 0xD7;
+  39      =2  sbit AC   = 0xD6;
+  40      =2  sbit F0   = 0xD5;
+  41      =2  sbit RS1  = 0xD4;
+  42      =2  sbit RS0  = 0xD3;
+  43      =2  sbit OV   = 0xD2;
+  44      =2  sbit P    = 0xD0;
+  45      =2  
+  46      =2  /*  TCON  */
+  47      =2  sbit TF1  = 0x8F;
+  48      =2  sbit TR1  = 0x8E;
+  49      =2  sbit TF0  = 0x8D;
+  50      =2  sbit TR0  = 0x8C;
+  51      =2  sbit IE1  = 0x8B;
+  52      =2  sbit IT1  = 0x8A;
+  53      =2  sbit IE0  = 0x89;
+  54      =2  sbit IT0  = 0x88;
+  55      =2  
+  56      =2  /*  IE   */
+  57      =2  sbit EA   = 0xAF;
+  58      =2  sbit ES   = 0xAC;
+  59      =2  sbit ET1  = 0xAB;
+  60      =2  sbit EX1  = 0xAA;
+  61      =2  sbit ET0  = 0xA9;
+  62      =2  sbit EX0  = 0xA8;
+  63      =2  
+  64      =2  /*  IP   */ 
+  65      =2  sbit PS   = 0xBC;
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 3   
+
+  66      =2  sbit PT1  = 0xBB;
+  67      =2  sbit PX1  = 0xBA;
+  68      =2  sbit PT0  = 0xB9;
+  69      =2  sbit PX0  = 0xB8;
+  70      =2  
+  71      =2  /*  P3  */
+  72      =2  sbit RD   = 0xB7;
+  73      =2  sbit WR   = 0xB6;
+  74      =2  sbit T1   = 0xB5;
+  75      =2  sbit T0   = 0xB4;
+  76      =2  sbit INT1 = 0xB3;
+  77      =2  sbit INT0 = 0xB2;
+  78      =2  sbit TXD  = 0xB1;
+  79      =2  sbit RXD  = 0xB0;
+  80      =2  
+  81      =2  /*  SCON  */
+  82      =2  sbit SM0  = 0x9F;
+  83      =2  sbit SM1  = 0x9E;
+  84      =2  sbit SM2  = 0x9D;
+  85      =2  sbit REN  = 0x9C;
+  86      =2  sbit TB8  = 0x9B;
+  87      =2  sbit RB8  = 0x9A;
+  88      =2  sbit TI   = 0x99;
+  89      =2  sbit RI   = 0x98;
+  90      =2  
+  91      =2  #endif
+   8      =1  #include <INTRINS.H>
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  INTRINS.H
+   3      =2  
+   4      =2  Intrinsic functions for C51.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __INTRINS_H__
+  10      =2  #define __INTRINS_H__
+  11      =2  
+  12      =2  extern void          _nop_     (void);
+  13      =2  extern bit           _testbit_ (bit);
+  14      =2  extern unsigned char _cror_    (unsigned char, unsigned char);
+  15      =2  extern unsigned int  _iror_    (unsigned int,  unsigned char);
+  16      =2  extern unsigned long _lror_    (unsigned long, unsigned char);
+  17      =2  extern unsigned char _crol_    (unsigned char, unsigned char);
+  18      =2  extern unsigned int  _irol_    (unsigned int,  unsigned char);
+  19      =2  extern unsigned long _lrol_    (unsigned long, unsigned char);
+  20      =2  extern unsigned char _chkfloat_(float);
+  21      =2  
+  22      =2  #endif
+  23      =2  
+   9      =1  
+  10      =1  
+  11      =1  
+  12      =1  typedef unsigned char BYTE;
+  13      =1  
+  14      =1  typedef bit bool;
+  15      =1  
+   2          #include <assert.h>
+   1      =1  /*--------------------------------------------------------------------------
+   2      =1  ASSERT.H
+   3      =1  
+   4      =1  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 4   
+
+   5      =1  All rights reserved.
+   6      =1  --------------------------------------------------------------------------*/
+   7      =1  
+   8      =1  #ifndef __ASSERT_H__
+   9      =1  #define __ASSERT_H__
+  10      =1  
+  11      =1  #undef assert
+  12      =1  
+  13      =1  #ifndef __ASSERT_INC
+  14      =1  #include <stdio.h>      /* prototype for 'printf' */
+   1      =2  /*--------------------------------------------------------------------------
+   2      =2  STDIO.H
+   3      =2  
+   4      =2  Prototypes for standard I/O functions.
+   5      =2  Copyright (c) 1988-2002 Keil Elektronik GmbH and Keil Software, Inc.
+   6      =2  All rights reserved.
+   7      =2  --------------------------------------------------------------------------*/
+   8      =2  
+   9      =2  #ifndef __STDIO_H__
+           =2 #define __STDIO_H__
+           =2 
+           =2 #ifndef EOF
+           =2  #define EOF -1
+           =2 #endif
+           =2 
+           =2 #ifndef NULL
+           =2  #define NULL ((void *) 0)
+           =2 #endif
+           =2 
+           =2 #ifndef _SIZE_T
+           =2  #define _SIZE_T
+           =2  typedef unsigned int size_t;
+           =2 #endif
+           =2 
+           =2 #pragma SAVE
+           =2 #pragma REGPARMS
+           =2 extern char _getkey (void);
+           =2 extern char getchar (void);
+           =2 extern char ungetchar (char);
+           =2 extern char putchar (char);
+           =2 extern int printf   (const char *, ...);
+           =2 extern int sprintf  (char *, const char *, ...);
+           =2 extern int vprintf  (const char *, char *);
+           =2 extern int vsprintf (char *, const char *, char *);
+           =2 extern char *gets (char *, int n);
+           =2 extern int scanf (const char *, ...);
+           =2 extern int sscanf (char *, const char *, ...);
+           =2 extern int puts (const char *);
+           =2 
+           =2 #pragma RESTORE
+           =2 
+           =2 #endif
+  43      =2  
+  15      =1  #define __ASSERT_INC
+  16      =1  #endif
+  17      =1  
+  18      =1  #ifndef NDEBUG
+  19      =1  
+  20      =1  #define assert(expr) \
+  21      =1    if (expr) { ; } \
+  22      =1    else  {\
+  23      =1      printf("Assert failed: " #expr " (file %s line %d)\n", __FILE__, (int) __LINE__ );\
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 5   
+
+  24      =1      while (1);\
+  25      =1    }
+  26      =1  #else
+           =1 #define assert(expr)
+           =1 #endif
+  29      =1  
+  30      =1  #endif
+   3          
+   4          void AUTO_COLOR_TEST(void)
+   5          {
+   6   1      BYTE TEST = 0;
+   7   1      
+   8   1      while(1)
+   9   1      {
+  10   2                      if((++TEST) > 6)
+  11   2                              TEST = 1;
+  12   2              switch(TEST)
+  13   2                      {
+  14   3                      case 0:
+  15   3                              printf("%d\n case 0:",TEST);
+  16   3                              break;
+  17   3                      case 1:
+  18   3                              printf("%d\n case 1:",TEST);
+  19   3                              break;
+  20   3                      case 2:
+  21   3                              printf("%d\n case 2:",TEST);
+  22   3                              break;
+  23   3                      case 3:
+  24   3                              printf("%d\n case 3:",TEST);
+  25   3                              break;
+  26   3                      case 4:
+  27   3                              printf("%d\n case 4:",TEST);
+  28   3                              break;
+  29   3                      case 5:
+  30   3                              printf("%d\n case 5:",TEST);
+  31   3                              break;
+  32   3                      case 6:
+  33   3                              printf("%d\n case 6:",TEST);
+  34   3                              break;
+  35   3      
+  36   3                      default:
+  37   3                              break;
+  38   3      
+  39   3                      }
+  40   2      }
+  41   1      }
+  42          
+  43          void try_test(void)
+  44          {
+  45   1      BYTE i;
+  46   1      
+  47   1      #if 1
+  48   1      
+  49   1      while(0)
+  50   1      {
+  51   2      ACC = 0;
+  52   2      _nop_();
+  53   2      ACC = 1;
+  54   2      _nop_();
+  55   2      }
+  56   1      
+  57   1      
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 6   
+
+  58   1      
+  59   1      for(i=1;0;i++)
+  60   1      {
+  61   2      ACC = 0;
+  62   2      _nop_();
+  63   2      ACC = 1;
+  64   2      _nop_();
+  65   2      }
+  66   1      #pragma asm
+*** ERROR C272 IN LINE 66 OF TEST.C: 'asm/endasm' requires src-control to be active
+  67   1                      mov ACC,#1d
+  68   1      run_loop:
+  69   1                      djnz ACC,run_loop
+  70   1                      jnz run_loop
+  71   1                      mov ACC,#0AAH
+  72   1      #pragma endasm
+*** ERROR C272 IN LINE 72 OF TEST.C: 'asm/endasm' requires src-control to be active
+  73   1                      printf("\nA = %x\n",ACC);
+  74   1      #elif 0
+                              scanf("\n%d %f %c",&x,&y,&z);
+                              printf("\n%d %f %c\n",x,y,z);
+              
+                              printf("\n%x\n",ALERT_BTN_OK);
+                              printf("%x\n",ALERT_BTN_CANCEL);
+                              printf("%x\n",MAX_ALERT_BTN_NUM);
+              #else
+              
+              #endif
+  84   1      }
+  85          
+  86          void check_parms (char *string)
+  87          {
+  88   1      assert (string != NULL); /* check for NULL ptr */
+  89   1      printf ("String %s is OK\n", string);
+  90   1      }
+  91          
+  92          void Check_drafting(void)
+  93          {
+  94   1      BYTE xdata index=0;
+  95   1      BYTE xdata arrary[10]={1,2,3,4,5,6,7,8,9,0};
+  96   1      
+  97   1      
+  98   1      while(index != 'q')
+  99   1      {
+ 100   2              index=getchar();
+ 101   2              index-=65;
+ 102   2              
+ 103   2              printf("\r%d",arrary[index]);
+ 104   2      
+ 105   2      /*
+ 106   2         switch(index)
+ 107   2         {
+ 108   2              case 'a':
+ 109   2                      y--;
+ 110   2      //          gotoxy(x,y);
+ 111   2              printf("\r 1");
+ 112   2                      break;
+ 113   2              case 's':
+ 114   2                      x--;
+ 115   2      //          gotoxy(x,y);
+ 116   2              printf("\r 2");
+ 117   2                      break;
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 7   
+
+ 118   2              case 'd':
+ 119   2                      x++;
+ 120   2      //          gotoxy(x,y);
+ 121   2              printf("\r 3");
+ 122   2                      break;
+ 123   2              case 'f':
+ 124   2                      y++;
+ 125   2      //          gotoxy(x,y);
+ 126   2              printf("\r 4");
+ 127   2                      break;
+ 128   2              default:
+ 129   2                      break;
+ 130   2         }
+ 131   2      */
+ 132   2      }
+ 133   1      printf("EXIT",index);
+ 134   1      for(;;);
+ 135   1      
+ 136   1      }
+ 137          
+ 138          void Test_Char_Key(void)
+ 139          {
+ 140   1      BYTE get_ch_123[2] = {0,0},i;
+ 141   1      
+ 142   1      do{
+ 143   2      get_ch_123[1] = 0;
+ 144   2      }while(/*get_ch_123[1]  == '\n'*/0);
+ 145   1      
+ 146   1      while(1)
+ 147   1      {
+ 148   2      
+ 149   2              for(i=0;i<2;i++)
+ 150   2                      {
+ 151   3                      get_ch_123[i] = getchar();
+ 152   3      
+ 153   3              switch(get_ch_123[0])
+ 154   3                      {
+ 155   4                      case 41:
+ 156   4                              get_ch_123[0] = 'A';
+ 157   4                              break;
+ 158   4                      case 42:
+ 159   4                              get_ch_123[0] = 'B';
+ 160   4                              break;
+ 161   4                      case 43:
+ 162   4                              get_ch_123[0] = 'C';
+ 163   4                              break;
+ 164   4                      case 44:
+ 165   4                              get_ch_123[0] = 'D';
+ 166   4                              break;
+ 167   4                      case 45:
+ 168   4                              get_ch_123[0] = 'E';
+ 169   4                              break;
+ 170   4                      case 46:
+ 171   4                              get_ch_123[0] = 'F';
+ 172   4                              break;
+ 173   4                      case 30:
+ 174   4                              get_ch_123[0] = 0;
+ 175   4                              break;
+ 176   4                      case 31:
+ 177   4                              get_ch_123[0] = 1;
+ 178   4                              break;
+ 179   4                      case 32:
+C51 COMPILER V7.07   TEST                                                                  03/06/2006 13:40:45 PAGE 8   
+
+ 180   4                              get_ch_123[0] = 2;
+ 181   4                              break;
+ 182   4                      case 33:
+ 183   4                              get_ch_123[0] = 3;
+ 184   4                              break;
+ 185   4                      case 34:
+ 186   4                              get_ch_123[0] = 4;
+ 187   4                              break;
+ 188   4                      case 35:
+ 189   4                              get_ch_123[0] = 5;
+ 190   4                              break;
+ 191   4                      case 36:
+ 192   4                              get_ch_123[0] = 6;
+ 193   4                              break;
+ 194   4                      case 37:
+ 195   4                              get_ch_123[0] = 7;
+ 196   4                              break;
+ 197   4                      case 38:
+ 198   4                              get_ch_123[0] = 8;
+ 199   4                              break;
+ 200   4                      case 39:
+ 201   4                              get_ch_123[0] = 9;
+ 202   4                              break;
+ 203   4                              
+ 204   4                      default:
+ 205   4                              get_ch_123[0] = 0xff;
+ 206   4                              break;
+ 207   4                      }
+ 208   3              printf("INPUT_KEY = %d\n",get_ch_123[i]);
+ 209   3                      }
+ 210   2              if(get_ch_123[1] == '\n')
+ 211   2              P1 = get_ch_123[0];
+ 212   2              
+ 213   2              for(i=0;i<2;i++)
+ 214   2                      {
+ 215   3                      get_ch_123[i] = 0;
+ 216   3                      }
+ 217   2      
+ 218   2      }
+ 219   1      }
+ 220          
+ 221          
+*** WARNING C316 IN LINE 221 OF test.c: unterminated conditionals
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  2 ERROR(S)

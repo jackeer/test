@@ -1,0 +1,754 @@
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     1
+
+
+MACRO ASSEMBLER A51 V7.08a
+OBJECT MODULE PLACED IN .\output\test.OBJ
+ASSEMBLER INVOKED BY: C:\Keil\C51\BIN\A51.EXE .\output\test.src PR(.\list\test.ls1) EP DEBUG
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ; .\output\test.SRC generated from: test.c
+                       2     ; COMPILER INVOKED BY:
+                       3     ;        C:\Keil\C51\BIN\C51.EXE test.c DEBUG OBJECTEXTEND CODE LISTINCLUDE SYMBOLS PRINT(.
+                             \list\test.lst) SRC(.\output\test.SRC)
+                       4     
+                       5     $nomod51 
+                       6     
+                       7     NAME    TEST
+                       8     
+  0080                 9     P0      DATA    080H
+  0090                10     P1      DATA    090H
+  00A0                11     P2      DATA    0A0H
+  00B0                12     P3      DATA    0B0H
+  00B4                13     T0      BIT     0B0H.4
+  00D6                14     AC      BIT     0D0H.6
+  00B5                15     T1      BIT     0B0H.5
+  00AF                16     EA      BIT     0A8H.7
+  00A8                17     IE      DATA    0A8H
+  00B7                18     RD      BIT     0B0H.7
+  00AC                19     ES      BIT     0A8H.4
+  00B8                20     IP      DATA    0B8H
+  0098                21     RI      BIT     098H.0
+  00B2                22     INT0    BIT     0B0H.2
+  00D7                23     CY      BIT     0D0H.7
+  0099                24     TI      BIT     098H.1
+  00B3                25     INT1    BIT     0B0H.3
+  00BC                26     PS      BIT     0B8H.4
+  0081                27     SP      DATA    081H
+  00D2                28     OV      BIT     0D0H.2
+  00B6                29     WR      BIT     0B0H.6
+  0099                30     SBUF    DATA    099H
+  0087                31     PCON    DATA    087H
+  0098                32     SCON    DATA    098H
+  0089                33     TMOD    DATA    089H
+  0088                34     TCON    DATA    088H
+  0089                35     IE0     BIT     088H.1
+  008B                36     IE1     BIT     088H.3
+  00F0                37     B       DATA    0F0H
+  00E0                38     ACC     DATA    0E0H
+  00A9                39     ET0     BIT     0A8H.1
+  00AB                40     ET1     BIT     0A8H.3
+  008D                41     TF0     BIT     088H.5
+  008F                42     TF1     BIT     088H.7
+  009A                43     RB8     BIT     098H.2
+  008C                44     TH0     DATA    08CH
+  00A8                45     EX0     BIT     0A8H.0
+  0088                46     IT0     BIT     088H.0
+  008D                47     TH1     DATA    08DH
+  009B                48     TB8     BIT     098H.3
+  00AA                49     EX1     BIT     0A8H.2
+  008A                50     IT1     BIT     088H.2
+  00D0                51     P       BIT     0D0H.0
+  009F                52     SM0     BIT     098H.7
+  008A                53     TL0     DATA    08AH
+  009E                54     SM1     BIT     098H.6
+  008B                55     TL1     DATA    08BH
+  009D                56     SM2     BIT     098H.5
+  00B9                57     PT0     BIT     0B8H.1
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     2
+
+  00BB                58     PT1     BIT     0B8H.3
+  00D3                59     RS0     BIT     0D0H.3
+  008C                60     TR0     BIT     088H.4
+  00D4                61     RS1     BIT     0D0H.4
+  008E                62     TR1     BIT     088H.6
+  00B8                63     PX0     BIT     0B8H.0
+  00BA                64     PX1     BIT     0B8H.2
+  0083                65     DPH     DATA    083H
+  0082                66     DPL     DATA    082H
+  009C                67     REN     BIT     098H.4
+  00B0                68     RXD     BIT     0B0H.0
+  00B1                69     TXD     BIT     0B0H.1
+  00D5                70     F0      BIT     0D0H.5
+  00D0                71     PSW     DATA    0D0H
+                      72     ?PR?AUTO_COLOR_TEST?TEST                 SEGMENT CODE 
+                      73     ?DT?AUTO_COLOR_TEST?TEST                 SEGMENT DATA OVERLAYABLE 
+                      74     ?PR?try_test?TEST    SEGMENT CODE 
+                      75     ?DT?try_test?TEST    SEGMENT DATA OVERLAYABLE 
+                      76     ?PR?_check_parms?TEST                    SEGMENT CODE 
+                      77     ?DT?_check_parms?TEST                    SEGMENT DATA OVERLAYABLE 
+                      78     ?PR?Check_drafting?TEST                  SEGMENT CODE 
+                      79     ?CO?TEST             SEGMENT CODE 
+                      80     ?XD?Check_drafting?TEST                  SEGMENT XDATA OVERLAYABLE 
+                      81             EXTRN   CODE (getchar)
+                      82             EXTRN   CODE (_printf)
+                      83             EXTRN   DATA (?_printf?BYTE)
+                      84             EXTRN   CODE (?C?COPY)
+                      85             PUBLIC  Check_drafting
+                      86             PUBLIC  _check_parms
+                      87             PUBLIC  try_test
+                      88             PUBLIC  AUTO_COLOR_TEST
+                      89     
+----                  90             RSEG  ?DT?try_test?TEST
+0000                  91     ?try_test?BYTE:
+0000                  92               i?141:   DS   1
+                      93     
+----                  94             RSEG  ?DT?AUTO_COLOR_TEST?TEST
+0000                  95     ?AUTO_COLOR_TEST?BYTE:
+0000                  96            TEST?040:   DS   1
+                      97     
+----                  98             RSEG  ?DT?_check_parms?TEST
+0000                  99     ?_check_parms?BYTE:
+0000                 100          string?242:   DS   3
+                     101     
+----                 102             RSEG  ?XD?Check_drafting?TEST
+0000                 103           index?343:   DS   1
+                     104     
+----                 105             RSEG  ?XD?Check_drafting?TEST
+0001                 106          arrary?344:   DS   10
+                     107     
+----                 108             RSEG  ?CO?TEST
+0000                 109     ?SC_0:
+0000 25640A20        110             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'0' 
+0004 63617365                
+0008 2030                    
+000A 3A00            111             DB  ':' ,000H
+                     112     
+000C                 113     ?SC_12:
+000C 25640A20        114             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'1' 
+0010 63617365                
+0014 2031                    
+0016 3A00            115             DB  ':' ,000H
+                     116     
+0018                 117     ?SC_24:
+0018 25640A20        118             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'2' 
+001C 63617365                
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     3
+
+0020 2032                    
+0022 3A00            119             DB  ':' ,000H
+                     120     
+0024                 121     ?SC_36:
+0024 25640A20        122             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'3' 
+0028 63617365                
+002C 2033                    
+002E 3A00            123             DB  ':' ,000H
+                     124     
+0030                 125     ?SC_48:
+0030 25640A20        126             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'4' 
+0034 63617365                
+0038 2034                    
+003A 3A00            127             DB  ':' ,000H
+                     128     
+003C                 129     ?SC_60:
+003C 25640A20        130             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'5' 
+0040 63617365                
+0044 2035                    
+0046 3A00            131             DB  ':' ,000H
+                     132     
+0048                 133     ?SC_72:
+0048 25640A20        134             DB  '%' ,'d' ,00AH,' ' ,'c' ,'a' ,'s' ,'e' ,' ' ,'6' 
+004C 63617365                
+0050 2036                    
+0052 3A00            135             DB  ':' ,000H
+                     136     
+0054                 137     ?SC_84:
+0054 0A41203D        138             DB  00AH,'A' ,' ' ,'=' ,' ' ,'%' ,'x' ,00AH,000H
+0058 2025780A                
+005C 00                      
+                     139     
+005D                 140     ?SC_93:
+005D 41737365        141             DB  'A' ,'s' ,'s' ,'e' ,'r' ,'t' ,' ' ,'f' ,'a' ,'i' 
+0061 72742066                
+0065 6169                    
+0067 6C65643A        142             DB  'l' ,'e' ,'d' ,':' ,' ' ,'s' ,'t' ,'r' ,'i' ,'n' 
+006B 20737472                
+006F 696E                    
+0071 6720213D        143             DB  'g' ,' ' ,'!' ,'=' ,' ' ,'N' ,'U' ,'L' ,'L' ,' ' 
+0075 204E554C                
+0079 4C20                    
+007B 2866696C        144             DB  '(' ,'f' ,'i' ,'l' ,'e' ,' ' ,'%' ,'s' ,' ' ,'l' 
+007F 65202573                
+0083 206C                    
+0085 696E6520        145             DB  'i' ,'n' ,'e' ,' ' ,'%' ,'d' ,')' ,00AH,000H
+0089 2564290A                
+008D 00                      
+                     146     
+008E                 147     ?SC_142:
+008E 74657374        148             DB  't' ,'e' ,'s' ,'t' ,'.' ,'c' ,000H
+0092 2E6300                  
+                     149     
+0095                 150     ?SC_149:
+0095 53747269        151             DB  'S' ,'t' ,'r' ,'i' ,'n' ,'g' ,' ' ,'%' ,'s' ,' ' 
+0099 6E672025                
+009D 7320                    
+009F 6973204F        152             DB  'i' ,'s' ,' ' ,'O' ,'K' ,00AH,000H
+00A3 4B0A00                  
+                     153     
+00A6                 154     ?SC_166:
+00A6 0D256400        155             DB  00DH,'%' ,'d' ,000H
+                     156     
+00AA                 157     ?SC_170:
+00AA 45584954        158             DB  'E' ,'X' ,'I' ,'T' ,000H
+00AE 00                      
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     4
+
+                     159     
+00AF                 160     _?ix1000:
+00AF 01              161             DB      001H
+00B0 02              162             DB      002H
+00B1 03              163             DB      003H
+00B2 04              164             DB      004H
+00B3 05              165             DB      005H
+00B4 06              166             DB      006H
+00B5 07              167             DB      007H
+00B6 08              168             DB      008H
+00B7 09              169             DB      009H
+00B8 00              170             DB      000H
+                     171     
+                     172     ; #include <Def_INC.h>
+                     173     ; #include <assert.h>
+                     174     ; 
+                     175     ; void AUTO_COLOR_TEST(void)
+                     176     
+----                 177             RSEG  ?PR?AUTO_COLOR_TEST?TEST
+0000                 178     AUTO_COLOR_TEST:
+                     179             USING   0
+                     180                             ; SOURCE LINE # 4
+                     181     ; {
+                     182                             ; SOURCE LINE # 5
+                     183     ; BYTE TEST = 0;
+                     184                             ; SOURCE LINE # 6
+0000 E4              185             CLR     A
+0001 F500     F      186             MOV     TEST?040,A
+0003                 187     ?C0001:
+                     188     ; 
+                     189     ; while(1)
+                     190                             ; SOURCE LINE # 8
+                     191     ; {
+                     192                             ; SOURCE LINE # 9
+                     193     ;               if((++TEST) > 6)
+                     194                             ; SOURCE LINE # 10
+0003 0500     F      195             INC     TEST?040
+0005 E500     F      196             MOV     A,TEST?040
+0007 D3              197             SETB    C
+0008 9406            198             SUBB    A,#06H
+000A 4003            199             JC      ?C0003
+                     200     ;                       TEST = 1;
+                     201                             ; SOURCE LINE # 11
+000C 750001   F      202             MOV     TEST?040,#01H
+000F                 203     ?C0003:
+                     204     ;       switch(TEST)
+                     205                             ; SOURCE LINE # 12
+000F E500     F      206             MOV     A,TEST?040
+0011 B40700          207             CJNE    A,#07H,?C0030
+0014                 208     ?C0030:
+0014 50ED            209             JNC     ?C0001
+0016 900000   F      210             MOV     DPTR,#?C0031
+0019 F8              211             MOV     R0,A
+001A 28              212             ADD     A,R0
+001B 28              213             ADD     A,R0
+001C 73              214             JMP     @A+DPTR
+001D                 215     ?C0031:
+001D 020000   F      216             LJMP    ?C0005
+0020 020000   F      217             LJMP    ?C0006
+0023 020000   F      218             LJMP    ?C0007
+0026 020000   F      219             LJMP    ?C0008
+0029 020000   F      220             LJMP    ?C0009
+002C 020000   F      221             LJMP    ?C0010
+002F 020000   F      222             LJMP    ?C0011
+                     223     ;               {
+                     224                             ; SOURCE LINE # 13
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     5
+
+                     225     ;               case 0:
+                     226                             ; SOURCE LINE # 14
+0032                 227     ?C0005:
+                     228     ;                       printf("%d\n case 0:",TEST);
+                     229                             ; SOURCE LINE # 15
+0032 7BFF            230             MOV     R3,#0FFH
+0034 7A00     F      231             MOV     R2,#HIGH (?SC_0)
+0036 7900     F      232             MOV     R1,#LOW (?SC_0)
+                     233     ;                       break;
+                     234                             ; SOURCE LINE # 16
+0038 8026            235             SJMP    ?C0037
+                     236     ;               case 1:
+                     237                             ; SOURCE LINE # 17
+003A                 238     ?C0006:
+                     239     ;                       printf("%d\n case 1:",TEST);
+                     240                             ; SOURCE LINE # 18
+003A 7BFF            241             MOV     R3,#0FFH
+003C 7A00     F      242             MOV     R2,#HIGH (?SC_12)
+003E 7900     F      243             MOV     R1,#LOW (?SC_12)
+0040                 244     ?C0033:
+                     245     ;                       break;
+                     246                             ; SOURCE LINE # 19
+0040 801E            247             SJMP    ?C0037
+                     248     ;               case 2:
+                     249                             ; SOURCE LINE # 20
+0042                 250     ?C0007:
+                     251     ;                       printf("%d\n case 2:",TEST);
+                     252                             ; SOURCE LINE # 21
+0042 7BFF            253             MOV     R3,#0FFH
+0044 7A00     F      254             MOV     R2,#HIGH (?SC_24)
+0046 7900     F      255             MOV     R1,#LOW (?SC_24)
+0048                 256     ?C0034:
+                     257     ;                       break;
+                     258                             ; SOURCE LINE # 22
+0048 8016            259             SJMP    ?C0037
+                     260     ;               case 3:
+                     261                             ; SOURCE LINE # 23
+004A                 262     ?C0008:
+                     263     ;                       printf("%d\n case 3:",TEST);
+                     264                             ; SOURCE LINE # 24
+004A 7BFF            265             MOV     R3,#0FFH
+004C 7A00     F      266             MOV     R2,#HIGH (?SC_36)
+004E 7900     F      267             MOV     R1,#LOW (?SC_36)
+0050                 268     ?C0035:
+                     269     ;                       break;
+                     270                             ; SOURCE LINE # 25
+0050 800E            271             SJMP    ?C0037
+                     272     ;               case 4:
+                     273                             ; SOURCE LINE # 26
+0052                 274     ?C0009:
+                     275     ;                       printf("%d\n case 4:",TEST);
+                     276                             ; SOURCE LINE # 27
+0052 7BFF            277             MOV     R3,#0FFH
+0054 7A00     F      278             MOV     R2,#HIGH (?SC_48)
+0056 7900     F      279             MOV     R1,#LOW (?SC_48)
+0058                 280     ?C0036:
+                     281     ;                       break;
+                     282                             ; SOURCE LINE # 28
+0058 8006            283             SJMP    ?C0037
+                     284     ;               case 5:
+                     285                             ; SOURCE LINE # 29
+005A                 286     ?C0010:
+                     287     ;                       printf("%d\n case 5:",TEST);
+                     288                             ; SOURCE LINE # 30
+005A 7BFF            289             MOV     R3,#0FFH
+005C 7A00     F      290             MOV     R2,#HIGH (?SC_60)
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     6
+
+005E 7900     F      291             MOV     R1,#LOW (?SC_60)
+0060                 292     ?C0037:
+0060 850000   F      293             MOV     ?_printf?BYTE+03H,TEST?040
+0063 120000   F      294             LCALL   _printf
+                     295     ;                       break;
+                     296                             ; SOURCE LINE # 31
+0066 809B            297             SJMP    ?C0001
+                     298     ;               case 6:
+                     299                             ; SOURCE LINE # 32
+0068                 300     ?C0011:
+                     301     ;                       printf("%d\n case 6:",TEST);
+                     302                             ; SOURCE LINE # 33
+0068 7BFF            303             MOV     R3,#0FFH
+006A 7A00     F      304             MOV     R2,#HIGH (?SC_72)
+006C 7900     F      305             MOV     R1,#LOW (?SC_72)
+006E 850000   F      306             MOV     ?_printf?BYTE+03H,TEST?040
+0071 120000   F      307             LCALL   _printf
+                     308     ;                       break;
+                     309                             ; SOURCE LINE # 34
+0074 808D            310             SJMP    ?C0001
+                     311     ; END OF AUTO_COLOR_TEST
+                     312     
+                     313     ; 
+                     314     ;               default:
+                     315     ;                       break;
+                     316     ; 
+                     317     ;               }
+                     318     ; }
+                     319     ; }
+                     320     ; 
+                     321     ; void try_test(void)
+                     322     
+----                 323             RSEG  ?PR?try_test?TEST
+0000                 324     try_test:
+                     325             USING   0
+                     326                             ; SOURCE LINE # 43
+                     327     ; {
+                     328                             ; SOURCE LINE # 44
+                     329     ; BYTE i;
+                     330     ; 
+                     331     ; #if 1
+                     332     ; 
+                     333     ; while(0)
+                     334                             ; SOURCE LINE # 49
+                     335     ; {
+                     336                             ; SOURCE LINE # 50
+                     337     ; ACC = 0;
+                     338                             ; SOURCE LINE # 51
+                     339     ; _nop_();
+                     340                             ; SOURCE LINE # 52
+                     341     ; ACC = 1;
+                     342                             ; SOURCE LINE # 53
+                     343     ; _nop_();
+                     344                             ; SOURCE LINE # 54
+                     345     ; }
+                     346                             ; SOURCE LINE # 55
+0000                 347     ?C0015:
+                     348     ; 
+                     349     ; 
+                     350     ; 
+                     351     ; for(i=1;0;i++)
+                     352                             ; SOURCE LINE # 59
+0000 750001   F      353             MOV     i?141,#01H
+                     354     ; {
+                     355                             ; SOURCE LINE # 60
+                     356     ; ACC = 0;
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     7
+
+                     357                             ; SOURCE LINE # 61
+                     358     ; _nop_();
+                     359                             ; SOURCE LINE # 62
+                     360     ; ACC = 1;
+                     361                             ; SOURCE LINE # 63
+                     362     ; _nop_();
+                     363                             ; SOURCE LINE # 64
+                     364     ; }
+                     365                             ; SOURCE LINE # 65
+0003                 366     ?C0017:
+                     367     ; #pragma asm
+                     368     ;               mov ACC,#1d
+0003 75E001          369               mov ACC,#1d
+                     370     ; run_loop:
+0006                 371               run_loop:
+                     372     ;               djnz ACC,run_loop
+0006 D5E0FD          373               djnz ACC,run_loop
+                     374     ;               jnz run_loop
+0009 70FB            375               jnz run_loop
+                     376     ;               mov ACC,#0AAH
+000B 75E0AA          377               mov ACC,#0AAH
+                     378     ; #pragma endasm
+                     379     ;               printf("\nA = %x\n",ACC);
+                     380                             ; SOURCE LINE # 73
+000E 7BFF            381             MOV     R3,#0FFH
+0010 7A00     F      382             MOV     R2,#HIGH (?SC_84)
+0012 7900     F      383             MOV     R1,#LOW (?SC_84)
+0014 F500     F      384             MOV     ?_printf?BYTE+03H,A
+0016 020000   F      385             LJMP    _printf
+                     386     ; END OF try_test
+                     387     
+                     388     ; #elif 0
+                     389     ;               scanf("\n%d %f %c",&x,&y,&z);
+                     390     ;               printf("\n%d %f %c\n",x,y,z);
+                     391     ; 
+                     392     ;               printf("\n%x\n",ALERT_BTN_OK);
+                     393     ;               printf("%x\n",ALERT_BTN_CANCEL);
+                     394     ;               printf("%x\n",MAX_ALERT_BTN_NUM);
+                     395     ; #else
+                     396     ; 
+                     397     ; #endif
+                     398     ; }
+                     399     ; 
+                     400     ; void check_parms (char *string)
+                     401     
+----                 402             RSEG  ?PR?_check_parms?TEST
+0000                 403     _check_parms:
+                     404             USING   0
+                     405                             ; SOURCE LINE # 86
+0000 8B00     F      406             MOV     string?242,R3
+0002 8A00     F      407             MOV     string?242+01H,R2
+0004 8900     F      408             MOV     string?242+02H,R1
+                     409     ; {
+                     410                             ; SOURCE LINE # 87
+                     411     ; assert (string != NULL); /* check for NULL ptr */
+                     412                             ; SOURCE LINE # 88
+0006 E9              413             MOV     A,R1
+0007 4A              414             ORL     A,R2
+0008 4B              415             ORL     A,R3
+0009 701A            416             JNZ     ?C0021
+000B                 417     ?C0020:
+000B 7500FF   F      418             MOV     ?_printf?BYTE+03H,#0FFH
+000E 750000   F      419             MOV     ?_printf?BYTE+04H,#HIGH (?SC_142)
+0011 750000   F      420             MOV     ?_printf?BYTE+05H,#LOW (?SC_142)
+0014 750000   F      421             MOV     ?_printf?BYTE+06H,#00H
+0017 750058   F      422             MOV     ?_printf?BYTE+07H,#058H
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     8
+
+001A 7BFF            423             MOV     R3,#0FFH
+001C 7A00     F      424             MOV     R2,#HIGH (?SC_93)
+001E 7900     F      425             MOV     R1,#LOW (?SC_93)
+0020 120000   F      426             LCALL   _printf
+0023                 427     ?C0022:
+0023 80FE            428             SJMP    ?C0022
+0025                 429     ?C0021:
+                     430     ; printf ("String %s is OK\n", string);
+                     431                             ; SOURCE LINE # 89
+0025 850000   F      432             MOV     ?_printf?BYTE+03H,string?242
+0028 850000   F      433             MOV     ?_printf?BYTE+04H,string?242+01H
+002B 850000   F      434             MOV     ?_printf?BYTE+05H,string?242+02H
+002E 7BFF            435             MOV     R3,#0FFH
+0030 7A00     F      436             MOV     R2,#HIGH (?SC_149)
+0032 7900     F      437             MOV     R1,#LOW (?SC_149)
+0034 020000   F      438             LJMP    _printf
+                     439     ; END OF _check_parms
+                     440     
+                     441     ; }
+                     442     ; 
+                     443     ; void Check_drafting(void)
+                     444     
+----                 445             RSEG  ?PR?Check_drafting?TEST
+0000                 446     Check_drafting:
+                     447             USING   0
+                     448                             ; SOURCE LINE # 92
+                     449     ; {
+                     450                             ; SOURCE LINE # 93
+                     451     ; BYTE xdata index=0;
+                     452                             ; SOURCE LINE # 94
+0000 E4              453             CLR     A
+0001 900000   F      454             MOV     DPTR,#index?343
+0004 F0              455             MOVX    @DPTR,A
+                     456     ; BYTE xdata arrary[10]={1,2,3,4,5,6,7,8,9,0};
+                     457                             ; SOURCE LINE # 95
+0005 7800     F      458             MOV     R0,#LOW (arrary?344)
+0007 7C00     F      459             MOV     R4,#HIGH (arrary?344)
+0009 7D01            460             MOV     R5,#01H
+000B 7BFF            461             MOV     R3,#0FFH
+000D 7A00     F      462             MOV     R2,#HIGH (_?ix1000)
+000F 7900     F      463             MOV     R1,#LOW (_?ix1000)
+0011 FE              464             MOV     R6,A
+0012 7F0A            465             MOV     R7,#0AH
+0014 120000   F      466             LCALL   ?C?COPY
+0017                 467     ?C0025:
+                     468     ; 
+                     469     ; 
+                     470     ; while(index != 'q')
+                     471                             ; SOURCE LINE # 98
+0017 900000   F      472             MOV     DPTR,#index?343
+001A E0              473             MOVX    A,@DPTR
+001B 6471            474             XRL     A,#071H
+001D 6024            475             JZ      ?C0026
+                     476     ; {
+                     477                             ; SOURCE LINE # 99
+                     478     ;       index=getchar();
+                     479                             ; SOURCE LINE # 100
+001F 120000   F      480             LCALL   getchar
+0022 900000   F      481             MOV     DPTR,#index?343
+0025 EF              482             MOV     A,R7
+0026 F0              483             MOVX    @DPTR,A
+                     484     ;       index-=65;
+                     485                             ; SOURCE LINE # 101
+0027 E0              486             MOVX    A,@DPTR
+0028 24BF            487             ADD     A,#0BFH
+002A F0              488             MOVX    @DPTR,A
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE     9
+
+                     489     ;       
+                     490     ;       printf("\r%d",arrary[index]);
+                     491                             ; SOURCE LINE # 103
+002B 7BFF            492             MOV     R3,#0FFH
+002D 7A00     F      493             MOV     R2,#HIGH (?SC_166)
+002F 7900     F      494             MOV     R1,#LOW (?SC_166)
+0031 E0              495             MOVX    A,@DPTR
+0032 2400     F      496             ADD     A,#LOW (arrary?344)
+0034 F582            497             MOV     DPL,A
+0036 E4              498             CLR     A
+0037 3400     F      499             ADDC    A,#HIGH (arrary?344)
+0039 F583            500             MOV     DPH,A
+003B E0              501             MOVX    A,@DPTR
+003C F500     F      502             MOV     ?_printf?BYTE+03H,A
+003E 120000   F      503             LCALL   _printf
+                     504     ; 
+                     505     ; /*
+                     506     ;    switch(index)
+                     507     ;    {
+                     508     ;       case 'a':
+                     509     ;               y--;
+                     510     ; //        gotoxy(x,y);
+                     511     ;       printf("\r 1");
+                     512     ;               break;
+                     513     ;       case 's':
+                     514     ;               x--;
+                     515     ; //        gotoxy(x,y);
+                     516     ;       printf("\r 2");
+                     517     ;               break;
+                     518     ;       case 'd':
+                     519     ;               x++;
+                     520     ; //        gotoxy(x,y);
+                     521     ;       printf("\r 3");
+                     522     ;               break;
+                     523     ;       case 'f':
+                     524     ;               y++;
+                     525     ; //        gotoxy(x,y);
+                     526     ;       printf("\r 4");
+                     527     ;               break;
+                     528     ;       default:
+                     529     ;               break;
+                     530     ;    }
+                     531     ; */
+                     532     ; }
+                     533                             ; SOURCE LINE # 132
+0041 80D4            534             SJMP    ?C0025
+0043                 535     ?C0026:
+                     536     ; printf("EXIT",index);
+                     537                             ; SOURCE LINE # 133
+0043 7BFF            538             MOV     R3,#0FFH
+0045 7A00     F      539             MOV     R2,#HIGH (?SC_170)
+0047 7900     F      540             MOV     R1,#LOW (?SC_170)
+0049 900000   F      541             MOV     DPTR,#index?343
+004C E0              542             MOVX    A,@DPTR
+004D F500     F      543             MOV     ?_printf?BYTE+03H,A
+004F 120000   F      544             LCALL   _printf
+                     545     ; for(;;);
+                     546                             ; SOURCE LINE # 134
+0052                 547     ?C0027:
+0052 80FE            548             SJMP    ?C0027
+                     549     ; END OF Check_drafting
+                     550     
+                     551             END
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE    10
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E                   T Y P E  V A L U E   ATTRIBUTES
+
+?AUTO_COLOR_TEST?BYTE. .  D ADDR   0000H   R   SEG=?DT?AUTO_COLOR_TEST?TEST
+?C0001 . . . . . . . . .  C ADDR   0003H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0003 . . . . . . . . .  C ADDR   000FH   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0005 . . . . . . . . .  C ADDR   0032H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0006 . . . . . . . . .  C ADDR   003AH   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0007 . . . . . . . . .  C ADDR   0042H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0008 . . . . . . . . .  C ADDR   004AH   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0009 . . . . . . . . .  C ADDR   0052H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0010 . . . . . . . . .  C ADDR   005AH   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0011 . . . . . . . . .  C ADDR   0068H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0015 . . . . . . . . .  C ADDR   0000H   R   SEG=?PR?TRY_TEST?TEST
+?C0017 . . . . . . . . .  C ADDR   0003H   R   SEG=?PR?TRY_TEST?TEST
+?C0020 . . . . . . . . .  C ADDR   000BH   R   SEG=?PR?_CHECK_PARMS?TEST
+?C0021 . . . . . . . . .  C ADDR   0025H   R   SEG=?PR?_CHECK_PARMS?TEST
+?C0022 . . . . . . . . .  C ADDR   0023H   R   SEG=?PR?_CHECK_PARMS?TEST
+?C0025 . . . . . . . . .  C ADDR   0017H   R   SEG=?PR?CHECK_DRAFTING?TEST
+?C0026 . . . . . . . . .  C ADDR   0043H   R   SEG=?PR?CHECK_DRAFTING?TEST
+?C0027 . . . . . . . . .  C ADDR   0052H   R   SEG=?PR?CHECK_DRAFTING?TEST
+?C0030 . . . . . . . . .  C ADDR   0014H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0031 . . . . . . . . .  C ADDR   001DH   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0033 . . . . . . . . .  C ADDR   0040H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0034 . . . . . . . . .  C ADDR   0048H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0035 . . . . . . . . .  C ADDR   0050H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0036 . . . . . . . . .  C ADDR   0058H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C0037 . . . . . . . . .  C ADDR   0060H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+?C?COPY. . . . . . . . .  C ADDR   -----       EXT
+?CO?TEST . . . . . . . .  C SEG    00B9H       REL=UNIT
+?DT?AUTO_COLOR_TEST?TEST  D SEG    0001H       REL=UNIT
+?DT?TRY_TEST?TEST. . . .  D SEG    0001H       REL=UNIT
+?DT?_CHECK_PARMS?TEST. .  D SEG    0003H       REL=UNIT
+?PR?AUTO_COLOR_TEST?TEST  C SEG    0076H       REL=UNIT
+?PR?CHECK_DRAFTING?TEST.  C SEG    0054H       REL=UNIT
+?PR?TRY_TEST?TEST. . . .  C SEG    0019H       REL=UNIT
+?PR?_CHECK_PARMS?TEST. .  C SEG    0037H       REL=UNIT
+?SC_0. . . . . . . . . .  C ADDR   0000H   R   SEG=?CO?TEST
+?SC_12 . . . . . . . . .  C ADDR   000CH   R   SEG=?CO?TEST
+?SC_142. . . . . . . . .  C ADDR   008EH   R   SEG=?CO?TEST
+?SC_149. . . . . . . . .  C ADDR   0095H   R   SEG=?CO?TEST
+?SC_166. . . . . . . . .  C ADDR   00A6H   R   SEG=?CO?TEST
+?SC_170. . . . . . . . .  C ADDR   00AAH   R   SEG=?CO?TEST
+?SC_24 . . . . . . . . .  C ADDR   0018H   R   SEG=?CO?TEST
+?SC_36 . . . . . . . . .  C ADDR   0024H   R   SEG=?CO?TEST
+?SC_48 . . . . . . . . .  C ADDR   0030H   R   SEG=?CO?TEST
+?SC_60 . . . . . . . . .  C ADDR   003CH   R   SEG=?CO?TEST
+?SC_72 . . . . . . . . .  C ADDR   0048H   R   SEG=?CO?TEST
+?SC_84 . . . . . . . . .  C ADDR   0054H   R   SEG=?CO?TEST
+?SC_93 . . . . . . . . .  C ADDR   005DH   R   SEG=?CO?TEST
+?TRY_TEST?BYTE . . . . .  D ADDR   0000H   R   SEG=?DT?TRY_TEST?TEST
+?XD?CHECK_DRAFTING?TEST.  X SEG    000BH       REL=UNIT
+?_CHECK_PARMS?BYTE . . .  D ADDR   0000H   R   SEG=?DT?_CHECK_PARMS?TEST
+?_PRINTF?BYTE. . . . . .  D ADDR   -----       EXT
+AC . . . . . . . . . . .  B ADDR   00D0H.6 A   
+ACC. . . . . . . . . . .  D ADDR   00E0H   A   
+ARRARY?344 . . . . . . .  X ADDR   0001H   R   SEG=?XD?CHECK_DRAFTING?TEST
+AUTO_COLOR_TEST. . . . .  C ADDR   0000H   R   SEG=?PR?AUTO_COLOR_TEST?TEST
+B. . . . . . . . . . . .  D ADDR   00F0H   A   
+CHECK_DRAFTING . . . . .  C ADDR   0000H   R   SEG=?PR?CHECK_DRAFTING?TEST
+CY . . . . . . . . . . .  B ADDR   00D0H.7 A   
+DPH. . . . . . . . . . .  D ADDR   0083H   A   
+DPL. . . . . . . . . . .  D ADDR   0082H   A   
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE    11
+
+EA . . . . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . . . . .  B ADDR   00A8H.4 A   
+ET0. . . . . . . . . . .  B ADDR   00A8H.1 A   
+ET1. . . . . . . . . . .  B ADDR   00A8H.3 A   
+EX0. . . . . . . . . . .  B ADDR   00A8H.0 A   
+EX1. . . . . . . . . . .  B ADDR   00A8H.2 A   
+F0 . . . . . . . . . . .  B ADDR   00D0H.5 A   
+GETCHAR. . . . . . . . .  C ADDR   -----       EXT
+I?141. . . . . . . . . .  D ADDR   0000H   R   SEG=?DT?TRY_TEST?TEST
+IE . . . . . . . . . . .  D ADDR   00A8H   A   
+IE0. . . . . . . . . . .  B ADDR   0088H.1 A   
+IE1. . . . . . . . . . .  B ADDR   0088H.3 A   
+INDEX?343. . . . . . . .  X ADDR   0000H   R   SEG=?XD?CHECK_DRAFTING?TEST
+INT0 . . . . . . . . . .  B ADDR   00B0H.2 A   
+INT1 . . . . . . . . . .  B ADDR   00B0H.3 A   
+IP . . . . . . . . . . .  D ADDR   00B8H   A   
+IT0. . . . . . . . . . .  B ADDR   0088H.0 A   
+IT1. . . . . . . . . . .  B ADDR   0088H.2 A   
+OV . . . . . . . . . . .  B ADDR   00D0H.2 A   
+P. . . . . . . . . . . .  B ADDR   00D0H.0 A   
+P0 . . . . . . . . . . .  D ADDR   0080H   A   
+P1 . . . . . . . . . . .  D ADDR   0090H   A   
+P2 . . . . . . . . . . .  D ADDR   00A0H   A   
+P3 . . . . . . . . . . .  D ADDR   00B0H   A   
+PCON . . . . . . . . . .  D ADDR   0087H   A   
+PS . . . . . . . . . . .  B ADDR   00B8H.4 A   
+PSW. . . . . . . . . . .  D ADDR   00D0H   A   
+PT0. . . . . . . . . . .  B ADDR   00B8H.1 A   
+PT1. . . . . . . . . . .  B ADDR   00B8H.3 A   
+PX0. . . . . . . . . . .  B ADDR   00B8H.0 A   
+PX1. . . . . . . . . . .  B ADDR   00B8H.2 A   
+RB8. . . . . . . . . . .  B ADDR   0098H.2 A   
+RD . . . . . . . . . . .  B ADDR   00B0H.7 A   
+REN. . . . . . . . . . .  B ADDR   0098H.4 A   
+RI . . . . . . . . . . .  B ADDR   0098H.0 A   
+RS0. . . . . . . . . . .  B ADDR   00D0H.3 A   
+RS1. . . . . . . . . . .  B ADDR   00D0H.4 A   
+RUN_LOOP . . . . . . . .  C ADDR   0006H   R   SEG=?PR?TRY_TEST?TEST
+RXD. . . . . . . . . . .  B ADDR   00B0H.0 A   
+SBUF . . . . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . . . . .  D ADDR   0098H   A   
+SM0. . . . . . . . . . .  B ADDR   0098H.7 A   
+SM1. . . . . . . . . . .  B ADDR   0098H.6 A   
+SM2. . . . . . . . . . .  B ADDR   0098H.5 A   
+SP . . . . . . . . . . .  D ADDR   0081H   A   
+STRING?242 . . . . . . .  D ADDR   0000H   R   SEG=?DT?_CHECK_PARMS?TEST
+T0 . . . . . . . . . . .  B ADDR   00B0H.4 A   
+T1 . . . . . . . . . . .  B ADDR   00B0H.5 A   
+TB8. . . . . . . . . . .  B ADDR   0098H.3 A   
+TCON . . . . . . . . . .  D ADDR   0088H   A   
+TEST . . . . . . . . . .  N NUMB   -----       
+TEST?040 . . . . . . . .  D ADDR   0000H   R   SEG=?DT?AUTO_COLOR_TEST?TEST
+TF0. . . . . . . . . . .  B ADDR   0088H.5 A   
+TF1. . . . . . . . . . .  B ADDR   0088H.7 A   
+TH0. . . . . . . . . . .  D ADDR   008CH   A   
+TH1. . . . . . . . . . .  D ADDR   008DH   A   
+TI . . . . . . . . . . .  B ADDR   0098H.1 A   
+TL0. . . . . . . . . . .  D ADDR   008AH   A   
+TL1. . . . . . . . . . .  D ADDR   008BH   A   
+TMOD . . . . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . . . . .  B ADDR   0088H.4 A   
+TR1. . . . . . . . . . .  B ADDR   0088H.6 A   
+TRY_TEST . . . . . . . .  C ADDR   0000H   R   SEG=?PR?TRY_TEST?TEST
+TXD. . . . . . . . . . .  B ADDR   00B0H.1 A   
+WR . . . . . . . . . . .  B ADDR   00B0H.6 A   
+_?IX1000 . . . . . . . .  C ADDR   00AFH   R   SEG=?CO?TEST
+A51 MACRO ASSEMBLER  TEST                                                                 11/07/2005 10:54:14 PAGE    12
+
+_CHECK_PARMS . . . . . .  C ADDR   0000H   R   SEG=?PR?_CHECK_PARMS?TEST
+_PRINTF. . . . . . . . .  C ADDR   -----       EXT
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

@@ -1,0 +1,206 @@
+C51 COMPILER V9.02   FUNC_IR                                                               06/29/2013 15:30:09 PAGE 1   
+
+
+C51 COMPILER V9.02, COMPILATION OF MODULE FUNC_IR
+NO OBJECT MODULE REQUESTED
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE func_ir.c DEBUG OBJECTEXTEND PRINT(.\list\func_ir.lst) SRC(.\output\func_ir
+                    -.SRC)
+
+line level    source
+
+   1          
+   2          /********************************************************
+   3            IR Communication Function v0.1(Copyright(c) VXIS Inc. 2002)
+   4            v0.0
+   5            Data:2002.08.02
+   6            by P.J. Yang
+   7            v0.1
+   8            Data:2003.01.15
+   9            by P.J. Yang
+  10            Modify:1.儲存變數減少為Custom Code和Data Code
+  11                   2.將最末端 last_code_com = 0; 程式移至 IF 判斷式外，避免
+  12                     無法連續按同一按鈕的問題。
+  13            Data:2003.01.16
+  14            by P.J. Yang
+  15            Modify:1.修正持續壓住按鈕，但無法偵測的問題。
+  16          ********************************************************/
+  17          
+  18          #include <reg51.h>
+  19          #include <stdio.h>
+  20          #include <intrins.h>
+  21          #include <System.h>
+  22          #include <Macro.h>
+  23          #include "Func_ir.h"
+  24          
+  25          extern void IR_Received (void);
+  26          
+  27          BYTE idata IR_Received_Data[0x02];
+  28          BOOL last_code_com;     // A flag to show whether the last code receive is complete
+  29                                          // 0 => Not complete
+  30                                          // 1 => Completed
+  31          
+  32          sbit IRPORT = P3^2;
+  33          
+  34          
+  35          /************************************************************************************
+  36          Function: IR_Received
+  37          Active Interrupt: INT0
+  38          Input:
+  39                1.IRPORT
+  40                2.last_code_com => A flag to show whether the received IR code is processed complete
+  41                                          0 => Not complete
+  42                                          1 => Completed
+  43          Output:
+  44                1.IR_Received_Data[0] = Data_Code
+  45                  IR_Received_Data[1] = Custom_Code
+  46          
+  47          How to use:
+  48                1.Set INT0 enable
+  49                2.Add below program code to your Code:
+  50                     extern char idata IR_Received_Data[0x04];
+  51                     extern bit last_code_com;
+  52                3.Then,your program can detect whether new IR_code have received by detecting
+  53                  the "last_code_com" flag.
+  54                  last_code_com = 0 => New IR_code have received
+C51 COMPILER V9.02   FUNC_IR                                                               06/29/2013 15:30:09 PAGE 2   
+
+  55                                  1 => No new IR_code
+  56                4.After processing New IR_code,you should reset the "last_code_com" flag to '1'.
+  57          
+  58          ************************************************************************************/
+  59          
+  60          void IR_Received() interrupt EX0INT using EX0INT_BANK
+  61          {
+  62   1        unsigned char count1=0;
+  63   1        unsigned char count2=0;
+  64   1        char idata IR_Received_Data_temp[4];
+  65   1      
+  66   1        if (!last_code_com)           // Check whether the last code receive is complete
+  67   1        {
+  68   2            goto End_Int0;
+  69   2        }
+  70   1      
+  71   1        EA = 0;                       // Disable all interrupt
+  72   1      
+  73   1        // Check leader code. Signal will keep low until 9.2ms,then go high.
+  74   1        // If signal go high before 9.2ms,it must be a noise and keep it out
+  75   1        // Delay xx ms
+  76   1        for (count1=0;count1<0x03;count1++)
+  77   1        {
+  78   2          for (count2=0;count2<0x96;count2++)
+  79   2          {
+  80   3          }
+  81   2        }
+  82   1        // Check whether the signal go high and delay xx ms
+  83   1        for (count1=0;count1<0xff;count1++)
+  84   1        {
+  85   2         if (IRPORT)
+  86   2         {
+  87   3          goto End_Int0;                      // The signal is noise
+  88   3         }
+  89   2        }
+  90   1      
+  91   1        // Start Receiving 32 bits data (customer code + data code)
+  92   1        while (!IRPORT)                       // wait until IRPORT = 1
+  93   1        {                                     // waiting for the end of the carrier waveform of leader code
+  94   2        }
+  95   1        while (!IRPORT)                       // wait until IRPORT = 1
+  96   1        {                                     // Check the carrier waveform
+  97   2        }
+  98   1        while (IRPORT)                        // wait until IRPORT = 0
+  99   1        {                                     // waiting for the carrier waveform of custom code
+ 100   2        }
+ 101   1      
+ 102   1        for (count1=0;count1<0x20;count1++)
+ 103   1        {
+ 104   2          while (!IRPORT)                     // wait until IRPORT = 1
+ 105   2          {                                   // waiting for the end of the carrier waveform of custom code
+ 106   3          }
+ 107   2          // To know the content of the code by checking how long it is
+ 108   2          for (count2=0;count2<0x7f;count2++)
+ 109   2          {
+ 110   3           _nop_();
+ 111   3           _nop_();
+ 112   3           if (!IRPORT)
+ 113   3           {
+ 114   4            break;
+ 115   4           }
+ 116   3          }
+C51 COMPILER V9.02   FUNC_IR                                                               06/29/2013 15:30:09 PAGE 3   
+
+ 117   2      
+ 118   2          // Save the received bit to carry flag
+ 119   2          CY = IRPORT;
+ 120   2      
+ 121   2          // Check whether the code is the same code.
+ 122   2          for (count2=0;count2<=0xff;count2++)
+ 123   2          {
+ 124   3           _nop_();
+ 125   3           _nop_();
+ 126   3           if (!IRPORT)
+ 127   3           {
+ 128   4            break;
+ 129   4           }
+ 130   3           else if (count2 == 0xff)
+ 131   3           {
+ 132   4                last_code_com = 0;    // Set the flag to show New IR_Code have received
+ 133   4                goto End_Int0;
+ 134   4           }
+ 135   3          }
+ 136   2      
+ 137   2          // Save the received bit to IR_Received_Data_temp by rotating ACC and Carrier
+ 138   2          ACC = IR_Received_Data_temp[0];
+ 139   2          #pragma asm
+ 140   2           rrc A
+ 141   2          #pragma endasm
+ 142   2          IR_Received_Data_temp[0] = ACC;
+ 143   2      
+ 144   2          ACC = IR_Received_Data_temp[1];
+ 145   2          #pragma asm
+ 146   2           rrc A
+ 147   2          #pragma endasm
+ 148   2          IR_Received_Data_temp[1] = ACC;
+ 149   2      
+ 150   2          ACC = IR_Received_Data_temp[2];
+ 151   2          #pragma asm
+ 152   2           rrc A
+ 153   2          #pragma endasm
+ 154   2          IR_Received_Data_temp[2] = ACC;
+ 155   2      
+ 156   2          ACC = IR_Received_Data_temp[3];
+ 157   2          #pragma asm
+ 158   2           rrc A
+ 159   2          #pragma endasm
+ 160   2          IR_Received_Data_temp[3] = ACC;
+ 161   2        }
+ 162   1      
+ 163   1        // Check whether IR_Received_Data_temp and IR_Received_Data is the same
+ 164   1        if (IR_Received_Data[0] != IR_Received_Data_temp[1] || IR_Received_Data[1] != IR_Received_Data_temp[3])
+ 165   1        {
+ 166   2         IR_Received_Data[0] = IR_Received_Data_temp[1];
+ 167   2         IR_Received_Data[1] = IR_Received_Data_temp[3];
+ 168   2        }
+ 169   1        last_code_com = 0;                    // Set the flag to show New IR_Code have received
+ 170   1      
+ 171   1      IR_Received_Data[1] = _pbIRKeyTbl[IR_Received_Data[1]];
+ 172   1              
+ 173   1      End_Int0:
+ 174   1        EA = 1;       // Enable all interrupts
+ 175   1      }
+ 176          
+
+
+C51 COMPILER V9.02   FUNC_IR                                                               06/29/2013 15:30:09 PAGE 4   
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    206    ----
+   CONSTANT SIZE    =     50    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =      2       4
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

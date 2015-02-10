@@ -1,0 +1,1 @@
+"func_ir.c" DEBUG OBJECTEXTEND PRINT(.\list\func_ir.lst) SRC (.\output\func_ir.SRC)
