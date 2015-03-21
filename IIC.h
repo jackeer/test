@@ -1,6 +1,6 @@
 
-#ifndef __FLOAT_H__
-#define __FLOAT_H__
+#ifndef __IIC_H__
+#define __IIC_H__
 
 
 /*========================
