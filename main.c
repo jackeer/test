@@ -169,6 +169,7 @@ while(1)
 
 }
 
+
 //	AUTO_COLOR_TEST();
 //	getchar();
 
